@@ -47,13 +47,19 @@ public class PurchaseSignController {
     @Autowired
     private PurchasePlanDetailService planDetailService;
 
-//    @Autowired
-//    private QualityService qualityService;
-//    @Autowired
-//    private PurchaseQualityDetailService purchaseQualityDetailService;
+    @Autowired
+    private QualityService qualityService;
+    @Autowired
+    private PurchaseQualityDetailService purchaseQualityDetailService;
 
     @Autowired
+    private WarehouseInService inService;
+    @Autowired
+    private WarehouseInDetailService inDetailService;
+    @Autowired
     private WarehouseInCreateService warehouseInCreateService;
+
+
     @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
@@ -391,75 +397,161 @@ public class PurchaseSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
-//        Map<String, List<Quality>> prodQualityMap = new HashMap<>();
-//
-//        //遍历(质检属性:2:检验) 采购签收明细
-//        String productIds = new String();
-//        if (qualityList != null && qualityList.size() > 0) {
-//            for (PurchaseSignDetail signDetail : qualityList) {
-//                //productId 货品id
-//                String productId = signDetail.getProductId();
-//                if (productId != null && productId.trim().length() > 0) {
-//                    productIds = productIds + productId.trim() + ",";
-//                }
-//            }
-//        }
-//
-//        if (productIds != null && productIds.trim().length() > 0) {
-//            productIds = StringUtil.stringTrimSpace(productIds);
-//            productIds = "'" + productIds.replace(",", "','") + "'";
-//
-//            PageData findMap = new PageData();
-//            findMap.put("productIds", productIds);
-//            //业务名称 (purchase:采购)
-//            findMap.put("business", "purchase");
-//            findMap.put("orderStr", "product_id asc");
-//            List<Quality> prodQualityList = qualityService.findQualityList(findMap);
-//
-//            if (prodQualityList != null && prodQualityList.size() > 0) {
-//                for (Quality quality : prodQualityList) {
-//                    String productId = quality.getProductId();
-//
-//                    if (prodQualityMap.get(productId) == null) {
-//                        List<Quality> tempList = new ArrayList<>();
-//                        tempList.add(quality);
-//                        prodQualityMap.put(productId, tempList);
-//                    } else if (prodQualityMap.get(productId) != null) {
-//                        List<Quality> tempList = prodQualityMap.get(productId);
-//                        tempList.add(quality);
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (signDtlList != null && signDtlList.size() > 0) {
-//            for (PurchaseSignDetail signDetail : signDtlList) {
-//                PurchaseQualityDetail addQualityDtl = new PurchaseQualityDetail();
-//                addQualityDtl.setSignDetailId(signDetail.getId());
-//                addQualityDtl.setOrderUnit(signDetail.getOrderUnit());
-//
-//                //货品id productId
-//                String productId = signDetail.getProductId();
-//                addQualityDtl.setProductId(productId);
-//
-//                //qualityId 质检项id
-//                List<Quality> prodQualityList = prodQualityMap.get(productId);
-//                if (prodQualityList != null && prodQualityList.size() > 0) {
-//                    for (Quality quality : prodQualityList) {
-//                        addQualityDtl.setQualityId(quality.getId());
-//                    }
-//                }
-//
-//                purchaseQualityDetailService.save(addQualityDtl);
-//            }
-//        }
+        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
+        Map<String, List<Quality>> prodQualityMap = new HashMap<>();
+
+        //遍历(质检属性:2:检验) 采购签收明细
+        String productIds = new String();
+        if (qualityList != null && qualityList.size() > 0) {
+            for (PurchaseSignDetail signDetail : qualityList) {
+                //productId 货品id
+                String productId = signDetail.getProductId();
+                if (productId != null && productId.trim().length() > 0) {
+                    productIds = productIds + productId.trim() + ",";
+                }
+            }
+        }
+
+        if (productIds != null && productIds.trim().length() > 0) {
+            productIds = StringUtil.stringTrimSpace(productIds);
+            productIds = "'" + productIds.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("productIds", productIds);
+            //业务名称 (purchase:采购)
+            findMap.put("business", "purchase");
+            findMap.put("orderStr", "product_id asc");
+            List<Quality> prodQualityList = qualityService.findQualityList(findMap);
+
+            if (prodQualityList != null && prodQualityList.size() > 0) {
+                for (Quality quality : prodQualityList) {
+                    String productId = quality.getProductId();
+
+                    if (prodQualityMap.get(productId) == null) {
+                        List<Quality> tempList = new ArrayList<>();
+                        tempList.add(quality);
+                        prodQualityMap.put(productId, tempList);
+                    } else if (prodQualityMap.get(productId) != null) {
+                        List<Quality> tempList = prodQualityMap.get(productId);
+                        tempList.add(quality);
+                    }
+                }
+            }
+        }
+
+        if (signDtlList != null && signDtlList.size() > 0) {
+            for (PurchaseSignDetail signDetail : signDtlList) {
+                PurchaseQualityDetail addQualityDtl = new PurchaseQualityDetail();
+                addQualityDtl.setSignDetailId(signDetail.getId());
+                addQualityDtl.setOrderUnit(signDetail.getOrderUnit());
+
+                //货品id productId
+                String productId = signDetail.getProductId();
+                addQualityDtl.setProductId(productId);
+
+                //qualityId 质检项id
+                List<Quality> prodQualityList = prodQualityMap.get(productId);
+                if (prodQualityList != null && prodQualityList.size() > 0) {
+                    for (Quality quality : prodQualityList) {
+                        addQualityDtl.setQualityId(quality.getId());
+                    }
+                }
+
+                purchaseQualityDetailService.save(addQualityDtl);
+            }
+        }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseSign/addPurchaseSign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * 取消(采购)签收单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseSign/cancelPurchaseSign")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel cancelPurchaseSign() throws Exception {
+        logger.info("################/purchase/purchaseSign/cancelPurchaseSign 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //signId 采购签收单id
+        String signId = pageData.getString("signId");
+        if (signId == null || signId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购签收单id为空或空字符串！");
+            return model;
+        }
+
+        //获取免检入库单id-根据(签收单id,quality:质检属性:1:免检)查询
+        PageData findMap = new PageData();
+        findMap.put("parentId", signId);
+        findMap.put("quality", "1");
+        List<Map> mapList = signDetailService.getDataListPage(findMap, null);
+
+        //获取(入库单id)Map-遍历查询结构集
+        Map<String, String> inParentMap = new HashMap<>();
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+                //inParentId (免检)入库单
+                String inParentId = (String)objectMap.get("inParentId");
+
+                if (inParentId != null && inParentId.trim().length() > 0) {
+                    inParentMap.put(inParentId.trim(), inParentId.trim());
+                }
+            }
+        }
+
+        //取消入库单
+        if (inParentMap != null) {
+            for (Iterator iterator = inParentMap.keySet().iterator(); iterator.hasNext();) {
+                //inParentId 入库单id
+                String inParentId = (String)iterator.next();
+
+                //修改入库单明细状态
+                PageData mapDetail = new PageData();
+                mapDetail.put("parentId", inParentId);
+                //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                mapDetail.put("state", "-1");
+                inDetailService.updateStateByDetail(mapDetail);
+
+                //修改入库单状态
+                WarehouseIn editWarehouseIn = new WarehouseIn();
+                editWarehouseIn.setId(inParentId);
+                //状态(0:未完成 1:已完成 -1:已取消)
+                editWarehouseIn.setState("-1");
+                inService.update(editWarehouseIn);
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //取消采购签收单
+        PageData mapDetail = new PageData();
+        mapDetail.put("parentId", signId);
+        //明细状态:状态(1:检验中 2:已完成 -1:已取消)
+        mapDetail.put("state", "-1");
+        signDetailService.updateStateByDetail(mapDetail);
+
+        PurchaseSign editSign = new PurchaseSign();
+        editSign.setId(signId);
+        //状态(1:检验中 2:已完成 -1:已取消)
+        editSign.setState("-1");
+        signService.update(editSign);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseSign/cancelPurchaseSign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 
 }

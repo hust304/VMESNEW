@@ -80,6 +80,8 @@ public interface PurchaseSignDetailService {
      */
     List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
+    void updateStateByDetail(PageData pd) throws Exception;
+
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
      *

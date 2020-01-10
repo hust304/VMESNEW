@@ -26,6 +26,17 @@
         </foreach>
     </update>
 
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_purchase_sign_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentId != null and parentId != ''" >
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </update>
+
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="PurchaseSignDetail" >
         delete from vmes_column where model_code = 'PurchaseSignDetail';
@@ -82,6 +93,8 @@
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityName', '是否质检', 36, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityTypeName', '检验方式', 37, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'stateName', '状态', 38, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'inParentId', '(免检)入库单id', 39, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -215,13 +228,18 @@
             prodUnitPrice.n2p_decimal_count n2pDecimalCount,
 
             prodUnitPrice.p2n_is_scale p2nIsScale,
-            prodUnitPrice.p2n_decimal_count p2nDecimalCount
+            prodUnitPrice.p2n_decimal_count p2nDecimalCount,
+
+            <!--(免检)入库单-->
+            inDetail.parent_id inParentId
 
         from vmes_purchase_sign_detail detail
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
+            <!--关联(免检)入库单明细-->
+            left join vmes_warehouse_in_detail inDetail on detail.in_detail_id = inDetail.id
 
             <!--(采购订单明细id)-退货完成数量-退货明细汇总-->
             left join (
@@ -237,6 +255,9 @@
         <where>
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id = #{parentId}
+            </if>
+            <if test="quality != null and quality != ''">
+                and detail.quality = #{quality}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
