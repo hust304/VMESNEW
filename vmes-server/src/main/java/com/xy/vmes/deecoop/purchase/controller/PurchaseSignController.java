@@ -361,7 +361,7 @@ public class PurchaseSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //根据质检属性 (1:免检 2:检验) 过滤出两个结构体
+        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
         List<PurchaseSignDetail> qualityList = new ArrayList<>();
         if (signDtlList != null && signDtlList.size() > 0) {
             for (PurchaseSignDetail signDetail : signDtlList) {
@@ -374,7 +374,6 @@ public class PurchaseSignController {
             }
         }
 
-        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
         Map<String, List<Quality>> prodQualityMap = new HashMap<>();
 
         //遍历(质检属性:2:检验) 采购签收明细
@@ -416,8 +415,8 @@ public class PurchaseSignController {
             }
         }
 
-        if (signDtlList != null && signDtlList.size() > 0) {
-            for (PurchaseSignDetail signDetail : signDtlList) {
+        if (qualityList != null && qualityList.size() > 0) {
+            for (PurchaseSignDetail signDetail : qualityList) {
                 PurchaseQualityDetail addQualityDtl = new PurchaseQualityDetail();
                 addQualityDtl.setSignDetailId(signDetail.getId());
                 addQualityDtl.setOrderUnit(signDetail.getOrderUnit());

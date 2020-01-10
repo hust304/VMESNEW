@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -35,6 +36,7 @@ public class PurchaseQualityDetailServiceImp implements PurchaseQualityDetailSer
      */
     @Override
     public void save(PurchaseQualityDetail object) throws Exception {
+        object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
         purchaseQualityDetailMapper.insert(object);
