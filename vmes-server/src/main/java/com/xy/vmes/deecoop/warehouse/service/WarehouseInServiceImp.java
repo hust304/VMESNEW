@@ -689,11 +689,9 @@ public class WarehouseInServiceImp implements WarehouseInService {
     }
 
     @Override
-    public ResultModel listPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseInDetail(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("warehouseInDetail");
         if (columnList == null || columnList.size() == 0) {
@@ -724,14 +722,20 @@ public class WarehouseInServiceImp implements WarehouseInService {
                 }
             }
         }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
 
         pd.put("orderStr", "a.cdate asc");
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
         }
 
         List<Map> varMapList = new ArrayList();
@@ -784,8 +788,9 @@ public class WarehouseInServiceImp implements WarehouseInService {
             }
         }
 
+        result.put("hideTitles",titlesHideList);
+        result.put("titles",titlesList);
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;

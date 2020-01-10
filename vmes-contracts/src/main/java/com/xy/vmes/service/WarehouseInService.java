@@ -116,7 +116,7 @@ public interface WarehouseInService {
 
     ResultModel importExcelWarehouseIn(MultipartFile file) throws Exception;
 
-    ResultModel listPageWarehouseInDetail(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseInDetail(PageData pd) throws Exception;
 
     ResultModel findWarehouseListByWarehouseIn(PageData pd, Pagination pg) throws Exception;
 
