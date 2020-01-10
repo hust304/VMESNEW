@@ -11,6 +11,7 @@
         signDetail.id signDtlId,
         signDetail.parent_id signId,
         round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
+        signDetail.quality quality,
         round(ifnull(signDetail.quality_count, 0), 2) qualityCount,
 
         <!--获取(免检)入库执行-->
@@ -24,7 +25,7 @@
                 from vmes_warehouse_in_execute
                 where isdisable = '1'
                 group by detail_id
-            ) inExecute on signDetail.in_detail_id: = outDetail.id
+            ) inExecute on signDetail.in_detail_id = inExecute.detail_id
 
         <!--获取(检验入库)入库执行-->
         <!--获取(检验让步接收)入库执行-->

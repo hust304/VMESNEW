@@ -102,6 +102,8 @@
         (replace(uuid(), '-', ''),'PurchaseSign','supplierName','供应商',16, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'PurchaseSign','signUserName','签收人',17, '1','0','1','0',now(), 'admin'),
 
+        (replace(uuid(), '-', ''),'PurchaseSign','isShowEdit','是否显示修改按钮',17, '1','0','1','0',now(), 'admin')
+
     </insert>
 
     <!-- 自动创建，可以修改 -->
@@ -133,7 +135,10 @@
 
             purchaseOrder.supplier_id supplierId,
             supplier.name supplierName,
-            signUser.user_name signUserName
+            signUser.user_name signUserName,
+
+            <!-- java类获取数据(isShowEdit) -->
+            '' isShowEdit
 
         from vmes_purchase_sign sign
             left join vmes_purchase_order purchaseOrder on sign.order_id = purchaseOrder.id

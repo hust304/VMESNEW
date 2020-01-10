@@ -226,7 +226,24 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
             result.put("pageData", pg);
         }
 
+        //isNeedShowEdit 是否需要判断(是否显示修改按钮) 'true':需要判断
+        String isNeedShowEdit = pd.getString("isNeedShowEdit");
+
         List<Map> varList = this.getDataListPage(pd, pg);
+        //设置 isShowEdit(是否显示编辑按钮) 1:显示(默认显示) 0:不显示
+        if ("true".equals(isNeedShowEdit) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String signId = (String)mapObject.get("id");
+
+                //查询SQL语句: PurchaseSignInDetailMapper.findSignDetailByInDetail
+                PageData findMap = new PageData();
+                findMap.put("signId", signId);
+                List<Map<String, Object>> mapList = purchaseSignDetailService.findSignDetailByInDetail(findMap);
+
+                String isShowEdit = this.findShowEditByMapList(mapList);
+                mapObject.put("isShowEdit", isShowEdit);
+            }
+        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -237,6 +254,49 @@ public class PurchaseSignServiceImp implements PurchaseSignService {
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    private String findShowEditByMapList(List<Map<String, Object>> mapList) {
+        //isShowEdit(是否显示编辑按钮) 1:显示(默认显示) 0:不显示
+        String isShowEdit = "1";
+        if (mapList == null || mapList.size() == 0) {return isShowEdit;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            //quality质检属性 (1:免检 2:检验)
+            String quality = (String)mapObject.get("quality");
+
+            //quality质检属性:1:免检
+            if ("1".equals(quality)) {
+                //executeCount (免检)入库执行数量
+                BigDecimal executeCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("executeCount") != null) {
+                    executeCount = (BigDecimal)mapObject.get("executeCount");
+                }
+
+                //(免检)入库执行数量(大于0) 不可修改(isShowEdit:0:不显示)
+                if (executeCount.doubleValue() > 0) {
+                    isShowEdit = "0";
+                    break;
+                }
+
+                //quality质检属性:2:检验
+            } else if ("2".equals(quality)) {
+                //qualityCount (实际)检验数量
+                BigDecimal qualityCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("qualityCount") != null) {
+                    qualityCount = (BigDecimal)mapObject.get("qualityCount");
+                }
+
+                //(实际)检验数量(大于0) 不可修改 (isShowEdit:0:不显示)
+                if (qualityCount.doubleValue() > 0) {
+                    isShowEdit = "0";
+                    break;
+                }
+            }
+        }
+
+        return isShowEdit;
+    }
+
+
 //    /**
 //     * 创建采购签收单及签收明细
 //     *
