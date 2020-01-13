@@ -44,9 +44,10 @@ public class KanbanWarehouseServiceImp implements KanbanWarehouseService {
         ResultModel model = new ResultModel();
         Map<String,Object> result = new HashMap<String,Object>();
         PageData pageData = new PageData();
-        pageData.put("company_id",pd.getString("currentCompanyId"));
-        pageData.put("isdisable","1");
-        List<WarehouseOut> outList = warehouseOutService.selectByColumnMap(pageData);
+        pageData.put("companyId",pd.getString("currentCompanyId"));
+        pageData.put("isQueryAll","true");
+        pageData.put("queryStr","isdisable = '1' and (state = '0'  or (state = '1' and cdate >= DATE_FORMAT(NOW(),'%Y-%m-%d')))");
+        List<WarehouseOut> outList = warehouseOutService.dataList(pageData);
         int outCompleted = 0;
         int outUnCompleted = 0;
         int inCompleted = 0;
@@ -79,7 +80,7 @@ public class KanbanWarehouseServiceImp implements KanbanWarehouseService {
             result.put("outUnCompleted",0);
             result.put("outCompletedRatio",0);
         }
-        List<WarehouseIn> inList = warehouseInService.selectByColumnMap(pageData);
+        List<WarehouseIn> inList = warehouseInService.dataList(pageData);
         if(inList!=null&&inList.size()>0){
             for(int i=0;i<inList.size();i++){
                 WarehouseIn obj = inList.get(i);
@@ -103,7 +104,7 @@ public class KanbanWarehouseServiceImp implements KanbanWarehouseService {
             result.put("inUnCompleted",0);
             result.put("inCompletedRatio",0);
         }
-        List<WarehouseCheck> checkList = warehouseCheckService.selectByColumnMap(pageData);
+        List<WarehouseCheck> checkList = warehouseCheckService.dataList(pageData);
         if(checkList!=null&&checkList.size()>0){
             for(int i=0;i<checkList.size();i++){
                 WarehouseCheck obj = checkList.get(i);
@@ -137,7 +138,9 @@ public class KanbanWarehouseServiceImp implements KanbanWarehouseService {
             result.put("allCompletedRatio",0);
         }
 
-
+        pageData = new PageData();
+        pageData.put("company_id",pd.getString("currentCompanyId"));
+        pageData.put("isdisable","1");
         List<Product> productList = productService.selectByColumnMap(pageData);
         if(productList!=null&&productList.size()>0){
             result.put("productCount",productList.size());
