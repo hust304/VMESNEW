@@ -153,6 +153,7 @@ public class KanbanWarehouseServiceImp implements KanbanWarehouseService {
             result.put("productCount",0);
             result.put("alertProductCount",0);
         }
+        model.putResult(result);
         return model;
     }
 
