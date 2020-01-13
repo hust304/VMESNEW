@@ -140,6 +140,10 @@ public interface PurchaseSignDetailService {
     */
     ResultModel listPagePurchaseSignDetail(PageData pd) throws Exception;
 
+    //获取(质量-采购检验)采购签收明细检验
+    //菜单路径:(质量-采购检验) 当前采购签收明细(执行)按钮弹出框查询调用方法
+    ResultModel listPagePurchaseSignDetailByQualityExecute(PageData pd) throws Exception;
+
 
 
 

@@ -375,6 +375,75 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         return model;
     }
 
+    //获取(质量-采购检验)采购签收明细检验
+    //菜单路径:(质量-采购检验) 当前采购签收明细(执行)按钮弹出框查询调用方法
+    public ResultModel listPagePurchaseSignDetailByQualityExecute(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("PurchaseSignDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //qualityType 检验方式id (1:全检 2:抽检)
+                String qualityType = "1";
+                if (mapObject.get("qualityType") != null && mapObject.get("qualityType").toString().trim().length() > 0) {
+                    qualityType = mapObject.get("qualityType").toString().trim();
+                }
+
+                //arriveCount 签收数
+                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("arriveCount") != null) {
+                    arriveCount = (BigDecimal)mapObject.get("arriveCount");
+                }
+
+                //qualityCount 实检数
+                BigDecimal qualityCount = null;
+                //qualityType 检验方式:1:全检 qualityCount实检数 == arriveCount签收数
+                if ("1".equals(qualityType)) {
+                    qualityCount = arriveCount;
+                }
+                mapObject.put("qualityCount", qualityCount);
+
+                //badCount 不合格数
+                mapObject.put("badCount", null);
+                //retreatCount 退货数
+                mapObject.put("retreatCount", null);
+                //receiveCount 让步接收
+                mapObject.put("receiveCount", null);
+            }
+        }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
 }
 
 

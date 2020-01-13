@@ -253,6 +253,9 @@
             ) retreatDetail on detail.order_detail_id = retreatDetail.order_detail_id
 
         <where>
+            <if test="signDtlId != null and signDtlId != ''">
+                and detail.id = #{signDtlId}
+            </if>
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id = #{parentId}
             </if>

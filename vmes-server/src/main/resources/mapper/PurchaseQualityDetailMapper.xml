@@ -51,25 +51,30 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <insert id="insertColumn" >
+    <insert id="purchaseQualityDetail" >
         delete from vmes_column where model_code = 'purchaseQualityDetail' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'purchaseQualityDetail','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','signDetailId','采购订单明细ID',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','orderUnit','单据单位id(采购订单单位)',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','qualityId','质检项id',4, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'purchaseQualityDetail','badCount','(质检项)不合格数量',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'purchaseQualityDetail','remark','备注',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'purchaseQualityDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseQualityDetail','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'purchaseQualityDetail','qualityName','质检项',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseQualityDetail','qualityCriterion','检验标准',13, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
@@ -121,22 +126,30 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        sign_detail_id signDetailId,
-        product_id productId,
-        order_unit orderUnit,
-        quality_id qualityId,
+        detail.id id,
+        detail.sign_detail_id signDetailId,
+        detail.product_id productId,
+        detail.order_unit orderUnit,
+        detail.quality_id qualityId,
 
-        bad_count badCount,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+        detail.bad_count badCount,
+        detail.cuser cuser,
+        detail.cdate cdate,
+        detail.uuser uuser,
+        detail.udate udate,
 
-        remark remark,
-        isdisable isdisable
-        from vmes_purchase_quality_detail
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        quality.name qualityName,
+        quality.criterion qualityCriterion
+
+        from vmes_purchase_quality_detail detail
+        left join vmes_quality quality on detail.quality_id = quality.id
         <where>
+            <if test="signDetailId != null and signDetailId != ''">
+                and detail.sign_detail_id = #{signDetailId}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}

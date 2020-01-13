@@ -29,13 +29,30 @@ public class PurchaseQualityDetailController {
     * @date 2020-01-09
     */
     @PostMapping("/purchase/purchaseQualityDetail/listPagePurchaseQualityDetails")
-    public ResultModel listPagePurchaseQualityDetails()  throws Exception {
+    public ResultModel listPagePurchaseQualityDetails() throws Exception {
         logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetails 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = purchaseQualityDetailService.listPagePurchaseQualityDetails(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 获取(质量-采购检验)采购签收明细检验项目
+     * 菜单路径:(质量-采购检验) 当前采购签收明细(执行)按钮弹出框查询调用方法
+     * @author 陈刚
+     * @date 2020-01-09
+     */
+    @PostMapping("/purchase/purchaseQualityDetail/listPagePurchaseQualityDetailByQualityExecute")
+    public ResultModel listPagePurchaseQualityDetailByQualityExecute() throws Exception {
+        logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetailByQualityExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = purchaseQualityDetailService.listPagePurchaseQualityDetailByQualityExecute(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetailByQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
