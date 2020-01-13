@@ -13,6 +13,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -419,19 +420,23 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                 }
 
                 //qualityCount 实检数
-                BigDecimal qualityCount = null;
+                BigDecimal qualityCount = BigDecimal.valueOf(0D);
                 //qualityType 检验方式:1:全检 qualityCount实检数 == arriveCount签收数
                 if ("1".equals(qualityType)) {
                     qualityCount = arriveCount;
                 }
-                mapObject.put("qualityCount", qualityCount);
+                //四舍五入到2位小数
+                qualityCount = qualityCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("qualityCount", qualityCount.toString());
 
+                BigDecimal tempBigDecimal = BigDecimal.valueOf(0D);
+                tempBigDecimal = tempBigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 //badCount 不合格数
-                mapObject.put("badCount", null);
+                mapObject.put("badCount", tempBigDecimal.toString());
                 //retreatCount 退货数
-                mapObject.put("retreatCount", null);
+                mapObject.put("retreatCount", tempBigDecimal.toString());
                 //receiveCount 让步接收
-                mapObject.put("receiveCount", null);
+                mapObject.put("receiveCount", tempBigDecimal.toString());
             }
         }
 

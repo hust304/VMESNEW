@@ -11,10 +11,13 @@ import com.xy.vmes.service.ColumnService;
 import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -254,8 +257,11 @@ public class PurchaseQualityDetailServiceImp implements PurchaseQualityDetailSer
         List<Map> varList = this.getDataListPage(pd, pg);
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> mapObject : varList) {
+                BigDecimal tempBigDecimal = BigDecimal.valueOf(0D);
+                tempBigDecimal = tempBigDecimal.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
                 //badCount 不合格数
-                mapObject.put("badCount", null);
+                mapObject.put("badCount", tempBigDecimal.toString());
             }
         }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
