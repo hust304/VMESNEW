@@ -449,6 +449,16 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         return model;
     }
 
+    //采购签收明细-检验执行
+    public ResultModel purchaseSignDetailByQualityExecute(PageData pd) throws Exception {
+        return null;
+    }
+
+    //采购签收明细-免检
+    public ResultModel updateSignDetailByQuality(PageData pd) throws Exception {
+        return null;
+    }
+
 }
 
 
