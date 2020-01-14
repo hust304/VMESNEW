@@ -116,6 +116,17 @@ public class CompanyController {
         return model;
     }
 
+    @PostMapping("/system/company/getCompanyInfo")
+    public ResultModel getCompanyInfo() throws Exception {
+        logger.info("################/system/company/getCompanyInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = companyService.getCompanyInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/company/getCompanyInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * Excel导出功能：
