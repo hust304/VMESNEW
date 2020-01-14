@@ -1046,7 +1046,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //修改采购订单
         //根据(采购订单明细id) 查询
-        String orderDtlIds = (String)signDetailMap.get("orderDtlId");
+        String orderDtlIds = (String)signDetailMap.get("orderDetailId");
         Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
         if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
             String detailIds = orderDtlIds.trim();
@@ -1066,7 +1066,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             PurchaseOrderDetail editOrderDtl = new PurchaseOrderDetail();
 
             //orderDetailId 采购订单明细ID
-            String orderDetailId = (String)signDetailMap.get("orderDtlId");
+            String orderDetailId = (String)signDetailMap.get("orderDetailId");
             editOrderDtl.setId(orderDetailId);
 
             Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
@@ -1187,7 +1187,8 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     PurchaseSignDetail editSignDtl = new PurchaseSignDetail();
 
                     //signDtlId 采购签收id
-                    editSignDtl.setId(signDtlId);
+                    String signDtlId_key = (String)iterator.next();
+                    editSignDtl.setId(signDtlId_key);
 
                     Map<String, Object> mapValue = businessByInMap.get(signDtlId);
                     //inDtlId:   入库明细id
@@ -1215,7 +1216,8 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     PurchaseSignDetail editSignDtl = new PurchaseSignDetail();
 
                     //signDtlId 采购签收id
-                    editSignDtl.setId(signDtlId);
+                    String signDtlId_key = (String)iterator.next();
+                    editSignDtl.setId(signDtlId_key);
 
                     Map<String, Object> mapValue = businessByInMap.get(signDtlId);
                     //inDtlId:   入库明细id
