@@ -483,14 +483,14 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             return model;
         }
 
-        String executeJsonStr = pageData.getString("executeJsonStr");
-        if (executeJsonStr == null || executeJsonStr.trim().length() == 0) {
+        String jsonStr = pageData.getString("jsonStr");
+        if (jsonStr == null || jsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("请至少填写一条入库数据！");
+            model.putMsg("请至少填写一行数据！");
             return model;
         }
 
-        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(executeJsonStr);
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
         if(jsonMapList == null || jsonMapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("采购签收明细执行 Json字符串-转换成List错误！");
@@ -524,7 +524,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
 
             supplierId = objectMap.get("supplierId");
-            supplierName = objectMap.get("supplierId");
+            supplierName = objectMap.get("supplierName");
 
             //采购订单id
             orderId = objectMap.get("orderId");
@@ -782,19 +782,6 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             }
             //四舍五入到2位小数
             badCount = badCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-//            //retreatCount (检验)退货数量
-//            BigDecimal retreatCount = BigDecimal.valueOf(0D);
-//            String retreatCountStr = objectMap.get("retreatCount");
-//            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
-//                try {
-//                    retreatCount = new BigDecimal(retreatCountStr);
-//                } catch (NumberFormatException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            //四舍五入到2位小数
-//            retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
             //receiveCount (检验)让步接收数量
             BigDecimal receiveCount = BigDecimal.valueOf(0D);

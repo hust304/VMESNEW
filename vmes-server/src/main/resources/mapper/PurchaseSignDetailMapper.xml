@@ -233,7 +233,6 @@
             prodUnitPrice.p2n_decimal_count p2nDecimalCount,
 
             <!--关联采购订单-->
-            detail.order_detail_id orderDtlId,
             orderDtl.parent_id orderId,
             purchaseOrder.supplier_id supplierId,
             supplier.name supplierName,
