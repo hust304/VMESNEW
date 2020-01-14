@@ -95,6 +95,8 @@
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'stateName', '状态', 38, '1', '0', '1', '0', now(), 'admin'),
 
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'inParentId', '(免检)入库单id', 39, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'supplierId', '供应商id', 40, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'supplierName', '供应商名称', 41, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -230,6 +232,12 @@
             prodUnitPrice.p2n_is_scale p2nIsScale,
             prodUnitPrice.p2n_decimal_count p2nDecimalCount,
 
+            <!--关联采购订单-->
+            detail.order_detail_id orderDtlId,
+            orderDtl.parent_id orderId,
+            purchaseOrder.supplier_id supplierId,
+            supplier.name supplierName,
+
             <!--(免检)入库单-->
             inDetail.parent_id inParentId
 
@@ -238,6 +246,12 @@
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (detail.product_id = prodUnitPrice.product_id and detail.order_unit = prodUnitPrice.unit)
+
+            <!--关联采购订单明细-->
+            left join vmes_purchase_order_detail orderDtl on detail.order_detail_id = orderDtl.id
+            left join vmes_purchase_order purchaseOrder on detail.order_id = purchaseOrder.id
+            left join vmes_customer supplier on purchaseOrder.supplier_id = supplier.id
+
             <!--关联(免检)入库单明细-->
             left join vmes_warehouse_in_detail inDetail on detail.in_detail_id = inDetail.id
 

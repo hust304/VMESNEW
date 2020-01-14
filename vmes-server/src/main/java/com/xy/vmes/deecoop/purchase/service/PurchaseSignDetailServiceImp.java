@@ -4,15 +4,14 @@ import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseSignDetailMapper;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseSignInDetailMapper;
-import com.xy.vmes.entity.PurchaseSignDetail;
-import com.xy.vmes.service.PurchaseSignDetailService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,28 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
     @Autowired
     private PurchaseSignInDetailMapper purchaseSignInDetailMapper;
 
+    @Autowired
+    private PurchaseSignService signService;
+    @Autowired
+    private PurchaseQualityDetailService qualityDetailService;
+    @Autowired
+    private PurchaseOrderDetailToolService orderDetailToolService;
+
+    @Autowired
+    private PurchaseOrderService orderService;
+    @Autowired
+    private PurchaseOrderDetailService orderDetailService;
+
+    @Autowired
+    private PurchasePlanService planService;
+    @Autowired
+    private PurchasePlanDetailService planDetailService;
+
+    @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
     @Autowired
     private ColumnService columnService;
 
@@ -450,13 +471,777 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
     }
 
     //采购签收明细-检验执行
-    public ResultModel purchaseSignDetailByQualityExecute(PageData pd) throws Exception {
-        return null;
+    public ResultModel purchaseSignDetailByQualityExecute(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //获取基本参数 数据非空验证
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String executeJsonStr = pageData.getString("executeJsonStr");
+        if (executeJsonStr == null || executeJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少填写一条入库数据！");
+            return model;
+        }
+
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(executeJsonStr);
+        if(jsonMapList == null || jsonMapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购签收明细执行 Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //创建(复杂版,简版)仓库-入库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        //修改采购签收////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String orderDtlIds = new String();
+        String orderId = new String();
+        String supplierId = new String();
+        String supplierName = new String();
+
+        List<PurchaseSignDetail> signDetailList = new ArrayList<>();
+        for (Map<String, String> objectMap : jsonMapList) {
+            PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+            supplierId = objectMap.get("supplierId");
+            supplierName = objectMap.get("supplierId");
+
+            //采购订单id
+            orderId = objectMap.get("orderId");
+            //采购订单明细id
+            String orderDtlId = objectMap.get("orderDtlId");
+            orderDtlIds = orderDtlIds + orderDtlId + ",";
+            editSignDetail.setOrderDetailId(orderDtlId);
+
+            //id 采购签收明细id
+            String id = objectMap.get("id");
+            editSignDetail.setId(id);
+
+            //qualityType 检验方式 (1:全检 2:抽检)
+            String qualityType = objectMap.get("qualityType");
+            editSignDetail.setQuality(qualityType);
+
+            //qualityCount (实际)检验数量
+            BigDecimal qualityCount = BigDecimal.valueOf(0D);
+            String qualityCountStr = objectMap.get("qualityCount");
+            if (qualityCountStr != null && qualityCountStr.trim().length() > 0) {
+                try {
+                    qualityCount = new BigDecimal(qualityCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            qualityCount = qualityCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setQualityCount(qualityCount);
+
+            //badCount (检验)不合格数量
+            BigDecimal badCount = BigDecimal.valueOf(0D);
+            String badCountStr = objectMap.get("badCount");
+            if (badCountStr != null && badCountStr.trim().length() > 0) {
+                try {
+                    badCount = new BigDecimal(badCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            badCount = badCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setBadCount(badCount);
+
+            //retreatCount (检验)退货数量
+            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+            String retreatCountStr = objectMap.get("retreatCount");
+            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+                try {
+                    retreatCount = new BigDecimal(retreatCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setRetreatCount(retreatCount);
+
+            //receiveCount (检验)让步接收数量
+            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+            String receiveCountStr = objectMap.get("receiveCount");
+            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+                try {
+                    receiveCount = new BigDecimal(receiveCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            receiveCount = receiveCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setReceiveCount(receiveCount);
+
+            //状态(1:检验中 2:已完成 -1:已取消)
+            editSignDetail.setState("2");
+            signDetailList.add(editSignDetail);
+            this.update(editSignDetail);
+
+            //采购签收单id
+            String parentId = objectMap.get("parentId");
+            if (parentId != null && parentId.trim().length() > 0) {
+                List<PurchaseSignDetail> signDtlList = this.findSignDetailListByParentId(parentId);
+
+                //获取签收单状态-根据签收单明细
+                if (signDtlList != null && signDtlList.size() > 0) {
+                    PurchaseSign editSign = new PurchaseSign();
+                    editSign.setId(parentId);
+
+                    String parentState = this.findParentStateByDetailList(signDtlList);
+                    editSign.setState(parentState);
+                    signService.save(editSign);
+                }
+            }
+
+            //修改(vmes_purchase_quality_detail:采购质检项明细)
+            Object childObj = objectMap.get("children");
+            List childList = (List)childObj;
+            if (childList != null && childList.size() > 0) {
+                for (int i = 0; i < childList.size(); i++) {
+                    PurchaseQualityDetail editQualityDtl = new PurchaseQualityDetail();
+                    Map<String, String> childMap = (Map<String, String>)childList.get(i);
+
+                    //id 采购质检项明细id
+                    String id_child = childMap.get("id");
+                    editQualityDtl.setId(id_child);
+
+                    //badCount (质检项)不合格数量
+                    BigDecimal badCount_child = BigDecimal.valueOf(0D);
+                    String badCount_childStr = objectMap.get("badCount");
+                    if (badCount_childStr != null && badCount_childStr.trim().length() > 0) {
+                        try {
+                            badCount_child = new BigDecimal(badCount_childStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    editQualityDtl.setBadCount(badCount_child);
+
+                    qualityDetailService.update(editQualityDtl);
+                }
+            }
+        }
+
+        //修改采购订单////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //根据(采购订单明细id) 查询
+        Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
+        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
+            String detailIds = orderDtlIds.trim();
+            detailIds = StringUtil.stringTrimSpace(detailIds);
+            detailIds = "'" + detailIds.replace(",", "','") + "'";
+
+            //SQL语句: PurchaseOrderDetailCollectMapper.findPurchaseOrderDetailCollect
+            PageData findMap = new PageData();
+            findMap.put("detailIds", detailIds);
+            orderDetailMap = orderDetailToolService.findPurchaseOrderDetailMap(findMap);
+        }
+
+        //遍历当前签收明细List
+        //planId 采购计划id
+        Map<String, String> planIdMap = new HashMap<>();
+        if (signDetailList != null && signDetailList.size() > 0) {
+            for (PurchaseSignDetail signDetail : signDetailList) {
+                PurchaseOrderDetail editOrderDtl = new PurchaseOrderDetail();
+
+                //orderDetailId 采购订单明细ID
+                String orderDetailId = signDetail.getOrderDetailId();
+                editOrderDtl.setId(orderDetailId);
+
+                Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
+                //detailCount 采购数量
+                BigDecimal detailCount = BigDecimal.valueOf(0D);
+                if (valueMap.get("detailCount") != null) {
+                    detailCount = (BigDecimal)valueMap.get("detailCount");
+                }
+
+                //arriveCount 签收数量:= (已完成)签收数量 - (已完成)退货数量
+                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                if (valueMap.get("arriveCount") != null) {
+                    arriveCount = (BigDecimal)valueMap.get("arriveCount");
+                }
+
+                //采购单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                    editOrderDtl.setState("4");
+                    orderDetailService.update(editOrderDtl);
+
+                    //planDtlId 采购计划明细id
+                    String planDtlId = (String)valueMap.get("planDtlId");
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        PurchasePlanDetail editPlanDtl = new PurchasePlanDetail();
+                        editPlanDtl.setId(planDtlId);
+                        //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        editPlanDtl.setState("4");
+                        planDetailService.update(editPlanDtl);
+                    }
+                }
+
+                //planId 采购计划id
+                if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
+                    String planId = (String)valueMap.get("planId");
+                    planIdMap.put(planId.trim(), planId.trim());
+                }
+            }
+        }
+
+        //反写采购订单状态
+        orderService.updateState(orderId);
+        //反写 (采购计划明细,采购计划)状态
+        if (planIdMap != null) {
+            for (Iterator iterator = planIdMap.keySet().iterator(); iterator.hasNext();) {
+                String planId = (String)iterator.next();
+                if (planId != null && planId.trim().length() > 0) {
+                    planService.updateState(planId);
+                }
+            }
+        }
+
+        //生成(正常接收Map, 让步接收Map) ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //正常接收Map
+        Map<String, Map<String, Object>> businessByInMap = new HashMap<>();
+        //让步接收Map
+        Map<String, Map<String, Object>> businessByReceiveInMap = new HashMap<>();
+
+        for (Map<String, String> objectMap : jsonMapList) {
+            //采购签收明细id
+            String signDtlId = objectMap.get("id");
+            //货品id
+            String productId = objectMap.get("productId");
+
+            //p2nFormula 单位换算公式:计价单位转换计量单位:
+            String p2nFormula = new String();
+            if (objectMap.get("p2nFormula") != null) {
+                p2nFormula = objectMap.get("p2nFormula").trim();
+            }
+
+            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+            String p2nIsScale = new String();
+            if (objectMap.get("p2nIsScale") != null) {
+                p2nIsScale = objectMap.get("p2nIsScale").trim();
+            }
+
+            //小数位数 (最小:0位 最大:4位)
+            Integer p2nDecimalCount = Integer.valueOf(2);
+            String p2nDecimalCountStr = objectMap.get("p2nDecimalCount");
+            if (p2nDecimalCountStr != null) {
+                try {
+                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            //qualityCount (实际)检验数量
+            BigDecimal qualityCount = BigDecimal.valueOf(0D);
+            String qualityCountStr = objectMap.get("qualityCount");
+            if (qualityCountStr != null && qualityCountStr.trim().length() > 0) {
+                try {
+                    qualityCount = new BigDecimal(qualityCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            qualityCount = qualityCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //badCount (检验)不合格数量
+            BigDecimal badCount = BigDecimal.valueOf(0D);
+            String badCountStr = objectMap.get("badCount");
+            if (badCountStr != null && badCountStr.trim().length() > 0) {
+                try {
+                    badCount = new BigDecimal(badCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            badCount = badCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+//            //retreatCount (检验)退货数量
+//            BigDecimal retreatCount = BigDecimal.valueOf(0D);
+//            String retreatCountStr = objectMap.get("retreatCount");
+//            if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+//                try {
+//                    retreatCount = new BigDecimal(retreatCountStr);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            //四舍五入到2位小数
+//            retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //receiveCount (检验)让步接收数量
+            BigDecimal receiveCount = BigDecimal.valueOf(0D);
+            String receiveCountStr = objectMap.get("receiveCount");
+            if (receiveCountStr != null && receiveCountStr.trim().length() > 0) {
+                try {
+                    receiveCount = new BigDecimal(receiveCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            receiveCount = receiveCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            //正常接收数量 := (实际)检验数量 - (检验)不合格数量
+            BigDecimal inCount = BigDecimal.valueOf(qualityCount.doubleValue() - badCount.doubleValue());
+            //四舍五入到2位小数
+            inCount = inCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //(计量单位)正常接收数量 -> 单位换算公式(p2nFormula)
+            BigDecimal p2n_inCount = EvaluateUtil.countFormulaP2N(inCount, p2nFormula);
+            p2n_inCount = StringUtil.scaleDecimal(p2n_inCount, p2nIsScale, p2nDecimalCount);
+
+            if (p2n_inCount != null && p2n_inCount.doubleValue() > 0) {
+                //Map<String, Map<String, Object>> businessByInMap
+                Map<String, Object> inValueMap = new HashMap<>();
+
+                //productId: 货品id
+                inValueMap.put("productId", productId);
+                //inDtlId:   入库明细id
+                inValueMap.put("inDtlId", null);
+                //inCount:   入库数量
+                inValueMap.put("inCount", p2n_inCount);
+
+                businessByInMap.put(signDtlId, inValueMap);
+            }
+
+            //让步接收数量 : (检验)让步接收数量
+            BigDecimal receiveInCount = receiveCount;
+            //(计量单位)让步接收数量 -> 单位换算公式(p2nFormula)
+            BigDecimal p2n_receiveInCount = EvaluateUtil.countFormulaP2N(receiveInCount, p2nFormula);
+            p2n_receiveInCount = StringUtil.scaleDecimal(p2n_receiveInCount, p2nIsScale, p2nDecimalCount);
+            if (p2n_receiveInCount != null && p2n_receiveInCount.doubleValue() > 0) {
+                Map<String, Object> inValueMap = new HashMap<>();
+
+                //productId: 货品id
+                inValueMap.put("productId", productId);
+                //inDtlId:   入库明细id
+                inValueMap.put("inDtlId", null);
+                //inCount:   入库数量
+                inValueMap.put("inCount", p2n_receiveInCount);
+
+                businessByReceiveInMap.put(signDtlId, inValueMap);
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //正常接收入库(正常接收Map businessByInMap)
+        if (businessByInMap != null && businessByInMap.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+                    //signDtlId 采购签收id
+                    String signDtlId = (String)iterator.next();
+                    editSignDetail.setId(signDtlId);
+
+                    Map<String, Object> mapValue = businessByInMap.get(signDtlId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
+
+                    //qualityInDtlId (检验入库)入库单明细id
+                    editSignDetail.setQualityInDtlId(inDtlId);
+
+                    this.update(editSignDetail);
+                }
+            }
+
+        } else if (businessByInMap != null && businessByInMap.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+                    //signDtlId 采购签收id
+                    String signDtlId = (String)iterator.next();
+                    editSignDetail.setId(signDtlId);
+
+                    Map<String, Object> mapValue = businessByInMap.get(signDtlId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
+                    //qualityInDtlId (检验入库)入库单明细id
+                    editSignDetail.setQualityInDtlId(inDtlId);
+
+                    this.update(editSignDetail);
+                }
+            }
+        }
+
+        //让步接收入库///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //让步接收入库(让步接收Map businessByReceiveInMap)
+        if (businessByReceiveInMap != null && businessByReceiveInMap.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByReceiveInMap);
+
+            for (Iterator iterator = businessByReceiveInMap.keySet().iterator(); iterator.hasNext();) {
+                PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+                //signDtlId 采购签收id
+                String signDtlId = (String)iterator.next();
+                editSignDetail.setId(signDtlId);
+
+                Map<String, Object> mapValue = businessByReceiveInMap.get(signDtlId);
+                //inDtlId:   入库明细id
+                String inDtlId = (String)mapValue.get("inDtlId");
+
+                //receiveInDtlId (检验让步接收入库)入库单明细id
+                editSignDetail.setReceiveInDtlId(inDtlId);
+
+                this.update(editSignDetail);
+            }
+
+        } else if (businessByReceiveInMap != null && businessByReceiveInMap.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByReceiveInMap);
+
+            for (Iterator iterator = businessByReceiveInMap.keySet().iterator(); iterator.hasNext();) {
+                PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+
+                //signDtlId 采购签收id
+                String signDtlId = (String)iterator.next();
+                editSignDetail.setId(signDtlId);
+
+                Map<String, Object> mapValue = businessByReceiveInMap.get(signDtlId);
+                //inDtlId:   入库明细id
+                String inDtlId = (String)mapValue.get("inDtlId");
+
+                //receiveInDtlId (检验让步接收入库)入库单明细id
+                editSignDetail.setReceiveInDtlId(inDtlId);
+
+                this.update(editSignDetail);
+            }
+        }
+
+        return model;
     }
 
     //采购签收明细-免检
-    public ResultModel updateSignDetailByQuality(PageData pd) throws Exception {
-        return null;
+    public ResultModel updateSignDetailByQuality(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        String signDtlId = pageData.getString("signDtlId");
+        if (signDtlId == null || signDtlId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购签收明细id为空或空字符串！");
+            return model;
+        }
+
+        //获取基本参数 数据非空验证
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //创建(复杂版,简版)仓库-入库单-需要的参数///////////////////////////////////////////////////////////////////////////////////
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //根据(采购签收明细id) 查询
+        //SQL语句: PurchaseSignDetailMapper.getDataListPage
+        PageData findMap = new PageData();
+        findMap.put("signDtlId", signDtlId);
+        List<Map> mapList = this.getDataListPage(findMap, null);
+
+        Map<String, Object> signDetailMap = new HashMap<>();
+        if (mapList != null && mapList.size() > 0) {
+            signDetailMap = mapList.get(0);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改采购签收
+        PurchaseSignDetail editSignDetail = new PurchaseSignDetail();
+        editSignDetail.setId(signDtlId);
+        //quality:质检属性 (1:免检 2:检验)
+        editSignDetail.setQuality("1");
+        //qualityType 检验方式 (1:全检 2:抽检)
+        editSignDetail.setQualityType(null);
+        //状态(1:检验中 2:已完成 -1:已取消)
+        editSignDetail.setState("2");
+        this.update(editSignDetail);
+
+        //采购签收单id
+        String parentId = (String)signDetailMap.get("parentId");
+        if (parentId != null && parentId.trim().length() > 0) {
+            List<PurchaseSignDetail> signDtlList = this.findSignDetailListByParentId(parentId);
+
+            //获取签收单状态-根据签收单明细
+            if (signDtlList != null && signDtlList.size() > 0) {
+                PurchaseSign editSign = new PurchaseSign();
+                editSign.setId(parentId);
+
+                String parentState = this.findParentStateByDetailList(signDtlList);
+                editSign.setState(parentState);
+                signService.save(editSign);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改采购订单
+        //根据(采购订单明细id) 查询
+        String orderDtlIds = (String)signDetailMap.get("orderDtlId");
+        Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
+        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
+            String detailIds = orderDtlIds.trim();
+            detailIds = StringUtil.stringTrimSpace(detailIds);
+            detailIds = "'" + detailIds.replace(",", "','") + "'";
+
+            //SQL语句: PurchaseOrderDetailCollectMapper.findPurchaseOrderDetailCollect
+            findMap = new PageData();
+            findMap.put("detailIds", detailIds);
+            orderDetailMap = orderDetailToolService.findPurchaseOrderDetailMap(findMap);
+        }
+
+        //遍历当前签收明细List
+        //planId 采购计划id
+        Map<String, String> planIdMap = new HashMap<>();
+        if (signDetailMap != null && signDetailMap.size() > 0) {
+            PurchaseOrderDetail editOrderDtl = new PurchaseOrderDetail();
+
+            //orderDetailId 采购订单明细ID
+            String orderDetailId = (String)signDetailMap.get("orderDtlId");
+            editOrderDtl.setId(orderDetailId);
+
+            Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
+            //detailCount 采购数量
+            BigDecimal detailCount = BigDecimal.valueOf(0D);
+            if (valueMap.get("detailCount") != null) {
+                detailCount = (BigDecimal)valueMap.get("detailCount");
+            }
+
+            //arriveCount 签收数量:= (已完成)签收数量 - (已完成)退货数量
+            BigDecimal arriveCount = BigDecimal.valueOf(0D);
+            if (valueMap.get("arriveCount") != null) {
+                arriveCount = (BigDecimal)valueMap.get("arriveCount");
+            }
+
+            //采购单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+            if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                editOrderDtl.setState("4");
+                orderDetailService.update(editOrderDtl);
+
+                //planDtlId 采购计划明细id
+                String planDtlId = (String)valueMap.get("planDtlId");
+                if (planDtlId != null && planDtlId.trim().length() > 0) {
+                    PurchasePlanDetail editPlanDtl = new PurchasePlanDetail();
+                    editPlanDtl.setId(planDtlId);
+                    //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                    editPlanDtl.setState("4");
+                    planDetailService.update(editPlanDtl);
+                }
+            }
+
+            //planId 采购计划id
+            if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
+                String planId = (String)valueMap.get("planId");
+                planIdMap.put(planId.trim(), planId.trim());
+            }
+        }
+
+        //反写采购订单状态
+        String orderId = (String)signDetailMap.get("orderId");
+        orderService.updateState(orderId);
+        //反写 (采购计划明细,采购计划)状态
+        if (planIdMap != null) {
+            for (Iterator iterator = planIdMap.keySet().iterator(); iterator.hasNext();) {
+                String planId = (String)iterator.next();
+                if (planId != null && planId.trim().length() > 0) {
+                    planService.updateState(planId);
+                }
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Map<String, Map<String, Object>> businessByInMap = new HashMap<>();
+
+        //货品id
+        String productId = (String)signDetailMap.get("productId");
+
+        //p2nFormula 单位换算公式:计价单位转换计量单位:
+        String p2nFormula = new String();
+        if (signDetailMap.get("p2nFormula") != null) {
+            p2nFormula = signDetailMap.get("p2nFormula").toString().trim();
+        }
+
+        //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+        String p2nIsScale = new String();
+        if (signDetailMap.get("p2nIsScale") != null) {
+            p2nIsScale = signDetailMap.get("p2nIsScale").toString().trim();
+        }
+
+        //小数位数 (最小:0位 最大:4位)
+        Integer p2nDecimalCount = Integer.valueOf(2);
+        if (signDetailMap.get("p2nDecimalCount") != null) {
+            p2nDecimalCount = (Integer)signDetailMap.get("p2nDecimalCount");
+        }
+
+        //签收数量
+        BigDecimal arriveCount = BigDecimal.valueOf(0D);
+        if (signDetailMap.get("arriveCount") != null) {
+            arriveCount = (BigDecimal)signDetailMap.get("arriveCount");
+        }
+
+        //(计量单位)签收数量 -> 单位换算公式(p2nFormula)
+        BigDecimal p2n_arriveCount = EvaluateUtil.countFormulaP2N(arriveCount, p2nFormula);
+        p2n_arriveCount = StringUtil.scaleDecimal(p2n_arriveCount, p2nIsScale, p2nDecimalCount);
+
+        if (arriveCount != null && arriveCount.doubleValue() > 0) {
+            Map<String, Object> inValueMap = new HashMap<>();
+
+            //productId: 货品id
+            inValueMap.put("productId", productId);
+            //inDtlId:   入库明细id
+            inValueMap.put("inDtlId", null);
+            //inCount:   入库数量
+            inValueMap.put("inCount", p2n_arriveCount);
+
+            businessByInMap.put(signDtlId, inValueMap);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        String supplierId = (String)signDetailMap.get("supplierId");
+        String supplierName = (String)signDetailMap.get("supplierName");
+
+        //正常接收入库(正常接收Map businessByInMap)
+        if (businessByInMap != null && businessByInMap.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+            //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+            warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    PurchaseSignDetail editSignDtl = new PurchaseSignDetail();
+
+                    //signDtlId 采购签收id
+                    editSignDtl.setId(signDtlId);
+
+                    Map<String, Object> mapValue = businessByInMap.get(signDtlId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
+                    //inDetailId (签收入库)入库单明细id
+                    editSignDtl.setInDetailId(inDtlId);
+
+                    this.update(editSignDtl);
+                }
+            }
+        } else if (businessByInMap != null && businessByInMap.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+            //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+            warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
+                    supplierName,
+                    //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                    Common.DICTIONARY_MAP.get("warehouseEntity"),
+                    cuser,
+                    companyId,
+                    //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
+                    Common.DICTIONARY_MAP.get("purchaseIn"),
+                    businessByInMap);
+
+            if (businessByInMap != null) {
+                for (Iterator iterator = businessByInMap.keySet().iterator(); iterator.hasNext();) {
+                    PurchaseSignDetail editSignDtl = new PurchaseSignDetail();
+
+                    //signDtlId 采购签收id
+                    editSignDtl.setId(signDtlId);
+
+                    Map<String, Object> mapValue = businessByInMap.get(signDtlId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
+                    //inDetailId (签收入库)入库单明细id
+                    editSignDtl.setInDetailId(inDtlId);
+
+                    this.update(editSignDtl);
+                }
+            }
+        }
+
+        return model;
     }
 
 }

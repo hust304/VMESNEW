@@ -145,10 +145,10 @@ public interface PurchaseSignDetailService {
     ResultModel listPagePurchaseSignDetailByQualityExecute(PageData pd) throws Exception;
 
     //采购签收明细-检验执行
-    ResultModel purchaseSignDetailByQualityExecute(PageData pd) throws Exception;
+    ResultModel purchaseSignDetailByQualityExecute(PageData pageData) throws Exception;
 
     //采购签收明细-免检
-    ResultModel updateSignDetailByQuality(PageData pd) throws Exception;
+    ResultModel updateSignDetailByQuality(PageData pageData) throws Exception;
 
 
 }
