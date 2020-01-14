@@ -132,7 +132,7 @@
         detail.order_unit orderUnit,
         detail.quality_id qualityId,
 
-        detail.bad_count badCount,
+        round(ifnull(detail.bad_count, 0), 2) badCount,
         detail.cuser cuser,
         detail.cdate cdate,
         detail.uuser uuser,

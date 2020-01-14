@@ -28,14 +28,14 @@ public class PurchaseQualityDetailController {
     * @author 陈刚 自动创建，可以修改
     * @date 2020-01-09
     */
-    @PostMapping("/purchase/purchaseQualityDetail/listPagePurchaseQualityDetails")
-    public ResultModel listPagePurchaseQualityDetails() throws Exception {
-        logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetails 执行开始 ################# ");
+    @PostMapping("/purchase/purchaseQualityDetail/listPagePurchaseQualityDetail")
+    public ResultModel listPagePurchaseQualityDetail() throws Exception {
+        logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = purchaseQualityDetailService.listPagePurchaseQualityDetails(pd);
+        ResultModel model = purchaseQualityDetailService.listPagePurchaseQualityDetail(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/purchase/purchaseQualityDetail/listPagePurchaseQualityDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -176,7 +176,7 @@ public class PurchaseQualityDetailServiceImp implements PurchaseQualityDetailSer
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPagePurchaseQualityDetails(PageData pd) throws Exception{
+    public ResultModel listPagePurchaseQualityDetail(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("purchaseQualityDetail");
         if (columnList == null || columnList.size() == 0) {
