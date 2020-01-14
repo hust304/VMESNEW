@@ -434,6 +434,12 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     qualityType = mapObject.get("qualityType").toString().trim();
                 }
 
+                //qualityTypeName 检验方式id (1:全检 2:抽检)
+                String qualityTypeName = "全检";
+                if (mapObject.get("qualityTypeName") != null && mapObject.get("qualityTypeName").toString().trim().length() > 0) {
+                    qualityTypeName = mapObject.get("qualityTypeName").toString().trim();
+                }
+
                 //arriveCount 签收数
                 BigDecimal arriveCount = BigDecimal.valueOf(0D);
                 if (mapObject.get("arriveCount") != null) {
