@@ -145,6 +145,18 @@
         </if>
     </select>
 
+
+    <select id="getCompanyInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        id id,
+        name companyName,
+        DATE_FORMAT(company_validity_date,'%Y-%m-%d') validityDate,
+        IF(DATEDIFF(company_validity_date,now())>=0,DATEDIFF(company_validity_date,now()),0) remainingDays
+        from vmes_department
+		where layer = '1' and id = #{currentCompanyId}
+    </select>
+
+
     <insert id="insertColumnByCompany" >
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
