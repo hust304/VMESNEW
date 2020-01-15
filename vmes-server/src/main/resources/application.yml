@@ -92,3 +92,5 @@ mybatis-plus:
 flowable:
 #关闭定时任务JOB
   async-executor-activate: false
+
+

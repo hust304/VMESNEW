@@ -58,6 +58,11 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-amqp'
 
+    compile 'com.aliyun:aliyun-java-sdk-core:4.4.0'
+    compile 'com.aliyun:aliyun-java-sdk-dysmsapi:1.0.0'
+
+
+
 }
 
 artifacts {

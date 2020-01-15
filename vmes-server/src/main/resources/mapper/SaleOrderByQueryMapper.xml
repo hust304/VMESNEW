@@ -30,7 +30,7 @@
         END priceTypeName,
 
         saleOrder.state state,
-        saleOrder.state orderStateByQuery,
+        CASE WHEN saleOrder.state = '3' then '4'  ELSE saleOrder.state end orderStateByQuery,
         CASE
         WHEN saleOrder.state = '0' THEN '待提交'
         WHEN saleOrder.state = '1' THEN '待审核'
