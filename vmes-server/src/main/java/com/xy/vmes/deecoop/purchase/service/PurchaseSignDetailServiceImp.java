@@ -439,6 +439,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                 if (mapObject.get("qualityTypeName") != null && mapObject.get("qualityTypeName").toString().trim().length() > 0) {
                     qualityTypeName = mapObject.get("qualityTypeName").toString().trim();
                 }
+                mapObject.put("qualityTypeName", qualityTypeName);
 
                 //arriveCount 签收数
                 BigDecimal arriveCount = BigDecimal.valueOf(0D);
@@ -545,7 +546,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
             //qualityType 检验方式 (1:全检 2:抽检)
             String qualityType = objectMap.get("qualityType");
-            editSignDetail.setQuality(qualityType);
+            editSignDetail.setQualityType(qualityType);
 
             //qualityCount (实际)检验数量
             BigDecimal qualityCount = BigDecimal.valueOf(0D);
@@ -620,7 +621,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
                     String parentState = this.findParentStateByDetailList(signDtlList);
                     editSign.setState(parentState);
-                    signService.save(editSign);
+                    signService.update(editSign);
                 }
             }
 
@@ -1045,7 +1046,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
                 String parentState = this.findParentStateByDetailList(signDtlList);
                 editSign.setState(parentState);
-                signService.save(editSign);
+                signService.update(editSign);
             }
         }
 
