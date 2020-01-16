@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 public class PurchasePlanDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//
 	@TableField("id")
 	private String id;
 	//采购计划ID
@@ -31,6 +30,7 @@ public class PurchasePlanDetail implements Serializable {
 	//采购数量
 	@TableField("count")
 	private BigDecimal count;
+
 	//期望到货时间
 	@TableField("edate")
 	private Date edate;
@@ -46,6 +46,7 @@ public class PurchasePlanDetail implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -55,7 +56,9 @@ public class PurchasePlanDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
+	//单位id(单据单位)
+	@TableField("unit_id")
+	private String unitId;
 
 
 	public void setId(String id) {
@@ -136,7 +139,12 @@ public class PurchasePlanDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(String unitId) {
+		this.unitId = unitId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

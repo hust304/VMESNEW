@@ -14,19 +14,22 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
-		parent_id parentId,<!-- 采购计划ID -->
-		product_id productId,<!-- 产品ID -->
-		reason reason,<!-- 采购原因(字典表-vmes_dictionary.id) -->
-		count count,<!-- 采购数量 -->
-		edate edate,<!-- 期望到货时间 -->
-		state state,<!-- 状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消) -->
-		cuser cuser,<!-- 创建用户id -->
-		cdate cdate,<!-- 创建时间 -->
-		uuser uuser,<!-- 修改用户id -->
-		udate udate,<!-- 修改时间 -->
-		remark remark,<!-- 备注 -->
-		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-		id id <!-- id -->
+        id id, <!-- id -->
+        parent_id parentId,<!-- 采购计划ID -->
+        product_id productId,<!-- 产品ID -->
+        reason reason,<!-- 采购原因(字典表-vmes_dictionary.id) -->
+        count count,<!-- 采购数量 -->
+
+        edate edate,<!-- 期望到货时间 -->
+        state state,<!-- 状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消) -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+        uuser uuser,<!-- 修改用户id -->
+
+        udate udate,<!-- 修改时间 -->
+        remark remark,<!-- 备注 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+        unit_id unitId
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
