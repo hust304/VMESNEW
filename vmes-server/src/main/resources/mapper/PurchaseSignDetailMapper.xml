@@ -98,6 +98,15 @@
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'supplierId', '供应商id', 40, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'supplierName', '供应商名称', 41, '1', '0', '1', '0', now(), 'admin'),
 
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'inCode', '(免检)入库单编码', 42, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityInParentId', '(检验入库)入库单id', 43, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityInCode', '(检验入库)入库单编码', 44, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'receiveInParentId', '(检验让步接收入库)入库单id', 45, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'receiveInCode', '让步接收单', 46, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'signInParentId', '合格入库单id', 47, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'signInCode', '合格入库单', 48, '1', '0', '1', '0', now(), 'admin'),
+
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -242,7 +251,19 @@
             supplier.name supplierName,
 
             <!--(免检)入库单-->
-            inDetail.parent_id inParentId
+            inDetail.parent_id inParentId,
+            inParent.code inCode,
+            <!--(检验入库)入库单-->
+            qualityInDtl.parent_id qualityInParentId,
+            qualityInParent.code qualityInCode,
+            <!--(检验让步接收入库)入库单-->
+            receiveInDtl.parent_id receiveInParentId,
+            receiveInParent.code receiveInCode,
+
+            <!--java 类实现(signInParentId,signInCode-->
+            '' signInParentId,
+            '' signInCode
+
 
         from vmes_purchase_sign_detail detail
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
@@ -257,6 +278,15 @@
 
             <!--关联(免检)入库单明细-->
             left join vmes_warehouse_in_detail inDetail on detail.in_detail_id = inDetail.id
+            left join vmes_warehouse_in inParent on inDetail.parent_id = inParent.id
+
+            <!--关联(检验入库)入库单明细-->
+            left join vmes_warehouse_in_detail qualityInDtl on detail.quality_inDtl_id = qualityInDtl.id
+            left join vmes_warehouse_in qualityInParent on qualityInDtl.parent_id = qualityInParent.id
+
+            <!--关联(检验让步接收入库)入库单明细-->
+            left join vmes_warehouse_in_detail receiveInDtl on detail.receive_inDtl_id = receiveInDtl.id
+            left join vmes_warehouse_in receiveInParent on receiveInDtl.parent_id = receiveInParent.id
 
             <!--(采购订单明细id)-退货完成数量-退货明细汇总-->
             left join (

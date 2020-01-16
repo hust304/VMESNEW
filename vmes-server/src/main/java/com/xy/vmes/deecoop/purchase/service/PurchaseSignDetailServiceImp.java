@@ -387,7 +387,68 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //inParentId (免检)入库单id
+                String inParentId = new String();
+                if (mapObject.get("inParentId") != null) {
+                    inParentId = mapObject.get("inParentId").toString().trim();
+                }
+                //inCode (免检)入库单编码
+                String inCode = new String();
+                if (mapObject.get("inCode") != null) {
+                    inCode = mapObject.get("inCode").toString().trim();
+                }
+
+                //qualityInParentId (检验入库)入库单编码
+                String qualityInParentId = new String();
+                if (mapObject.get("qualityInParentId") != null) {
+                    qualityInParentId = mapObject.get("qualityInParentId").toString().trim();
+                }
+                //qualityInCode (检验入库)入库单编码
+                String qualityInCode = new String();
+                if (mapObject.get("qualityInCode") != null) {
+                    qualityInCode = mapObject.get("qualityInCode").toString().trim();
+                }
+
+                //quality 质检属性id (1:免检 2:检验)
+                String quality = new String();
+                if (mapObject.get("quality") != null) {
+                    quality = mapObject.get("quality").toString().trim();
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //signInParentId  合格入库单id
+                //signInCode 合格入库单号
+
+                //quality 质检属性:1:免检  (免检)入库单
+                if ("1".equals(quality)) {
+                    mapObject.put("signInParentId", inParentId);
+                    mapObject.put("signInCode", inCode);
+
+                    //quality 质检属性:2:检验  (检验入库)入库单
+                } else if ("2".equals(quality)) {
+                    mapObject.put("signInParentId", qualityInParentId);
+                    mapObject.put("signInCode", qualityInCode);
+                }
+
+//                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                //receiveInParentId (检验让步接收入库)入库单id
+//                String receiveInParentId = new String();
+//                if (mapObject.get("receiveInParentId") != null) {
+//                    receiveInParentId = mapObject.get("receiveInParentId").toString().trim();
+//                }
+//                //receiveInCode (检验让步接收入库)入库单编码
+//                String receiveInCode = new String();
+//                if (mapObject.get("receiveInCode") != null) {
+//                    receiveInCode = mapObject.get("receiveInCode").toString().trim();
+//                }
+
+            }
+
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
