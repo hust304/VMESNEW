@@ -67,61 +67,39 @@ public class FinanceSaleTask {
                 "开始执行");
         logger.info(begin_logger_msg);
 
-        //1. 查询系统所有企业-是否采购企业付款期设定-未设定系统设定默认值
-        List<Map> mapList = null;
-        try {
-            PageData findMap = new PageData();
-            mapList = financePeriodService.getDataListPage(findMap,null);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        if (mapList == null || mapList.size() == 0) {
+
+        GregorianCalendar gc =new GregorianCalendar();
+        SimpleDateFormat sdf  =new SimpleDateFormat("yyyyMM");
+        PageData pageData = new PageData();
+
+        List<FinancePeriod> financePeriodList = financePeriodService.selectByColumnMap(pageData);
+
+        if(financePeriodList!=null&&financePeriodList.size()>0){
+            for(int j=0;j<financePeriodList.size();j++){
+                FinancePeriod financePeriod = financePeriodList.get(j);
+                pageData.put("company_id",financePeriod.getCompanyId());
+                pageData.put("genre",Common.DICTIONARY_MAP.get("customerGenre"));
+                List<Map> varList = financeBillService.getFinanceReceiveView(pageData,null);
+                if(varList!=null&&varList.size()>0){
+                    for(int k=0;k<varList.size();k++){
+                        Map map = varList.get(k);
+                        financeBillService.saveFinanceHistory(map);
+                    }
+                }
+                Date preDate = financePeriod.getCurrentPeriodDate();
+                gc.setTime(preDate);
+                gc.add(2,+1);
+                gc.set(gc.get(Calendar.YEAR),gc.get(Calendar.MONTH),gc.get(Calendar.DATE));
+                Date curDate = gc.getTime();
+                String curPeriod = sdf.format(curDate);
+                financePeriod.setCurrentPeriodDate(curDate);
+                financePeriod.setCurrentPeriod(curPeriod);
+                financePeriodService.update(financePeriod);
+            }
+        }else {
             String end_logger_msg = this.endLoggerMsg(startTime);
             logger.info(end_logger_msg);
             return;
-        }
-
-        for(int i=0;i<mapList.size();i++){
-            Map financePeriodMap = mapList.get(i);
-            if(financePeriodMap.get("companyId")!=null){
-                String companyId = (String)financePeriodMap.get("companyId");
-
-                GregorianCalendar gc =new GregorianCalendar();
-                SimpleDateFormat sdf  =new SimpleDateFormat("yyyyMM");
-                PageData pageData = new PageData();
-                pageData.put("company_id",companyId);
-                List<FinancePeriod> financePeriodList = financePeriodService.selectByColumnMap(pageData);
-                if(financePeriodList!=null&&financePeriodList.size()>0){
-                    for(int j=0;j<financePeriodList.size();j++){
-                        FinancePeriod financePeriod = financePeriodList.get(j);
-                        if(j==0){
-                            pageData.put("genre",Common.DICTIONARY_MAP.get("customerGenre"));
-                            List<Map> varList = financeBillService.getFinanceReceiveView(pageData,null);
-                            if(varList!=null&&varList.size()>0){
-                                for(int k=0;k<varList.size();k++){
-                                    Map map = varList.get(k);
-                                    financeBillService.saveFinanceHistory(map);
-                                }
-                            }
-                            Date preDate = financePeriod.getCurrentPeriodDate();
-                            gc.setTime(preDate);
-                            gc.add(2,+1);
-                            gc.set(gc.get(Calendar.YEAR),gc.get(Calendar.MONTH),gc.get(Calendar.DATE));
-                            Date curDate = gc.getTime();
-                            String curPeriod = sdf.format(curDate);
-                            financePeriod.setCurrentPeriodDate(curDate);
-                            financePeriod.setCurrentPeriod(curPeriod);
-                            financePeriodService.update(financePeriod);
-
-                        }else if(j>=1){
-                            financePeriodService.deleteById(financePeriod.getId());
-                        }
-                    }
-                }else{
-                    financeBillService.saveFinancePeriod(companyId);
-                }
-            }
-
         }
 
         String end_logger_msg = this.endLoggerMsg(startTime);
