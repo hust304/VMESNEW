@@ -52,6 +52,7 @@
             <!--quality:质检属性 (1:免检 2:检验)-->
             <!--product.purchase_quality_type 1:全检-->
             <!--product.purchase_quality_type 2:抽检-->
+            product.purchase_quality_type purchaseQualityType,
             CASE
             WHEN product.purchase_quality_type is null or CHAR_LENGTH(TRIM(product.purchase_quality_type)) = 0 THEN '免检'
             ELSE '检验'
@@ -105,6 +106,7 @@
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nFormula', 'p2nFormula', 16, '1', '0', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nIsScale', 'p2n:是否需要四舍五入', 17, '1', '0', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nDecimalCount', 'p2n:保留小数位数', 18, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'purchaseQualityType', '检验方式id(1:全检 2:抽检)', 19, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 </mapper>

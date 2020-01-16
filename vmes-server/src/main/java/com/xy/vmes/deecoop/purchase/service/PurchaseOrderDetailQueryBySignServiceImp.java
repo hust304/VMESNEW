@@ -73,6 +73,16 @@ public class PurchaseOrderDetailQueryBySignServiceImp implements PurchaseOrderDe
         }
 
         List<Map> varList = this.listOrderDetaiQueryBySign(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> objectMap : varList) {
+                String purchaseQualityType = new String();
+                if (objectMap.get("purchaseQualityType") != null) {
+                    purchaseQualityType = objectMap.get("purchaseQualityType").toString().trim();
+                }
+                objectMap.put("purchaseQualityType", purchaseQualityType);
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

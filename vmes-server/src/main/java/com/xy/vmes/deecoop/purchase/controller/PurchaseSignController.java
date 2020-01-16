@@ -47,10 +47,10 @@ public class PurchaseSignController {
     @Autowired
     private PurchasePlanDetailService planDetailService;
 
-    @Autowired
-    private QualityService qualityService;
-    @Autowired
-    private PurchaseQualityDetailService purchaseQualityDetailService;
+//    @Autowired
+//    private QualityService qualityService;
+//    @Autowired
+//    private PurchaseQualityDetailService purchaseQualityDetailService;
 
     @Autowired
     private WarehouseInService inService;
@@ -173,6 +173,7 @@ public class PurchaseSignController {
                 //quality:质检属性:2:检验  state:1:检验中
                 if ("1".equals(addSignDtl.getQuality().trim())) {
                     addSignDtl.setState("2");
+                    addSignDtl.setQualityType(null);
                 } else if ("2".equals(addSignDtl.getQuality().trim())) {
                     addSignDtl.setState("1");
                 }
@@ -361,81 +362,81 @@ public class PurchaseSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
-        List<PurchaseSignDetail> qualityList = new ArrayList<>();
-        if (signDtlList != null && signDtlList.size() > 0) {
-            for (PurchaseSignDetail signDetail : signDtlList) {
-                //quality 质检属性 (1:免检 2:检验)
-                String quality = signDetail.getQuality();
-                //quality 质检属性:2:检验 (1:免检 2:检验)
-                if ("2".equals(quality)) {
-                    qualityList.add(signDetail);
-                }
-            }
-        }
-
-        Map<String, List<Quality>> prodQualityMap = new HashMap<>();
-
-        //遍历(质检属性:2:检验) 采购签收明细
-        String productIds = new String();
-        if (qualityList != null && qualityList.size() > 0) {
-            for (PurchaseSignDetail signDetail : qualityList) {
-                //productId 货品id
-                String productId = signDetail.getProductId();
-                if (productId != null && productId.trim().length() > 0) {
-                    productIds = productIds + productId.trim() + ",";
-                }
-            }
-        }
-
-        if (productIds != null && productIds.trim().length() > 0) {
-            productIds = StringUtil.stringTrimSpace(productIds);
-            productIds = "'" + productIds.replace(",", "','") + "'";
-
-            PageData findMap = new PageData();
-            findMap.put("productIds", productIds);
-            //业务名称 (purchase:采购)
-            findMap.put("business", "purchase");
-            findMap.put("orderStr", "product_id asc");
-            List<Quality> prodQualityList = qualityService.findQualityList(findMap);
-
-            if (prodQualityList != null && prodQualityList.size() > 0) {
-                for (Quality quality : prodQualityList) {
-                    String productId = quality.getProductId();
-
-                    if (prodQualityMap.get(productId) == null) {
-                        List<Quality> tempList = new ArrayList<>();
-                        tempList.add(quality);
-                        prodQualityMap.put(productId, tempList);
-                    } else if (prodQualityMap.get(productId) != null) {
-                        List<Quality> tempList = prodQualityMap.get(productId);
-                        tempList.add(quality);
-                    }
-                }
-            }
-        }
-
-        if (qualityList != null && qualityList.size() > 0) {
-            for (PurchaseSignDetail signDetail : qualityList) {
-                PurchaseQualityDetail addQualityDtl = new PurchaseQualityDetail();
-                addQualityDtl.setSignDetailId(signDetail.getId());
-                addQualityDtl.setOrderUnit(signDetail.getOrderUnit());
-
-                //货品id productId
-                String productId = signDetail.getProductId();
-                addQualityDtl.setProductId(productId);
-
-                //qualityId 质检项id
-                List<Quality> prodQualityList = prodQualityMap.get(productId);
-                if (prodQualityList != null && prodQualityList.size() > 0) {
-                    for (Quality quality : prodQualityList) {
-                        addQualityDtl.setQualityId(quality.getId());
-                    }
-                }
-
-                purchaseQualityDetailService.save(addQualityDtl);
-            }
-        }
+//        //质检属性:2:检验 (1:免检 2:检验) --推送采购检验项
+//        List<PurchaseSignDetail> qualityList = new ArrayList<>();
+//        if (signDtlList != null && signDtlList.size() > 0) {
+//            for (PurchaseSignDetail signDetail : signDtlList) {
+//                //quality 质检属性 (1:免检 2:检验)
+//                String quality = signDetail.getQuality();
+//                //quality 质检属性:2:检验 (1:免检 2:检验)
+//                if ("2".equals(quality)) {
+//                    qualityList.add(signDetail);
+//                }
+//            }
+//        }
+//
+//        Map<String, List<Quality>> prodQualityMap = new HashMap<>();
+//
+//        //遍历(质检属性:2:检验) 采购签收明细
+//        String productIds = new String();
+//        if (qualityList != null && qualityList.size() > 0) {
+//            for (PurchaseSignDetail signDetail : qualityList) {
+//                //productId 货品id
+//                String productId = signDetail.getProductId();
+//                if (productId != null && productId.trim().length() > 0) {
+//                    productIds = productIds + productId.trim() + ",";
+//                }
+//            }
+//        }
+//
+//        if (productIds != null && productIds.trim().length() > 0) {
+//            productIds = StringUtil.stringTrimSpace(productIds);
+//            productIds = "'" + productIds.replace(",", "','") + "'";
+//
+//            PageData findMap = new PageData();
+//            findMap.put("productIds", productIds);
+//            //业务名称 (purchase:采购)
+//            findMap.put("business", "purchase");
+//            findMap.put("orderStr", "product_id asc");
+//            List<Quality> prodQualityList = qualityService.findQualityList(findMap);
+//
+//            if (prodQualityList != null && prodQualityList.size() > 0) {
+//                for (Quality quality : prodQualityList) {
+//                    String productId = quality.getProductId();
+//
+//                    if (prodQualityMap.get(productId) == null) {
+//                        List<Quality> tempList = new ArrayList<>();
+//                        tempList.add(quality);
+//                        prodQualityMap.put(productId, tempList);
+//                    } else if (prodQualityMap.get(productId) != null) {
+//                        List<Quality> tempList = prodQualityMap.get(productId);
+//                        tempList.add(quality);
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (qualityList != null && qualityList.size() > 0) {
+//            for (PurchaseSignDetail signDetail : qualityList) {
+//                PurchaseQualityDetail addQualityDtl = new PurchaseQualityDetail();
+//                addQualityDtl.setSignDetailId(signDetail.getId());
+//                addQualityDtl.setOrderUnit(signDetail.getOrderUnit());
+//
+//                //货品id productId
+//                String productId = signDetail.getProductId();
+//                addQualityDtl.setProductId(productId);
+//
+//                //qualityId 质检项id
+//                List<Quality> prodQualityList = prodQualityMap.get(productId);
+//                if (prodQualityList != null && prodQualityList.size() > 0) {
+//                    for (Quality quality : prodQualityList) {
+//                        addQualityDtl.setQualityId(quality.getId());
+//                    }
+//                }
+//
+//                purchaseQualityDetailService.save(addQualityDtl);
+//            }
+//        }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         Long endTime = System.currentTimeMillis();
