@@ -126,6 +126,10 @@ public interface QualityService {
     */
     ResultModel listPageQuality(PageData pd) throws Exception;
 
+    //获取(质量-采购检验)采购签收明细检验项目
+    //菜单路径:(质量-采购检验) 当前采购签收明细(执行)按钮弹出框查询调用方法
+    ResultModel findQualityByPurchaseSignDtl(PageData pd) throws Exception;
+
     ResultModel addQuality(PageData pd) throws Exception;
 }
 

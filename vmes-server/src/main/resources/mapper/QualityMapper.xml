@@ -115,6 +115,29 @@
         (replace(uuid(), '-', ''),'quality','business','业务名称',12, '1','1','1','0',now(), 'admin'),
     </insert>
 
+    <insert id="qualityBySignDetail">
+        delete from vmes_column where model_code = 'qualityBySignDetail' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'qualityBySignDetail','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','sysCode','系统编号(系统生成)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','qualityName','质检项',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','qualityCriterion','检验标准',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','remark','备注',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','business','业务名称',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'qualityBySignDetail','badCount','检验不合格',13, '1','1','1','0',now(), 'admin'),
+    </insert>
+
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         id id,

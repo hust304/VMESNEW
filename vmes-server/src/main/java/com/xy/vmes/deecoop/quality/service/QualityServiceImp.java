@@ -278,7 +278,7 @@ public class QualityServiceImp implements QualityService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageQuality(PageData pd) throws Exception{
+    public ResultModel listPageQuality(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("quality");
         if (columnList == null || columnList.size() == 0) {
@@ -305,6 +305,66 @@ public class QualityServiceImp implements QualityService {
         }
 
         List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    //获取(质量-采购检验)采购签收明细检验项目
+    //菜单路径:(质量-采购检验) 当前采购签收明细(执行)按钮弹出框查询调用方法
+    public ResultModel findQualityByPurchaseSignDtl(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("qualityBySignDetail");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        //SQL查询语句 QualityMapper.getDataListPage
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //name 质检项 --> qualityName
+                String qualityName = new String();
+                if (mapObject.get("name") != null) {
+                    qualityName = mapObject.get("name").toString().trim();
+                }
+                mapObject.put("qualityName", qualityName);
+
+                //criterion 检验标准 --> qualityCriterion
+                String qualityCriterion = new String();
+                if (mapObject.get("criterion") != null) {
+                    qualityCriterion = mapObject.get("criterion").toString().trim();
+                }
+                mapObject.put("qualityCriterion", qualityCriterion);
+
+                //badCount 检验不合格
+                mapObject.put("badCount", "0.00");
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
