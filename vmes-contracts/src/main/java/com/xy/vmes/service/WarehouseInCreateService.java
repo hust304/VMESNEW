@@ -46,6 +46,7 @@ public interface WarehouseInCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
+     * @param remark_dtl      (入库明细)备注
      * @param businessByInMap 业务货品入库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -55,12 +56,13 @@ public interface WarehouseInCreateService {
      *     inCount:   入库数量
      */
     void createWarehouseInBusinessByComplex(String deptId,
-                                    String deptName,
-                                    String warehouseId,
-                                    String cuser,
-                                    String companyId,
-                                    String inType,
-                                    Map<String, Map<String, Object>> businessByInMap) throws ApplicationException;
+                                            String deptName,
+                                            String warehouseId,
+                                            String cuser,
+                                            String companyId,
+                                            String inType,
+                                            String remark_dtl,
+                                            Map<String, Map<String, Object>> businessByInMap) throws ApplicationException;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
