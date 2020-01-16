@@ -625,31 +625,14 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                 }
             }
 
-            //修改(vmes_purchase_quality_detail:采购质检项明细)
+            //添加(vmes_purchase_quality_detail:采购质检项明细)
             Object childObj = objectMap.get("children");
             List childList = (List)childObj;
             if (childList != null && childList.size() > 0) {
                 for (int i = 0; i < childList.size(); i++) {
-                    PurchaseQualityDetail editQualityDtl = new PurchaseQualityDetail();
                     Map<String, String> childMap = (Map<String, String>)childList.get(i);
-
-                    //id 采购质检项明细id
-                    String id_child = childMap.get("id");
-                    editQualityDtl.setId(id_child);
-
-                    //badCount (质检项)不合格数量
-                    BigDecimal badCount_child = BigDecimal.valueOf(0D);
-                    String badCount_childStr = objectMap.get("badCount");
-                    if (badCount_childStr != null && badCount_childStr.trim().length() > 0) {
-                        try {
-                            badCount_child = new BigDecimal(badCount_childStr);
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    editQualityDtl.setBadCount(badCount_child);
-
-                    qualityDetailService.update(editQualityDtl);
+                    PurchaseQualityDetail addQualityDtl = (PurchaseQualityDetail)HttpUtils.pageData2Entity(childMap, new PurchaseQualityDetail());
+                    qualityDetailService.save(addQualityDtl);
                 }
             }
         }
