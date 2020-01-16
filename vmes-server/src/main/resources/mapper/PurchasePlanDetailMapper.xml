@@ -147,28 +147,43 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','id','id',0, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','parentId','采购计划ID',1, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','productId','货品ID',2, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','reasonId','采购原因ID',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','count','采购数量',10, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','edate','期望到货时间',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','state','明细状态',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','remark','备注',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','unitId','计量单位ID',9, '1','0','1','0',now(), 'admin'),
+
             (replace(uuid(), '-', ''),'PurchasePlanDetail','productCode','货品编码',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','productName','货品名称',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','spec','规格/型号',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','genre','属性',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','genreId','属性ID',7, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','unit','计量单位',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','unitId','计量单位ID',9, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','count','采购数量',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','reason','采购原因',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','reasonId','采购原因ID',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','edate','期望到货时间',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','remark','备注',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','state','明细状态',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','code','计划单号',21, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchasePlanDetail','id','id',0, '1','0','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','productProperty','自定义属性',22, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'n2pFormula', 'n2pFormula', 23, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'n2pIsScale', 'n2p:是否需要四舍五入', 24, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'n2pDecimalCount', 'n2p:保留小数位数', 25, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nFormula', 'p2nFormula', 26, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 27, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 28, '1', '0', '1', '0', now(), 'admin'),
+
+
+
     </insert>
 
 
@@ -335,16 +350,60 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        <include refid="Field1"></include>
+        detail.id id,
+        detail.parent_id parentId,
+        detail.product_id productId,
+        reason.id reasonId,
+        round(ifnull(detail.count, 0), 2) count,
+
+        DATE_FORMAT(detail.edate,'%Y-%m-%d') edate,
+        detail.state state,
+        detail.cuser cuser,
+        detail.cdate cdate,
+        detail.uuser uuser,
+
+        detail.udate udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+        detail.unit_id unitId,
+
+        reason.name reason,
+        plan.code code,
+
+        <!--货品表-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+        product.name productName,
+        product.spec,
+        product.property productProperty,
+        genre.id genreId,
+        genre.name genre,
+        unitName.name unitName,
+
+        <!--货品单位(单据单位)-->
+        prodUnit.np_formula n2pFormula,
+        prodUnit.pn_formula p2nFormula,
+
+        prodUnit.n2p_is_scale n2pIsScale,
+        prodUnit.n2p_decimal_count n2pDecimalCount,
+
+        prodUnit.p2n_is_scale p2nIsScale,
+        prodUnit.p2n_decimal_count p2nDecimalCount
+
         from
         vmes_purchase_plan_detail detail
-        left join vmes_purchase_plan  plan on plan.id = detail.parent_id
-        left join vmes_product product on product.id = detail.product_id
-        left join vmes_product_unit produnit on produnit.product_id = product.id and produnit.type = 1
-        left join vmes_dictionary genre on product.genre = genre.id
-        left join vmes_dictionary unit on produnit.unit = unit.id
-        left join vmes_dictionary type on product.type = type.id
+        left join vmes_purchase_plan plan on detail.parent_id = plan.id
         left join vmes_dictionary reason on detail.reason = reason.id
+        left join vmes_dictionary unitName on detail.unit_id = unitName.id
+
+        left join vmes_product product on detail.product_id = product.id
+        left join vmes_dictionary genre on product.genre = genre.id
+        left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
 
         <where>
             <!--queryStr 自定义sql查询语句-->

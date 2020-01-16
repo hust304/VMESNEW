@@ -27,7 +27,7 @@ public class PurchasePlanDetail implements Serializable {
 	//采购原因(字典表-vmes_dictionary.id)
 	@TableField("reason")
 	private String reason;
-	//采购数量
+	//计划数量(单据单位)
 	@TableField("count")
 	private BigDecimal count;
 
