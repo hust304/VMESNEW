@@ -310,6 +310,7 @@ public class PurchaseSignController {
                     companyId,
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
+                    null,
                     businessByInMap);
 
             if (businessByInMap != null) {
