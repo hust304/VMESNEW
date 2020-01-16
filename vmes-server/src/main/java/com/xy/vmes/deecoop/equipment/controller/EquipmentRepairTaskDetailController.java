@@ -535,6 +535,7 @@ public class EquipmentRepairTaskDetailController {
                             companyId,
                             //维保领料退回入库:repairRetreatIn:c396683796d54b8693b522a2c0ad2793 Common.DICTIONARY_MAP
                             Common.DICTIONARY_MAP.get("repairRetreatIn"),
+                            null,
                             businessByInMap);
 
                     if (businessByInMap != null) {
