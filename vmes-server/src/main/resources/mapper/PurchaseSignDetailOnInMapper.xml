@@ -95,11 +95,27 @@
             left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
 
         <where>
-            <!--入库单id-->
+            <!--(免检)入库单明细-->
             <if test="inParentId != null and inParentId != ''" >
                 and signDtl.in_detail_id in (
                 select id from vmes_warehouse_in_detail
                 where parent_id = #{inParentId}
+                )
+            </if>
+
+            <!--(检验入库)入库单明细-->
+            <if test="qualityInParentId != null and qualityInParentId != ''" >
+                and signDtl.quality_inDtl_id in (
+                select id from vmes_warehouse_in_detail
+                where parent_id = #{qualityInParentId}
+                )
+            </if>
+
+            <!--(检验让步接收入库)入库单明细-->
+            <if test="receiveInParentId != null and receiveInParentId != ''" >
+                and signDtl.receive_inDtl_id in (
+                select id from vmes_warehouse_in_detail
+                where parent_id = #{receiveInParentId}
                 )
             </if>
 

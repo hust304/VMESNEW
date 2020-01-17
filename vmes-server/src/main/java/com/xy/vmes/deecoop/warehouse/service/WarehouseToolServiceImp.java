@@ -176,6 +176,7 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
         //采购部分
         //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
         if (Common.DICTIONARY_MAP.get("purchaseIn").equals(type.trim())) {
+            //1. (免检)入库单明细
             PageData findMap = new PageData();
             findMap.put("inParentId", parentId);
             //SQL查询语句: PurchaseSignDetailOnInMapper.findPurchaseSignDetailOnInDetail
@@ -183,6 +184,25 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
             if (mapList != null && mapList.size() > 0) {
                 return Boolean.TRUE;
             }
+
+            //2. (检验入库)入库单明细
+            findMap = new PageData();
+            findMap.put("qualityInParentId", parentId);
+            //SQL查询语句: PurchaseSignDetailOnInMapper.findPurchaseSignDetailOnInDetail
+            mapList = purchaseSignService.findPurchaseSignDetailOnInDetail(findMap, null);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //3. (检验让步接收入库)入库单明细
+            findMap = new PageData();
+            findMap.put("receiveInParentId", parentId);
+            //SQL查询语句: PurchaseSignDetailOnInMapper.findPurchaseSignDetailOnInDetail
+            mapList = purchaseSignService.findPurchaseSignDetailOnInDetail(findMap, null);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
         }
 
         return Boolean.FALSE;
