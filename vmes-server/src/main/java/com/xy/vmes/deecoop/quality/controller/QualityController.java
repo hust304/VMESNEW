@@ -1,5 +1,7 @@
 package com.xy.vmes.deecoop.quality.controller;
 
+import com.xy.vmes.entity.PurchaseQualityDetail;
+import com.xy.vmes.service.PurchaseQualityDetailService;
 import com.xy.vmes.service.QualityService;
 
 import com.yvan.HttpUtils;
@@ -24,6 +26,8 @@ public class QualityController {
 
     @Autowired
     private QualityService qualityService;
+    @Autowired
+    private PurchaseQualityDetailService purchaseQualityDetailService;
 
     /**
      * (质量-采购质检)分页查询
@@ -140,6 +144,24 @@ public class QualityController {
     }
 
     /**
+     * 修改质检项
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/quality/quality/updateQuality")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateQuality() throws Exception {
+        logger.info("################/quality/quality/updateQuality 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = qualityService.updateQuality(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/quality/quality/updateQuality 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 删除质检项
      * @author 陈刚
      * @date 2019-12-05
@@ -158,6 +180,16 @@ public class QualityController {
         if (id == null || id.trim().length() == 0) {
             model.putCode("1");
             model.putMsg("质检项id为空或空字符串！");
+            return model;
+        }
+
+        //(quality_id:质检项ID) 系统表(vmes_purchase_quality_detail)中是存在
+        PageData findMap = new PageData();
+        findMap.put("qualityId", id);
+        PurchaseQualityDetail purchaseQualityDtl = purchaseQualityDetailService.findPurchaseQualityDetail(findMap);
+        if (purchaseQualityDtl != null) {
+            model.putCode("1");
+            model.putMsg("质检项在系统中正在使用不可删除！");
             return model;
         }
 

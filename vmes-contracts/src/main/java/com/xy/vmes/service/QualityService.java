@@ -108,6 +108,23 @@ public interface QualityService {
      */
     void updateProductQuality(String business, String productIds, String qualityType);
 
+    /**
+     * 获取(质检项,检验标准) 在系统表(vmes_quality) 中是否存在
+     * (企业id,货品id,业务名称)系统表(vmes_quality)字段
+     *
+     * @param id
+     * @param productId  货品id
+     * @param business   业务名称
+     * @param name       质检项
+     * @param criterion  检验标准
+     * @return
+     */
+    boolean isExistByQuality(String id,
+                             String productId,
+                             String business,
+                             String name,
+                             String criterion) throws Exception;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * (质量-采购质检)分页查询
@@ -131,6 +148,7 @@ public interface QualityService {
     ResultModel findQualityByPurchaseSignDtl(PageData pd) throws Exception;
 
     ResultModel addQuality(PageData pd) throws Exception;
+    ResultModel updateQuality(PageData pd) throws Exception;
 }
 
 

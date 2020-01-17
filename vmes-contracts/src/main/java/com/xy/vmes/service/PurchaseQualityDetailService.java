@@ -93,6 +93,10 @@ public interface PurchaseQualityDetailService {
      */
     List<PurchaseQualityDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    PurchaseQualityDetail findPurchaseQualityDetail(PageData object) throws Exception;
+    PurchaseQualityDetail findPurchaseQualityDetailById(String id) throws Exception;
+    List<PurchaseQualityDetail> findPurchaseQualityDetailList(PageData object) throws Exception;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

@@ -82,6 +82,13 @@
                 and business = #{business}
             </if>
 
+            <if test="name != null and name != ''" >
+                and name = #{name}
+            </if>
+            <if test="criterion != null and criterion != ''" >
+                and criterion = #{criterion}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
                 and ${queryStr}

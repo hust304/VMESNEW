@@ -15,6 +15,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.MessageFormat;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -224,6 +226,44 @@ public class QualityServiceImp implements QualityService {
         }
     }
 
+    /**
+     * 获取(质检项,检验标准) 在系统表(vmes_quality) 中是否存在
+     * (企业id,货品id,业务名称)系统表(vmes_quality)字段
+     *
+     * @param id
+     * @param productId  货品id
+     * @param business   业务名称
+     * @param name       质检项
+     * @param criterion  检验标准
+     * @return
+     */
+    public boolean isExistByQuality(String id,
+                                    String productId,
+                                    String business,
+                                    String name,
+                                    String criterion) throws Exception {
+        if (productId == null || productId.trim().length() == 0) {return false;}
+        if (name == null || name.trim().length() == 0) {return false;}
+        if (criterion == null || criterion.trim().length() == 0) {return false;}
+
+        PageData findMap = new PageData();
+        findMap.put("productId", productId);
+        findMap.put("name", name);
+        findMap.put("criterion", criterion);
+        findMap.put("business", business);
+
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+            findMap.put("isSelfExist", "true");
+        }
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+        List<Quality> objectList = this.findQualityList(findMap);
+        if (objectList != null && objectList.size() > 0) {return true;}
+
+        return false;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * (质量-采购质检)分页查询
@@ -414,6 +454,20 @@ public class QualityServiceImp implements QualityService {
             return model;
         }
 
+        //(货品id,业务名称)-(质检项,检验标准) 系统中是否重复
+        if (this.isExistByQuality(null,
+                productId,
+                business,
+                name,
+                criterion)
+        ) {
+            String tempStr = "质检项:{0} 检验标准:{1} 在系统中已经存在！";
+            String msgStr = MessageFormat.format(tempStr, name, criterion);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         String cuser = pageData.getString("cuser");
 
         Quality addQuality = new Quality();
@@ -426,6 +480,77 @@ public class QualityServiceImp implements QualityService {
         addQuality.setBusiness(business);
 
         this.save(addQuality);
+
+        return model;
+    }
+
+    public ResultModel updateQuality(PageData pageData) throws Exception {
+        ResultModel model = new ResultModel();
+
+        //(企业id,货品id,业务名称)-(质检项,检验标准) 系统中是否重复
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("检验项id为空或空字符串！");
+            return model;
+        }
+
+        String productId = pageData.getString("productId");
+        if (productId == null || productId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("货品id为空或空字符串！");
+            return model;
+        }
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode("1");
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //business:业务名称 (purchase:采购)
+        String business = pageData.getString("business");
+        if (business == null || business.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("(business:业务名称)为空或空字符串！");
+            return model;
+        }
+
+        //name 质检项
+        String name = pageData.getString("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("质检项为必填项不可为空！");
+            return model;
+        }
+
+        //criterion 检验标准
+        String criterion = pageData.getString("criterion");
+        if (criterion == null || criterion.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("检验标准为必填项不可为空！");
+            return model;
+        }
+
+        //(货品id,业务名称)-(质检项,检验标准) 系统中是否重复
+        if (this.isExistByQuality(id,
+                productId,
+                business,
+                name,
+                criterion)
+        ) {
+            String tempStr = "质检项:{0} 检验标准:{1} 在系统中已经存在！";
+            String msgStr = MessageFormat.format(tempStr, name, criterion);
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        Quality editQuality = new Quality();
+        editQuality.setId(id);
+        editQuality.setName(name);
+        editQuality.setCriterion(criterion);
+        this.update(editQuality);
 
         return model;
     }

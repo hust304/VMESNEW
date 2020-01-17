@@ -170,6 +170,27 @@ public class PurchaseQualityDetailServiceImp implements PurchaseQualityDetailSer
         return this.dataList(pageData);
     }
 
+    public PurchaseQualityDetail findPurchaseQualityDetail(PageData object) throws Exception {
+        List<PurchaseQualityDetail> objectList = this.findPurchaseQualityDetailList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public PurchaseQualityDetail findPurchaseQualityDetailById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findPurchaseQualityDetail(findMap);
+    }
+    public List<PurchaseQualityDetail> findPurchaseQualityDetailList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData

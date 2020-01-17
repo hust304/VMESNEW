@@ -112,6 +112,9 @@
                 </choose>
             </if>
 
+            <if test="qualityId != null and qualityId != ''" >
+                and quality_id = #{qualityId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>

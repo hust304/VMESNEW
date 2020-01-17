@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 import java.util.*;
-import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_quality:质量检验项目 实体类
