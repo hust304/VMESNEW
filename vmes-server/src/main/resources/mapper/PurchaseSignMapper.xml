@@ -152,6 +152,9 @@
 
             left join vmes_purchase_sign_detail detail on sign.id = detail.parent_id
         <where>
+            <if test="signId != null and signId != ''" >
+                and sign.id = #{signId}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and sign.company_id = #{currentCompanyId}
             </if>
