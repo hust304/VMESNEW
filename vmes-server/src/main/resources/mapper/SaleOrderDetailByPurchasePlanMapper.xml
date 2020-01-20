@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：销售订单明细查询 Mapper.xml
+采购-采购计划管理-(勾选订单明细)-弹出界面查询
+创建人：陈刚
+创建时间：2020-01-20
+ -->
+<mapper namespace="com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByPurchasePlanMapper">
+    <insert id="saleOrderDetailByPurchasePlan">
+        delete from vmes_column where model_code = 'saleOrderDetailByPurchasePlan';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'id', 'id', 0, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'parentId', '订单id', 1, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'state', '明细状态id', 2, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productId', '货品id', 3, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderUnit', '单位id', 4, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'deliverDate', '约定交期', 5, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'remark', '备注', 6, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderCount', '订购数量', 7, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'lockCount', '锁定货品数量', 8, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'stateName', '状态', 9, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productCode', '货品编码', 10, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productName', '货品名称', 11, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productSpec', '规格型号', 12, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productGenre', '货品属性id', 13, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productGenreName', '货品属性', 14, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderUnitName', '单位', 15, '1', '1', '1', '0', now(), 'admin'),
+
+    </insert>
+
+
+    <select id="listOrderDetaiByPurchasePlan" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            orderDtl.id id,
+            orderDtl.parent_id parentId,
+            orderDtl.state state,
+            orderDtl.product_id productId,
+            orderDtl.order_unit orderUnit,
+
+            DATE_FORMAT(orderDtl.deliver_date,'%Y-%m-%d') deliverDate,
+            orderDtl.remark remark,
+            round(ifnull(orderDtl.order_count, 0),2) orderCount,
+            round(ifnull(orderDtl.lock_count, 0),2) lockCount,
+            CASE
+                WHEN orderDtl.state = '0' THEN '待提交'
+                WHEN orderDtl.state = '1' THEN '待审核'
+                WHEN orderDtl.state = '2' THEN '待生产'
+                WHEN orderDtl.state = '3' THEN '待出库'
+                WHEN orderDtl.state = '4' THEN '待发货'
+                WHEN orderDtl.state = '5' THEN '已完成'
+                WHEN orderDtl.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+
+            <!--货品表-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.property productProperty,
+            product.genre productGenre,
+
+            genre.name productGenreName,
+            orderUnit.name orderUnitName
+
+        from vmes_sale_order_detail orderDtl
+            left join vmes_product product on orderDtl.product_id = product.id
+            left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
+            left join vmes_dictionary genre on product.genre = genre.id
+            left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.order_unit = prodUnitPrice.unit)
+        <where>
+            <if test="ids != null and ids != ''" >
+                and orderDtl.id in (${ids})
+            </if>
+            <if test="parentId != null and parentId != ''" >
+                and orderDtl.parent_id = #{parentId}
+            </if>
+            <if test="orderDtlState != null and orderDtlState != ''" >
+                and orderDtl.state in (${orderDtlState})
+            </if>
+
+        </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+
+    </select>
+</mapper>
