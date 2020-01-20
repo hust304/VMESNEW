@@ -160,7 +160,9 @@
 
         isdisable isdisable,
         version_lock_count versionLockCount,
-        isOrderChange isOrderChange
+        isOrderChange isOrderChange,
+        sequence sequence,
+        isNeedPurchase isNeedPurchase
 
         from vmes_sale_order_detail
         <where>

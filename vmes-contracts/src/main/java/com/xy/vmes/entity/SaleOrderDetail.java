@@ -107,6 +107,9 @@ public class SaleOrderDetail implements Serializable {
 	private String isOrderChange;
 	@TableField("sequence")
 	private Long sequence;
+	//是否需要采购(采购-计划过滤条件)
+	@TableField("isNeedPurchase")
+	private Long isNeedPurchase;
 
 
 	public Long getSequence() {
@@ -282,6 +285,12 @@ public class SaleOrderDetail implements Serializable {
 	}
 	public void setIsOrderChange(String isOrderChange) {
 		this.isOrderChange = isOrderChange;
+	}
+	public Long getIsNeedPurchase() {
+		return isNeedPurchase;
+	}
+	public void setIsNeedPurchase(Long isNeedPurchase) {
+		this.isNeedPurchase = isNeedPurchase;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
