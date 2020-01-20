@@ -59,6 +59,9 @@ public class PurchasePlanDetail implements Serializable {
 	//单位id(单据单位)
 	@TableField("unit_id")
 	private String unitId;
+	//销售订单明细id
+	@TableField("sale_order_dtl_id")
+	private String saleOrderDtlId;
 
 
 	public void setId(String id) {
@@ -144,6 +147,12 @@ public class PurchasePlanDetail implements Serializable {
 	}
 	public void setUnitId(String unitId) {
 		this.unitId = unitId;
+	}
+	public String getSaleOrderDtlId() {
+		return saleOrderDtlId;
+	}
+	public void setSaleOrderDtlId(String saleOrderDtlId) {
+		this.saleOrderDtlId = saleOrderDtlId;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
