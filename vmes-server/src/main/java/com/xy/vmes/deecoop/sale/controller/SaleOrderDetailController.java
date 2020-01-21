@@ -36,6 +36,8 @@ public class SaleOrderDetailController {
     private SaleOrderDetailByLockCountService saleOrderDetailByLockCountService;
     @Autowired
     private SaleOrderDetailByChangeService saleOrderDetailByChangeService;
+    @Autowired
+    private SaleOrderDetailByPurchasePlanService saleOrderDetailByPurchasePlanService;
 
     @Autowired
     private SaleDeliverService saleDeliverService;
@@ -114,6 +116,24 @@ public class SaleOrderDetailController {
         logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByChange 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * 销售订单明细查询
+     * 采购-采购计划管理-弹出界面查询
+     * @date 2020-01-20
+     */
+    @PostMapping("/sale/saleOrderDetail/listPageOrderDetaiByPurchasePlan")
+    public ResultModel listPageOrderDetaiByPurchasePlan() throws Exception {
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByPurchasePlan 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderDetailByPurchasePlanService.listPageOrderDetaiByPurchasePlan(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByPurchasePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 取消订单明细

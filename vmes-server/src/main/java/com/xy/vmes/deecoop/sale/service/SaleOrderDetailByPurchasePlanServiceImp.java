@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.sale.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByPurchasePlanMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
@@ -64,6 +65,15 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
+        if (pd.getString("orderDtlIds") != null) {
+            String orderDtlIds = pd.getString("orderDtlIds").toString().trim();
+            if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
+                orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
+                orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+                pd.put("orderDtlIds", orderDtlIds);
+            }
+        }
+
         //设置查询排序方式
         //pd.put("orderStr", "a.cdate asc");
         String orderStr = pd.getString("orderStr");
@@ -81,6 +91,14 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
         }
 
         List<Map> varList = this.listOrderDetaiByPurchasePlan(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for(int i=0; i < varList.size(); i++){
+                Map<String, Object> objectMap = varList.get(i);
+                //purchasePlanCount 计划数量
+                objectMap.put("purchasePlanCount", "0.00");
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

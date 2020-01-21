@@ -51,11 +51,11 @@
             saleOrder.audit_id auditId,
             saleOrder.customer_id customerId,
 
-            saleOrder.order_date orderDate,
-            saleOrder.total_sum totalSum,
-            saleOrder.order_sum orderSum,
-            expect_date expectDate,
-            remark remark,
+            DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+            round(ifnull(saleOrder.total_sum, 0),2) totalSum,
+            round(ifnull(saleOrder.order_sum, 0),2) orderSum,
+            DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
+            saleOrder.remark remark,
 
             CASE
                 WHEN saleOrder.state = '0' THEN '待提交'
@@ -67,12 +67,15 @@
             ELSE null
             END stateName,
             makeUser.user_name makeName,
-            customer.name customerName,
+            customer.name customerName
 
         from vmes_sale_order saleOrder
             left join vmes_customer customer on saleOrder.customer_id = customer.id
             left join vmes_user makeUser on saleOrder.make_id = makeUser.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
 
         </where>
         <if test="orderStr != null and orderStr != ''" >

@@ -32,6 +32,10 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productGenre', '货品属性id', 13, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productGenreName', '货品属性', 14, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderUnitName', '单位', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productProperty', '自定义属性', 16, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'sysCode', '订单编号', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'purchasePlanCount', '计划数量', 18, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -58,6 +62,7 @@
                 WHEN orderDtl.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
+            saleOrder.sys_code sysCode,
 
             <!--货品表-->
             product.code sysProductCode,
@@ -73,16 +78,20 @@
             product.genre productGenre,
 
             genre.name productGenreName,
-            orderUnit.name orderUnitName
+            orderUnit.name orderUnitName,
+
+            <!--java 类实现(purchasePlanCount) -->
+            '' purchasePlanCount
 
         from vmes_sale_order_detail orderDtl
+            left join vmes_sale_order saleOrder on orderDtl.parent_id = saleOrder.id
             left join vmes_product product on orderDtl.product_id = product.id
             left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.order_unit = prodUnitPrice.unit)
         <where>
-            <if test="ids != null and ids != ''" >
-                and orderDtl.id in (${ids})
+            <if test="orderDtlIds != null and orderDtlIds != ''" >
+                and orderDtl.id in (${orderDtlIds})
             </if>
             <if test="parentId != null and parentId != ''" >
                 and orderDtl.parent_id = #{parentId}

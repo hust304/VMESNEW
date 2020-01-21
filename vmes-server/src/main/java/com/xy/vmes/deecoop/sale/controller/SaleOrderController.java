@@ -25,6 +25,8 @@ public class SaleOrderController {
     private SaleOrderService saleOrderService;
     @Autowired
     private SaleOrderCollectService saleOrderCollectService;
+    @Autowired
+    private SaleOrderByPurchasePlanService saleOrderByPurchasePlanService;
 
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     /**
@@ -54,6 +56,22 @@ public class SaleOrderController {
         ResultModel model = saleOrderCollectService.listPageOrderCollectByInfo(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrder/listPageOrderCollectByInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 销售订单查询
+     * 采购-采购计划管理-弹出界面查询
+     * @date 2020-01-20
+     */
+    @PostMapping("/sale/saleOrder/listPageOrderByPurchasePlan")
+    public ResultModel listPageOrderByPurchasePlan() throws Exception {
+        logger.info("################/sale/saleOrder/listPageOrderByPurchasePlan 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderByPurchasePlanService.listPageOrderByPurchasePlan(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrder/listPageOrderByPurchasePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
