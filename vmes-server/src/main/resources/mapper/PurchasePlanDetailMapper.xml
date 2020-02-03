@@ -182,7 +182,7 @@
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nFormula', 'p2nFormula', 26, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 27, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 28, '1', '0', '1', '0', now(), 'admin'),
-
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'saleOrderDtlId', '销售订单明细id', 28, '1', '0', '1', '0', now(), 'admin'),
 
 
     </insert>
@@ -367,6 +367,7 @@
         detail.remark remark,
         detail.isdisable isdisable,
         detail.unit_id unitId,
+        detail.sale_order_dtl_id saleOrderDtlId,
 
         reason.name reason,
         plan.code code,
