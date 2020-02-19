@@ -101,6 +101,13 @@
             <if test="orderDtlState != null and orderDtlState != ''" >
                 and orderDtl.state in (${orderDtlState})
             </if>
+            <!--vmes_sale_order_detail.is_need_purchase 是否需要采购(0:不需要 1:需要)-->
+            <if test="'true' == isNeedPurchase" >
+                and orderDtl.is_need_purchase = '1'
+            </if>
+            <if test="'false' == isNeedPurchase" >
+                and (is_need_purchase = '0' or (is_need_purchase is null or CHAR_LENGTH(TRIM(is_need_purchase)) = 0))
+            </if>
 
         </where>
         <if test="orderStr != null and orderStr != ''" >
