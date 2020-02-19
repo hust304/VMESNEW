@@ -189,6 +189,46 @@ public class SaleOrderDetailController {
         return model;
     }
 
+    /**
+     * 修改(vmes_sale_order_detail.is_need_purchase)该字段属性值
+     * is_need_purchase:是否需要采购(0:不需要 1:需要)
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/sale/saleOrderDetail/updateSaleOrderDetailByIsNeedPurchase")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateSaleOrderDetailByIsNeedPurchase() throws Exception {
+        logger.info("################/sale/saleOrderDetail/updateSaleOrderDetailByIsNeedPurchase 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //销售订单明细id
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("销售订单明细id为空或空字符串！");
+            return model;
+        }
+
+        //是否需要采购(0:不需要 1:需要)
+        String isNeedPurchase = pageData.getString("isNeedPurchase");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("isNeedPurchase为空或空字符串！");
+            return model;
+        }
+
+        SaleOrderDetail editObject = new SaleOrderDetail();
+        editObject.setId(id);
+        editObject.setIsNeedPurchase(isNeedPurchase);
+        saleOrderDetailService.update(editObject);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/updateSaleOrderDetailByIsNeedPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 //    /**
 //    * Excel导出

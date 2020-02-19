@@ -36,6 +36,7 @@
 
             (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'sysCode', '订单编号', 17, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'purchasePlanCount', '计划数量', 18, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'isNeedPurchase', '是否需要采购', 19, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -63,6 +64,7 @@
             ELSE null
             END stateName,
             saleOrder.sys_code sysCode,
+            is_need_purchase isNeedPurchase,
 
             <!--货品表-->
             product.code sysProductCode,

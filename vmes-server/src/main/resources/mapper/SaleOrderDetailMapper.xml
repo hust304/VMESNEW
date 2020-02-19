@@ -162,7 +162,7 @@
         version_lock_count versionLockCount,
         isOrderChange isOrderChange,
         sequence sequence,
-        isNeedPurchase isNeedPurchase
+        is_need_purchase isNeedPurchase
 
         from vmes_sale_order_detail
         <where>

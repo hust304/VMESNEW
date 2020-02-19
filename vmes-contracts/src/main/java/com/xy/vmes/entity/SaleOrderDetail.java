@@ -22,16 +22,18 @@ public class SaleOrderDetail implements Serializable {
 	//订单ID
 	@TableField("parent_id")
 	private String parentId;
+	@TableField("sequence")
+	private Long sequence;
 	//明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
 	//附件地址
 	@TableField("file_url")
 	private String fileUrl;
+
 	//交付日期
 	@TableField("deliver_date")
 	private Date deliverDate;
-
 	//订单订购数量
 	@TableField("order_count")
 	private BigDecimal orderCount;
@@ -44,10 +46,10 @@ public class SaleOrderDetail implements Serializable {
 	//计量单位id
 	@TableField("product_unit")
 	private String productUnit;
+
 	//货品数量(计价数量)
 	@TableField("price_count")
 	private BigDecimal priceCount;
-
 	//计价单位id
 	@TableField("price_unit")
 	private String priceUnit;
@@ -60,19 +62,16 @@ public class SaleOrderDetail implements Serializable {
 	//货品金额(订购数量 * 货品单价)
 	@TableField("product_sum")
 	private BigDecimal productSum;
+
 	//是否锁定仓库(0:未锁定 1:已锁定)
 	@TableField("is_lock_warehouse")
 	private String isLockWarehouse;
-
 	//是否需要生产(0:无需 1:需要 库存不够)
 	@TableField("is_need_produce")
 	private String isNeedProduce;
 	//锁定货品数量(计量单位)
 	@TableField("lock_count")
 	private BigDecimal lockCount;
-	//可发货数量(计价单位)-(暂停该字段的维护(2020-01-02)-禁止使用该字段)
-	@TableField("need_deliver_count")
-	private BigDecimal needDeliverCount;
 	//锁定开始时间
 	@TableField("lock_date")
 	private Date lockDate;
@@ -99,17 +98,18 @@ public class SaleOrderDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//可发货数量(计价单位)-(暂停该字段的维护(2020-01-02)-禁止使用该字段)
+	@TableField("need_deliver_count")
+	private BigDecimal needDeliverCount;
 	//修改锁定库存版本号
 	@TableField("version_lock_count")
 	private Integer versionLockCount;
 	//发生订单变更记录 0:未变更(默认值) 1:已变更
 	@TableField("isOrderChange")
 	private String isOrderChange;
-	@TableField("sequence")
-	private Long sequence;
-	//是否需要采购(采购-计划过滤条件)
-	@TableField("isNeedPurchase")
-	private Long isNeedPurchase;
+	//是否需要采购(0:不需要 1:需要)
+	@TableField("is_need_purchase")
+	private String isNeedPurchase;
 
 
 	public Long getSequence() {
@@ -286,10 +286,10 @@ public class SaleOrderDetail implements Serializable {
 	public void setIsOrderChange(String isOrderChange) {
 		this.isOrderChange = isOrderChange;
 	}
-	public Long getIsNeedPurchase() {
+	public String getIsNeedPurchase() {
 		return isNeedPurchase;
 	}
-	public void setIsNeedPurchase(Long isNeedPurchase) {
+	public void setIsNeedPurchase(String isNeedPurchase) {
 		this.isNeedPurchase = isNeedPurchase;
 	}
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/

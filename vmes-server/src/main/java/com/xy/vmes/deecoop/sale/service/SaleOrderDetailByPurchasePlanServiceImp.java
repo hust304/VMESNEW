@@ -96,6 +96,15 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
                 Map<String, Object> objectMap = varList.get(i);
                 //purchasePlanCount 计划数量
                 objectMap.put("purchasePlanCount", "0.00");
+
+                //isNeedPurchase 是否需要采购(0:不需要 1:需要)
+                String isNeedPurchase = new String("0");
+                if (objectMap.get("isNeedPurchase") != null
+                    && "0,1".indexOf(objectMap.get("isNeedPurchase").toString().trim()) != 0
+                ) {
+                    isNeedPurchase = objectMap.get("isNeedPurchase").toString().trim();
+                }
+                objectMap.put("isNeedPurchase", isNeedPurchase);
             }
         }
 
