@@ -4,6 +4,8 @@ import com.yvan.Numbers;
 import com.yvan.common.util.Common;
 
 import java.math.BigDecimal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
     /**
@@ -86,6 +88,70 @@ public class StringUtil {
         }
 
         return bigValue;
+    }
+
+    /**
+     * 检验字符串中是否含有中文
+     * @param str  检验字符串
+     * @return
+     * false: 无中文
+     * true:  含有中文
+     */
+    public static boolean isExistChinese(String str) {
+        if (str == null || str.trim().length() == 0) {
+            return false;
+        }
+
+        char arr[] = str.toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            char c = arr[i];
+            // 中文字符
+            if ((c >= 0x0391 && c <= 0xFFE5)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检验是否是账号字符串
+     * 字符串中每一个字符是否满足[a-z,A-Z,_,0-9]
+     * @param str  检验字符串
+     * @return
+     * false: 错误
+     * true:  正常
+     */
+    public static boolean isWord(String str) {
+        if (str == null || str.trim().length() == 0) {
+            return false;
+        }
+
+        char arr[] = str.toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            char c = arr[i];
+
+            String regEx = "[\\w]";
+            Pattern p = Pattern.compile(regEx);
+            Matcher m = p.matcher("" + c);
+            if (!m.matches()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static void main(String args[]) throws Exception {
+        String str = "123abc_";
+        //boolean flag = StringUtil.isExistChinese(str);
+        boolean flag = StringUtil.isWord(str);
+        if (flag) {
+            System.out.println("true");
+        } else {
+            System.out.println("false");
+        }
+
+
     }
 
 }

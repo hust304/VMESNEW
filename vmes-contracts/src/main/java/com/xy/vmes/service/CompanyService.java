@@ -1,11 +1,9 @@
 package com.xy.vmes.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.entity.Department;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,14 +39,14 @@ public interface CompanyService {
     /**
      * 企业编码同一层级是否相同
      *
-     * @param pid   (不可为空)
+     * @param pid   (允许为空)
      * @param id    (允许为空)-(添加时is null, 修改时 is not null)
      * @param code  (不可为空)
      * @return
      *     true : 组织名称存在名称相同
      *     false: 组织名称不存在名称相同(默认值)
      */
-//    boolean isExistByCode(String pid, String id, String code);
+    boolean isExistByCode(String pid, String id, String code);
 
 //    Department object2objectDB(Department object, Department objectDB);
     //Integer findMaxSerialNumber(String pid);

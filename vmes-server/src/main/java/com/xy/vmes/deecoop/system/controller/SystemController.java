@@ -1,8 +1,10 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.service.CompanyService;
 import com.xy.vmes.service.DepartmentService;
 import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.UserService;
@@ -28,6 +30,8 @@ public class SystemController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CompanyService companyService;
     @Autowired
     private DepartmentService departmentService;
     @Autowired
@@ -158,6 +162,83 @@ public class SystemController {
             return model;
         }
 
+        return model;
+    }
+
+    /**
+     * 主页企业试用申请
+     * 验证企业简称(企业编码)是否同名
+     * 成功: code:0 msg:执行成功!
+     * 失败: code:1 msg:失败原因字符串
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/system/checkExistCompanyCode")
+    public ResultModel checkExistCompanyCode() throws Exception {
+        logger.info("################/system/checkExistCompanyCode 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //企业简称(企业编码): code
+        String code = pageData.getString("code");
+        if (code == null || code.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业简称为空或空字符串！");
+            return model;
+        }
+
+        String errorTemp = "企业简称({0})存在非法字符，必须[大小写字母下划线数字]";
+        //是否包含中文
+        if (StringUtil.isExistChinese(code)) {
+            String msgStr = MessageFormat.format(errorTemp, code);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+        //非法字符
+        if (!StringUtil.isWord(code)) {
+            String msgStr = MessageFormat.format(errorTemp, code);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //验证企业简称(企业编码)是否同名
+        if (companyService.isExistByCode(null, null, code)) {
+            String msgTemp = "企业简称({0})在系统中已经存在";
+            String msgStr = MessageFormat.format(msgTemp, code);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/checkExistCompanyCode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 主页企业试用申请
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/system/companyApplication")
+    public ResultModel companyApplication() throws Exception {
+        logger.info("################/system/companyApplication 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }

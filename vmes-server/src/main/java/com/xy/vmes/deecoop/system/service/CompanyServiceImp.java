@@ -163,7 +163,7 @@ public class CompanyServiceImp implements CompanyService {
     /**
      * 企业编码同一层级是否相同
      *
-     * @param pid   (不可为空)
+     * @param pid   (允许为空)
      * @param id    (允许为空)-(添加时is null, 修改时 is not null)
      * @param code  (不可为空)
      * @return
@@ -171,11 +171,15 @@ public class CompanyServiceImp implements CompanyService {
      *     false: 组织名称不存在名称相同(默认值)
      */
     public boolean isExistByCode(String pid, String id, String code) {
-        if (pid == null || pid.trim().length() == 0) {return false;}
         if (code == null || code.trim().length() == 0) {return false;}
 
+        String pidValue = new String();
+        if (pid != null) {
+            pidValue = pid.trim();
+        }
+
         PageData findMap = new PageData();
-        findMap.put("pid", pid);
+        findMap.put("pid", pidValue);
         //organizeType 组织类型(1:公司 2:部门)
         findMap.put("organizeType", "1");
         findMap.put("code", code);
