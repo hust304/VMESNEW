@@ -4,6 +4,7 @@ import com.yvan.Numbers;
 import com.yvan.common.util.Common;
 
 import java.math.BigDecimal;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,16 +142,29 @@ public class StringUtil {
         return true;
     }
 
-    public static void main(String args[]) throws Exception {
-        String str = "123abc_";
-        //boolean flag = StringUtil.isExistChinese(str);
-        boolean flag = StringUtil.isWord(str);
-        if (flag) {
-            System.out.println("true");
-        } else {
-            System.out.println("false");
+    /**
+     * 获取验证码
+     * @param length 验证码长度
+     * @return
+     */
+    public static String findSecurityCode(int length) {
+        String strTemp = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789";
+        Random r = new Random();
+
+        String code = "";
+        for (int i = 0; i < length; i++) {
+            code = code + strTemp.charAt(r.nextInt(strTemp.length()));
         }
 
+        return code;
+    }
+
+    public static void main(String args[]) throws Exception {
+        //String str = "123abc_";
+        //boolean flag = StringUtil.isExistChinese(str);
+
+        String str = StringUtil.findSecurityCode(4);
+        System.out.println("str:" + str);
 
     }
 
