@@ -218,6 +218,18 @@ public class SystemController {
             return model;
         }
 
+        //企业简称: code
+        //创建(企业管理员)账户 表(vmes_user)中是否存在
+        String userCode = code.toLowerCase() + "admin";
+        Boolean isExistUser = userService.isExistUserByUserCode(null, userCode);
+        if (isExistUser != null && isExistUser.booleanValue()) {
+            model.putCode(Integer.valueOf(1));
+            String msgTemp = "当前企业简称({0})，对应的用户账号{1}在系统中已经存在，请更换企业简称";
+            String msgStr = MessageFormat.format(msgTemp, code, userCode);
+            model.putMsg(msgStr);
+            return model;
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/checkExistCompanyCode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
