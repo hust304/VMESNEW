@@ -5,6 +5,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.service.*;
+import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.cache.RedisClient;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -220,6 +222,44 @@ public class SystemController {
         logger.info("################/system/checkExistCompanyCode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+//    /**
+//     * 1. 生成4位验证码
+//     * 2. 验证码-Redis缓存Key:(securityCode)
+//     * 3. 验证码-返回页面
+//     * 返回值 <ResultModel>
+//     *     ResultModel.code
+//     *     ResultModel.msg
+//     *     ResultModel.result<Map<String, Object>>
+//     *         securityCode:验证码
+//     *         securityCodeKey:(uuid:securityCode)
+//     *
+//     * 创建人：陈刚
+//     * 创建时间：2018-07-24
+//     */
+//    @PostMapping("/system/createSecurityCode")
+//    public ResultModel createSecurityCode()  throws Exception {
+//        logger.info("################/system/createSecurityCode 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//
+//        String SecurityCode = StringUtil.findSecurityCode(4);
+//        String RedisCodeKey = Conv.createUuid() + ":" + Common.REDIS_SECURITY_CODE;
+//
+//        //Redis-验证码-缓存2分钟(60 * 1000)
+//        int minute = 2 * 60 * 1000;
+//        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, minute);
+//
+//        Map<String, Object> dataMap = new HashMap<String, Object>();
+//        dataMap.put("securityCode", SecurityCode);
+//        dataMap.put("securityCodeKey", RedisCodeKey);
+//
+//        ResultModel model = new ResultModel();
+//        model.putResult(dataMap);
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/system/createSecurityCode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 主页企业试用申请
