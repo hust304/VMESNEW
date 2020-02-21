@@ -292,15 +292,15 @@ public class SystemController {
             email = pageData.getString("email").trim();
         }
 
-        //套餐: roleKey
-        String roleKey = pageData.getString("roleKey");
-        if (roleKey == null || roleKey.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "套餐");
-            model.putMsg(msgStr);
-            return model;
-        }
-        roleKey = roleKey.trim();
+//        //套餐: roleKey
+//        String roleKey = pageData.getString("roleKey");
+//        if (roleKey == null || roleKey.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "套餐");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        roleKey = roleKey.trim();
 
         //用户数: companyUserCount
         String companyUserCountStr = pageData.getString("companyUserCount");
@@ -426,6 +426,8 @@ public class SystemController {
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         companyApplicationService.addCompanyApplication(pageData);
+
+        //TODO 接口返回值
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
