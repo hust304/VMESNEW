@@ -300,28 +300,29 @@ public class SystemController {
         roleKey = roleKey.trim();
 
         //用户数: companyUserCount
-        String companyUserCount = pageData.getString("companyUserCount");
-        if (companyUserCount == null || companyUserCount.trim().length() == 0) {
+        String companyUserCountStr = pageData.getString("companyUserCount");
+        if (companyUserCountStr == null || companyUserCountStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             String msgStr = MessageFormat.format(msgIsNullTemp, "用户数");
             model.putMsg(msgStr);
             return model;
         }
-        companyUserCount = companyUserCount.trim();
+        companyUserCountStr = companyUserCountStr.trim();
 
         //时间: year
-        String year = pageData.getString("year");
-        if (year == null || year.trim().length() == 0) {
+        String yearStr = pageData.getString("year");
+        if (yearStr == null || yearStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             String msgStr = MessageFormat.format(msgIsNullTemp, "时间");
             model.putMsg(msgStr);
             return model;
         }
-        year = year.trim();
+        yearStr = yearStr.trim();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //参数(数字)字符串验证
         String msgNumberTemp = "{0}存在非法字符，必须全数字";
+        String msgNumberZeroTemp = "{0}必须大于零";
 
         //手机号 mobile
         try {
@@ -339,7 +340,13 @@ public class SystemController {
 
         //用户数 companyUserCount
         try {
-            new BigDecimal(companyUserCount);
+            Integer companyUserCount = new Integer(companyUserCountStr);
+            if (companyUserCount <= 0) {
+                model.putCode(Integer.valueOf(1));
+                String msgStr = MessageFormat.format(msgNumberZeroTemp, "用户数");
+                model.putMsg(msgStr);
+                return model;
+            }
         } catch (NumberFormatException e) {
             model.putCode(Integer.valueOf(1));
             String msgStr = MessageFormat.format(msgNumberTemp, "用户数");
@@ -348,7 +355,13 @@ public class SystemController {
         }
         //时间 year
         try {
-            new BigDecimal(year);
+            Integer year = new Integer(yearStr);
+            if (year <= 0) {
+                model.putCode(Integer.valueOf(1));
+                String msgStr = MessageFormat.format(msgNumberZeroTemp, "时间");
+                model.putMsg(msgStr);
+                return model;
+            }
         } catch (NumberFormatException e) {
             model.putCode(Integer.valueOf(1));
             String msgStr = MessageFormat.format(msgNumberTemp, "时间");

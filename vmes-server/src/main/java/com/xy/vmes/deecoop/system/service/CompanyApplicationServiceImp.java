@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.system.dao.CompanyMapper;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.User;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +53,31 @@ public class CompanyApplicationServiceImp implements CompanyApplicationService {
         //企业简称: code
         String code = pageData.getString("code");
         addCompany.setCode(code);
+
+        //系统用户数 companyUserCount
+        String companyUserCountStr = pageData.getString("companyUserCount").trim();
+        Integer companyUserCount = Integer.valueOf(companyUserCountStr);
+        addCompany.setCompanyUserCount(companyUserCount);
+
+        //有效期(yyyy-mm-dd) companyValidityDate
+        //时间 year
+        String yearStr = pageData.getString("year").trim();
+        Integer addYear = Integer.valueOf(yearStr);
+
+        //当前系统时间+(时间)年
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        String companyValidityDateStr = sysDateStr;
+        try {
+            companyValidityDateStr = DateFormat.getAddDay(sysDateStr,
+                    DateFormat.DEFAULT_YEAR,
+                    addYear.intValue(),
+                    DateFormat.DEFAULT_DATE_FORMAT);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Date companyValidityDate = DateFormat.dateString2Date(companyValidityDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        addCompany.setCompanyValidityDate(companyValidityDate);
 
         String id = Conv.createUuid();
         addCompany.setId(id);
