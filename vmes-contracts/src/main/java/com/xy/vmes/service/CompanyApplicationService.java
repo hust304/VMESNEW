@@ -1,6 +1,5 @@
 package com.xy.vmes.service;
 
-import com.xy.vmes.entity.Department;
 import com.yvan.PageData;
 
 /**
@@ -10,5 +9,5 @@ import com.yvan.PageData;
  */
 public interface CompanyApplicationService {
 
-    void addCompanyApplication(PageData companyMap) throws Exception;
+    void addCompanyApplication(PageData pageData) throws Exception;
 }

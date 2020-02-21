@@ -28,8 +28,11 @@ public class Common {
     //简版仓库
     public final static String SYS_WAREHOUSE_SIMPLE = "warehouseBySimple";
 
+    //主页企业申请注册
     //系统admin 用户id 表(vmes_user)
-    public final static String SYS_ADMIN_USER_ID = "0";
+    public final static String SYS_COMPANYAPPLICATION_ADMIN_USER_ID = "0";
+    //角色表(vmes_role) 角色名称:套餐A 角色ID:c4d92bfac8754500a44e815511b91f06
+    public final static String SYS_COMPANYAPPLICATION_ROLE_ID = "c4d92bfac8754500a44e815511b91f06";
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";

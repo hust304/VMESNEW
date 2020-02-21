@@ -56,7 +56,7 @@ public class CompanyApplicationServiceImp implements CompanyApplicationService {
         addCompany.setId(id);
         //organizeType组织类型(1:公司 2:部门)
         addCompany.setOrganizeType("1");
-        addCompany.setCuser(Common.SYS_ADMIN_USER_ID);
+        addCompany.setCuser(Common.SYS_COMPANYAPPLICATION_ADMIN_USER_ID);
 
         addCompany = departmentService.id2DepartmentByLayer(id,
                 Integer.valueOf(rootObj.getLayer().intValue() + 1),
@@ -107,7 +107,7 @@ public class CompanyApplicationServiceImp implements CompanyApplicationService {
         User addUser = new User();
         addUser.setCompanyId(addCompany.getId());
         addUser.setDeptId(addCompany.getId());
-        String userCode = addCompany.getCode().toLowerCase()+"admin";
+        String userCode = addCompany.getCode().toLowerCase() + "admin";
         addUser.setUserCode(userCode);
         addUser.setUserName(userCode);
         addUser.setMobile(mobile);
@@ -124,7 +124,8 @@ public class CompanyApplicationServiceImp implements CompanyApplicationService {
         //5.创建(用户角色)
         UserRole userRole = new UserRole();
         userRole.setUserId(addUser.getId());
-        userRole.setRoleId("");
+        //角色表(vmes_role) 角色名称:套餐A 角色ID:c4d92bfac8754500a44e815511b91f06
+        userRole.setRoleId(Common.SYS_COMPANYAPPLICATION_ROLE_ID);
         userRoleService.save(userRole);
     }
 

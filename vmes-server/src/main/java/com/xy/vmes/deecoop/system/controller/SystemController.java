@@ -4,12 +4,11 @@ import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
-import com.xy.vmes.service.CompanyService;
-import com.xy.vmes.service.DepartmentService;
-import com.xy.vmes.service.DictionaryService;
-import com.xy.vmes.service.UserService;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.cache.RedisClient;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +36,11 @@ public class SystemController {
     private DepartmentService departmentService;
     @Autowired
     private DictionaryService dictionaryService;
+    @Autowired
+    private CompanyApplicationService companyApplicationService;
+
+    @Autowired
+    RedisClient redisClient;
 
     @PostMapping("/system/findSystemDateTime")
     public ResultModel findSystemDateTime() throws Exception {
@@ -190,20 +195,11 @@ public class SystemController {
             return model;
         }
 
-        String errorTemp = "企业简称({0})存在非法字符，必须[大小写字母下划线数字]";
-        //是否包含中文
-        if (StringUtil.isExistChinese(code)) {
-            String msgStr = MessageFormat.format(errorTemp, code);
-
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgStr);
-            return model;
-        }
         //非法字符
         if (!StringUtil.isWord(code)) {
-            String msgStr = MessageFormat.format(errorTemp, code);
-
             model.putCode(Integer.valueOf(1));
+            String errorTemp = "企业简称({0})存在非法字符，必须[大小写字母下划线数字]";
+            String msgStr = MessageFormat.format(errorTemp, code);
             model.putMsg(msgStr);
             return model;
         }
@@ -236,6 +232,184 @@ public class SystemController {
 
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //接口参数非空判断
+        String msgIsNullTemp = "{0}为必填项不可为空";
+        //企业名称: name
+        String name = pageData.getString("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "企业名称");
+            model.putMsg(msgStr);
+            return model;
+        }
+        //企业简称: code
+        String code = pageData.getString("code");
+        if (code == null || code.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "企业简称");
+            model.putMsg(msgStr);
+            return model;
+        }
+        code = code.trim();
+
+        //手机号: mobile
+        String mobile = pageData.getString("mobile");
+        if (mobile == null || mobile.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "手机号");
+            model.putMsg(msgStr);
+            return model;
+        }
+        mobile = mobile.trim();
+
+        //验证码: securityCode (当前验证码)
+        String securityCode = pageData.getString("securityCode");
+        if (securityCode == null || securityCode.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "验证码");
+            model.putMsg(msgStr);
+            return model;
+        }
+        securityCode = securityCode.trim();
+
+        //验证码(Redis缓存Key): securityCodeKey
+        String securityCodeKey = pageData.getString("securityCodeKey");
+        if (securityCodeKey == null || securityCodeKey.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("securityCodeKey(验证码Redis缓存Key)为空或空字符串");
+            return model;
+        }
+        securityCodeKey = securityCodeKey.trim();
+
+        //邮箱: email
+        String email = new String();
+        if (pageData.getString("email") != null) {
+            email = pageData.getString("email").trim();
+        }
+
+        //套餐: roleKey
+        String roleKey = pageData.getString("roleKey");
+        if (roleKey == null || roleKey.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "套餐");
+            model.putMsg(msgStr);
+            return model;
+        }
+        roleKey = roleKey.trim();
+
+        //用户数: companyUserCount
+        String companyUserCount = pageData.getString("companyUserCount");
+        if (companyUserCount == null || companyUserCount.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "用户数");
+            model.putMsg(msgStr);
+            return model;
+        }
+        companyUserCount = companyUserCount.trim();
+
+        //时间: year
+        String year = pageData.getString("year");
+        if (year == null || year.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "时间");
+            model.putMsg(msgStr);
+            return model;
+        }
+        year = year.trim();
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //参数(数字)字符串验证
+        String msgNumberTemp = "{0}存在非法字符，必须全数字";
+
+        //手机号 mobile
+        try {
+            new BigDecimal(mobile);
+            if (mobile.length() != 11) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("手机号请输入11位数字");
+                return model;
+            }
+        } catch (NumberFormatException e) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("手机号请输入11位数字");
+            return model;
+        }
+
+        //用户数 companyUserCount
+        try {
+            new BigDecimal(companyUserCount);
+        } catch (NumberFormatException e) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgNumberTemp, "用户数");
+            model.putMsg(msgStr);
+            return model;
+        }
+        //时间 year
+        try {
+            new BigDecimal(year);
+        } catch (NumberFormatException e) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgNumberTemp, "时间");
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //金额: amount(单位元)
+        BigDecimal amount = BigDecimal.valueOf(0D);
+        String amountStr = pageData.getString("amount");
+        if (amountStr != null && amountStr.trim().length() > 0) {
+            try {
+                amount = new BigDecimal(amountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //四舍五入到2位小数
+        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //验证码-是否过期
+        String old_securityCode = redisClient.get(securityCodeKey.trim());
+        if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+            return model;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //验证 企业简称(企业编码): code
+        //非法字符
+        if (!StringUtil.isWord(code)) {
+            model.putCode(Integer.valueOf(1));
+            String errorTemp = "企业简称({0})存在非法字符，必须[大小写字母下划线数字]";
+            String msgStr = MessageFormat.format(errorTemp, code);
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //验证企业简称(企业编码)是否同名
+        if (companyService.isExistByCode(null, null, code)) {
+            model.putCode(Integer.valueOf(1));
+            String msgTemp = "企业简称({0})在系统中已经存在";
+            String msgStr = MessageFormat.format(msgTemp, code);
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //企业简称: code
+        //创建(企业管理员)账户 表(vmes_user)中是否存在
+        String userCode = code.toLowerCase() + "admin";
+        Boolean isExistUser = userService.isExistUserByUserCode(null, userCode);
+        if (isExistUser != null && isExistUser.booleanValue()) {
+            model.putCode(Integer.valueOf(1));
+            String msgTemp = "当前企业简称({0})，对应的用户账号{1}在系统中已经存在，请更换企业简称";
+            String msgStr = MessageFormat.format(msgTemp, code, userCode);
+            model.putMsg(msgStr);
+            return model;
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        companyApplicationService.addCompanyApplication(pageData);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
