@@ -331,9 +331,20 @@ public class UserLoginServiceImp implements UserLoginService {
         ResultModel model = new ResultModel();
         String SecurityCode = StringUtil.findSecurityCode(4);
 
+        //默认缓存1分钟(60 * 1000)
+        Integer second = Integer.valueOf(Common.REDIS_SECURITYCODE_LONG);
+        String secondStr = pageData.getString("second");
+        if (secondStr != null && secondStr.trim().length() > 0) {
+            try {
+                second = Integer.valueOf(secondStr) * 1000;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
         //Redis-验证码-缓存1分钟(60 * 1000)
         String RedisCodeKey = Conv.createUuid() + ":" + Common.REDIS_SECURITY_CODE;
-        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, Common.REDIS_SECURITYCODE_LONG);
+        redisClient.setWithExpireTime(RedisCodeKey, SecurityCode, second.intValue());
 
         Map<String, Object> dataMap = new HashMap<String, Object>();
         dataMap.put("securityCode", SecurityCode);
