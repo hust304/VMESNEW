@@ -97,6 +97,11 @@ public class UserLoginController {
      * 1. 生成4位验证码
      * 2. 验证码-Redis缓存Key:(securityCode)
      * 3. 验证码-返回页面
+     * 4. second指定验证码缓存时间单位秒
+     * 当(second指定验证码缓存时间)为空或等于零时为默认为60秒
+     *
+     * 接口参数
+     *     second：缓存时间单位秒(数值类型int)默认为60秒
      * 返回值 <ResultModel>
      *     ResultModel.code
      *     ResultModel.msg
@@ -108,7 +113,7 @@ public class UserLoginController {
      * 创建时间：2018-07-24
      */
     @PostMapping("/system/userLogin/createSecurityCode")
-    public ResultModel createSecurityCode()  throws Exception {
+    public ResultModel createSecurityCode() throws Exception {
         logger.info("################userLogin/createSecurityCode 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pageData = HttpUtils.parsePageData();

@@ -336,7 +336,10 @@ public class UserLoginServiceImp implements UserLoginService {
         String secondStr = pageData.getString("second");
         if (secondStr != null && secondStr.trim().length() > 0) {
             try {
-                second = Integer.valueOf(secondStr) * 1000;
+                int secondTemp = Integer.valueOf(secondStr).intValue();
+                if (secondTemp > 0) {
+                    second = secondTemp * 1000;
+                }
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
