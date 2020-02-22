@@ -410,7 +410,7 @@ public class SystemController {
             model.putMsg(msgStr);
             return model;
         }
-        //时间 year
+        //时间 year 界面无限:9999 year:=100
         try {
             Integer year = new Integer(yearStr);
             if (year <= 0) {
@@ -418,6 +418,9 @@ public class SystemController {
                 String msgStr = MessageFormat.format(msgNumberZeroTemp, "时间");
                 model.putMsg(msgStr);
                 return model;
+            } else if (9999 == year.intValue()) {
+                yearStr = "100";
+                pageData.put("year", yearStr);
             }
         } catch (NumberFormatException e) {
             model.putCode(Integer.valueOf(1));
