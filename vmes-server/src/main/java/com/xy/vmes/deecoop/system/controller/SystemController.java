@@ -288,6 +288,8 @@ public class SystemController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String strInfo = this.findParameterByCompanyApplication(pageData);
+        logger.info("companyApplication:parameter:" + strInfo);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //接口参数非空判断
         String msgIsNullTemp = "{0}为必填项不可为空";
@@ -484,5 +486,104 @@ public class SystemController {
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private String findParameterByCompanyApplication(PageData pageData) {
+        //企业名称: name
+        String nameValue = new String();
+        String name = pageData.getString("name");
+        if (name == null) {
+            nameValue = "is null";
+        } else {
+            nameValue = name;
+        }
+
+        //企业简称: code
+        String codeValue = new String();
+        String code = pageData.getString("code");
+        if (code == null) {
+            codeValue = "is null";
+        } else {
+            codeValue = code;
+        }
+
+        //手机号: mobile
+        String mobileValue = new String();
+        String mobile = pageData.getString("mobile");
+        if (mobile == null) {
+            mobileValue = "is null";
+        } else {
+            mobileValue = mobile;
+        }
+
+        //验证码: securityCode (当前验证码)
+        String securityCodeValue = new String();
+        String securityCode = pageData.getString("securityCode");
+        if (securityCode == null) {
+            securityCodeValue = "is null";
+        } else {
+            securityCodeValue = securityCode;
+        }
+
+        //验证码(Redis缓存Key): securityCodeKey
+        String securityCodeKeyValue = new String();
+        String securityCodeKey = pageData.getString("securityCodeKey");
+        if (securityCodeKey == null) {
+            securityCodeKeyValue = "is null";
+        } else {
+            securityCodeKeyValue = securityCodeKey;
+        }
+
+        //邮箱: email
+        String emailValue = new String();
+        String email = pageData.getString("email");
+        if (email == null) {
+            emailValue = "is null";
+        } else {
+            emailValue = email;
+        }
+
+        //用户数: companyUserCount
+        String companyUserCountValue = new String();
+        String companyUserCount = pageData.getString("companyUserCount");
+        if (companyUserCount == null) {
+            companyUserCountValue = "is null";
+        } else {
+            companyUserCountValue = companyUserCount;
+        }
+
+        //时间: year
+        String yearValue = new String();
+        String year = pageData.getString("year");
+        if (year == null) {
+            yearValue = "is null";
+        } else {
+            yearValue = year;
+        }
+
+        //金额: amount(单位元)
+        String amountValue = new String();
+        String amount = pageData.getString("amount");
+        if (amount == null) {
+            amountValue = "is null";
+        } else {
+            amountValue = amount;
+        }
+
+        String strTemp = "name:{0} code:{1} mobile:{2} securityCode:{3} securityCodeKey:{4} " +
+                         "email:{5} companyUserCount:{6} year:{7} amount:{8} ";
+        String strInfo = MessageFormat.format(strTemp,
+                nameValue,
+                codeValue,
+                mobileValue,
+                securityCodeValue,
+                securityCodeKeyValue,
+                emailValue,
+                companyUserCountValue,
+                yearValue,
+                amountValue);
+
+        return strInfo;
     }
 }
