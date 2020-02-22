@@ -481,8 +481,20 @@ public class SystemController {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         companyApplicationService.addCompanyApplication(pageData);
 
-        //TODO 接口返回值
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("userCode", userCode);
+        //默认免费试用
+        String notCost = "true";
+        if (amount.doubleValue() > 0D) {
+            notCost = "false";
 
+            dataMap.put("year", yearStr);
+            dataMap.put("companyUserCount", companyUserCountStr);
+            dataMap.put("amount", amount);
+        }
+        dataMap.put("notCost", notCost);
+
+        model.putResult(dataMap);
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
