@@ -224,7 +224,7 @@ public class SystemController {
         Boolean isExistUser = userService.isExistUserByUserCode(null, userCode);
         if (isExistUser != null && isExistUser.booleanValue()) {
             model.putCode(Integer.valueOf(1));
-            String msgTemp = "当前企业简称({0})，对应的用户账号{1}在系统中已经存在，请更换企业简称";
+            String msgTemp = "当前企业简称({0})，对应的用户企业管理员账号{1}在系统中已经存在，请更换企业简称";
             String msgStr = MessageFormat.format(msgTemp, code, userCode);
             model.putMsg(msgStr);
             return model;
@@ -476,7 +476,7 @@ public class SystemController {
         Boolean isExistUser = userService.isExistUserByUserCode(null, userCode);
         if (isExistUser != null && isExistUser.booleanValue()) {
             model.putCode(Integer.valueOf(1));
-            String msgTemp = "当前企业简称({0})，对应的用户账号{1}在系统中已经存在，请更换企业简称";
+            String msgTemp = "当前企业简称({0})，对应的用户企业管理员账号{1}在系统中已经存在，请更换企业简称";
             String msgStr = MessageFormat.format(msgTemp, code, userCode);
             model.putMsg(msgStr);
             return model;
