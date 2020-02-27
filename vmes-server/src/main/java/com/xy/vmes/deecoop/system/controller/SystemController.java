@@ -273,6 +273,8 @@ public class SystemController {
 
     @GetMapping("/system/emailTest")
     public ResultModel emailTest() throws Exception {
+        logger.info("################/system/emailTest 执行开始 ################# ");
+
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
@@ -297,6 +299,7 @@ public class SystemController {
             e.printStackTrace();
         }
 
+        logger.info("################/system/emailTest 执行结束 ################# ");
         return model;
     }
 
