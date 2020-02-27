@@ -281,7 +281,7 @@ public class SystemController {
         //标题
         String title = pageData.getString("title").trim();
         //内容
-        String content = pageData.getString("email").trim();
+        String content = pageData.getString("content").trim();
 
         List<String> mailpara = new ArrayList();
         mailpara.add("");// 0:发送人
