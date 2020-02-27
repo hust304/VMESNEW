@@ -497,7 +497,12 @@ public class SystemController {
             mailpara.add("企业申请注册成功");// 3:标题
             mailpara.add(mailContent);// 4:内容
             // 5:附件
-            MailUtil.mailSend(mailpara);
+
+            try {
+                MailUtil.mailSend(mailpara);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
