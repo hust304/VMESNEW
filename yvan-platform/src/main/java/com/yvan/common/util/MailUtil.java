@@ -320,13 +320,13 @@ public class MailUtil {
 //                }
 //            }
 
-            //String mailserver = "smtp.163.com";
+            //String mailserver = "smtp.163.com";220.181.12.16
             //String authuser = "chen_gang7906";
             //String authpass = "wdmzjcg79";
             //boolean authenticated = true;
 
             MailUtil sender = new MailUtil(
-                    "smtp.163.com",
+                    "220.181.12.16",
                     "chen_gang7906",
                     "wdmzjcg79",
                     true);
