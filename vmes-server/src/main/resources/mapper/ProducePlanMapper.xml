@@ -40,18 +40,20 @@
         (replace(uuid(), '-', ''),'producePlan','sysCode','生产计划单号(系统生成)',3, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','custCode','生产计划单号(用户自定义单号)',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','produceType','生产类型id',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','planDate','计划完成日期(业务反写字段)(yyyy-MM-dd)',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','state','状态id',7, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','cuser','创建用户id',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','cdate','制单日期',9, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','uuser','修改用户id',10, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','udate','修改时间',11, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','remark','备注',12, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','isdisable','是否启用(0:已禁用 1:启用)',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','begin_date','计划开始日期',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','end_date','计划结束日期',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','planDate','计划完成日期(业务反写字段)(yyyy-MM-dd)',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','state','状态id',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','cuser','创建用户id',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','cdate','制单日期',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','uuser','修改用户id',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','udate','修改时间',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','remark','备注',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','isdisable','是否启用(0:已禁用 1:启用)',15, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'producePlan','planStateName','状态',14, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','produceTypeName','生产类型',15, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','makeName','制单人',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','planStateName','状态',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','produceTypeName','生产类型',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','makeName','制单人',18, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -64,14 +66,17 @@
         cust_code custCode,
 
         produce_type produceType,
+        begin_date beginDate,
+        end_date endDate,
         plan_date planDate,
         state state,
+
         cuser cuser,
         cdate cdate,
-
         uuser uuser,
         udate udate,
         remark remark,
+
         isdisable isdisable
         from vmes_produce_plan
         <where>
@@ -110,14 +115,17 @@
             plan.cust_code custCode,
 
             plan.produce_type produceType,
+            DATE_FORMAT(plan.begin_date,'%Y-%m-%d %T') beginDate,
+            DATE_FORMAT(plan.end_date,'%Y-%m-%d %T') endDate,
             plan.plan_date planDate,
             plan.state state,
+
             plan.cuser cuser,
             DATE_FORMAT(plan.cdate,'%Y-%m-%d %T') cdate,
-
             plan.uuser uuser,
             plan.udate udate,
             plan.remark remark,
+
             plan.isdisable isdisable,
 
             CASE

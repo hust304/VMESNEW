@@ -33,19 +33,25 @@ public class ProducePlan implements Serializable {
 	//生产类型 (字典表-vmes_dictionary.id)
 	@TableField("produce_type")
 	private String produceType;
+	//计划开始日期
+	@TableField("begin_date")
+	private Date beginDate;
+	//计划结束日期
+	@TableField("end_date")
+	private Date endDate;
 	//计划完成日期(业务反写字段)(yyyy-MM-dd)
 	@TableField("plan_date")
 	private Date planDate;
 	//状态 (0:待提交 1:生产中 2:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
-
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
@@ -55,6 +61,7 @@ public class ProducePlan implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -95,6 +102,19 @@ public class ProducePlan implements Serializable {
 	}
 	public String getProduceType() {
 		return produceType;
+	}
+	public Date getBeginDate() {
+		return beginDate;
+	}
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	public void setPlanDate(Date planDate) {
 		this.planDate = planDate;
