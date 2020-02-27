@@ -129,7 +129,7 @@
             plan.isdisable isdisable,
 
             CASE
-            WHEN plan.state = '0' THEN '待提交'
+            WHEN plan.state = '0' THEN '待生产'
             WHEN plan.state = '1' THEN '生产中'
             WHEN plan.state = '2' THEN '已完成'
             WHEN plan.state = '-1' THEN '已取消'

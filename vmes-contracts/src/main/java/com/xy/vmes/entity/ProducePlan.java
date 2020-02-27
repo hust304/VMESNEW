@@ -42,7 +42,7 @@ public class ProducePlan implements Serializable {
 	//计划完成日期(业务反写字段)(yyyy-MM-dd)
 	@TableField("plan_date")
 	private Date planDate;
-	//状态 (0:待提交 1:生产中 2:已完成 -1:已取消)
+	//状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
 

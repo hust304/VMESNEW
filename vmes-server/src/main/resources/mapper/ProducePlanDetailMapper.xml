@@ -7,13 +7,6 @@
  -->
 <mapper namespace="com.xy.vmes.deecoop.produce.dao.ProducePlanDetailMapper">
 
-    <!-- 字段 自动创建，禁止修改-->
-    <sql id="Field">
-
-    </sql>
-
-
-
     <!-- 批量删除 自动创建，禁止修改-->
     <delete id="deleteByIds" parameterType="java.lang.String">
         delete from vmes_produce_plan_detail
@@ -22,7 +15,6 @@
 		#{item}
         </foreach>
     </delete>
-
 
     <!-- 自动创建，禁止修改-->
     <update id="updateToDisableByIds" parameterType="java.lang.String" >
@@ -42,6 +34,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'producePlanDetail','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','parentId','生产计划id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','unitId','单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
@@ -56,7 +49,14 @@
             (replace(uuid(), '-', ''),'producePlanDetail','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','remark','备注',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'producePlanDetail','productCode','货品编码',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productName','货品名称',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productSpec','规格型号',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productGenre','属性ID',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productProperty','自定义属性',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','unitName','单位',20, '1','0','1','0',now(), 'admin'),
+
     </insert>
 
 
@@ -110,33 +110,68 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        parent_id parentId,
-        product_id productId,
-        unit_id unitId,
-        count count,
+        detail.id id,
+        detail.parent_id parentId,
+        detail.product_id productId,
+        detail.unit_id unitId,
+        detail.count count,
 
-        begin_date beginDate,
-        end_date endDate,
-        plan_date planDate,
-        state state,
-        cuser cuser,
+        detail.begin_date beginDate,
+        detail.end_date endDate,
+        detail.plan_date planDate,
+        detail.state state,
+        detail.cuser cuser,
 
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_produce_plan_detail
+        detail.cdate cdate,
+        detail.uuser uuser,
+        detail.udate udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        CASE
+        WHEN plan.state = '0' THEN '待生产'
+        WHEN plan.state = '1' THEN '生产中'
+        WHEN plan.state = '2' THEN '已完成'
+        WHEN plan.state = '-1' THEN '已取消'
+        ELSE null
+        END stateName,
+
+        <!--货品表-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        product.property productProperty,
+        unitName.name unitName,
+
+        <!--货品单位(单据单位)-->
+        prodUnit.np_formula n2pFormula,
+        prodUnit.n2p_is_scale n2pIsScale,
+        prodUnit.n2p_decimal_count n2pDecimalCount,
+
+        prodUnit.pn_formula p2nFormula,
+        prodUnit.p2n_is_scale p2nIsScale,
+        prodUnit.p2n_decimal_count p2nDecimalCount
+
+        from vmes_produce_plan_detail detail
+            left join vmes_product product on detail.product_id = product.id
+            left join vmes_dictionary unitName on detail.unit_id = unitName.id
+            left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
         <where>
             <if test="ids != null and ids != ''" >
-                and id in (${ids})
+                and detail.id in (${ids})
             </if>
             <if test="parentId != null and parentId != ''" >
-                and parent_id = #{parentId}
+                and detail.parent_id = #{parentId}
             </if>
             <if test="state != null and state != ''" >
-                and state = #{state}
+                and detail.state = #{state}
             </if>
 
             <!--queryStr 自定义sql查询语句-->
