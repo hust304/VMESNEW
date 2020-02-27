@@ -271,6 +271,35 @@ public class SystemController {
 //        return model;
 //    }
 
+    @GetMapping("/system/emailTest")
+    public ResultModel emailTest() throws Exception {
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //邮箱: email
+        String email = pageData.getString("email").trim();
+        //标题
+        String title = pageData.getString("title").trim();
+        //内容
+        String content = pageData.getString("email").trim();
+
+        List<String> mailpara = new ArrayList();
+        mailpara.add("");// 0:发送人
+        mailpara.add(email);// 1:主送
+        mailpara.add("");// 2:抄送
+        mailpara.add(title);// 3:标题
+        mailpara.add(content);// 4:内容
+        // 5:附件
+
+        try {
+            MailUtil.mailSend(mailpara);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+
     /**
      * 主页企业试用申请
      *
