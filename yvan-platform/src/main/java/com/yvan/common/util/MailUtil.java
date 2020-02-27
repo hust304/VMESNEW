@@ -326,9 +326,9 @@ public class MailUtil {
             //boolean authenticated = true;
 
             MailUtil sender = new MailUtil(
-                    Common.SYS_MAIL_SERVER_SMTP,
-                    Common.SYS_MAIL_USER_NAME,
-                    Common.SYS_MAIL_PASSWORD,
+                    "smtp.163.com",
+                    "chen_gang7906",
+                    "wdmzjcg79",
                     true);
             if (tostr=="" || tostr == null) {
                 return "false";
@@ -389,13 +389,13 @@ public class MailUtil {
         mailpara.add("");// 0:发送人
         mailpara.add("chen_gang7906@163.com");// 1:主送
         mailpara.add("");// 2:抄送
-        mailpara.add("测试2");// 3:标题
+        mailpara.add("**************测试2");// 3:标题
         mailpara.add("测试22222");// 4:内容
         // 5:附件
         //File attachment = new File("d:\\测试.txt"); //附件1
-        String attachmentstr=MimeUtility.decodeText("d:\\测试.txt");
+        //String attachmentstr=MimeUtility.decodeText("d:\\测试.txt");
         //String attachmentstr = "d:\\测试.txt";
-        mailpara.add(attachmentstr);
+        //mailpara.add(attachmentstr);
 
         MailUtil.mailSend(mailpara);
     }
