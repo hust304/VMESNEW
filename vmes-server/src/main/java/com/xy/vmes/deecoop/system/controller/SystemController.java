@@ -10,6 +10,7 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.cache.RedisClient;
 import com.yvan.common.util.Common;
+import com.yvan.common.util.MailUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,10 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -484,6 +482,25 @@ public class SystemController {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         companyApplicationService.addCompanyApplication(pageData);
 
+        //发送邮件
+        if (email != null && email.trim().length() > 0) {
+            String mailTemp = "企业名称：{0} 手机号：{1} 账号：{2} 初始密码：手机号后6位 请登录网址：https://web.ouhaicloud.com 使用";
+            String mailContent = MessageFormat.format(mailTemp,
+                    name,
+                    mobile,
+                    userCode);
+
+            List<String> mailpara = new ArrayList();
+            mailpara.add("");// 0:发送人
+            mailpara.add(email);// 1:主送
+            mailpara.add("");// 2:抄送
+            mailpara.add("企业申请注册成功");// 3:标题
+            mailpara.add(mailContent);// 4:内容
+            // 5:附件
+            MailUtil.mailSend(mailpara);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Map<String, Object> dataMap = new HashMap();
         dataMap.put("userCode", userCode);
         //默认免费试用
