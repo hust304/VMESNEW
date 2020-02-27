@@ -328,7 +328,7 @@ public class MailUtil {
             MailUtil sender = new MailUtil(
                     "220.181.12.16",
                     "chen_gang7906",
-                    "wdmzjcg79",
+                    "wdmzjcg790412",
                     true);
             if (tostr=="" || tostr == null) {
                 return "false";
@@ -389,7 +389,7 @@ public class MailUtil {
         mailpara.add("");// 0:发送人
         mailpara.add("chen_gang7906@163.com");// 1:主送
         mailpara.add("");// 2:抄送
-        mailpara.add("**************测试2");// 3:标题
+        mailpara.add("**************测试3");// 3:标题
         mailpara.add("测试22222");// 4:内容
         // 5:附件
         //File attachment = new File("d:\\测试.txt"); //附件1
