@@ -496,6 +496,7 @@ public class SystemController {
             mailpara.add("");// 2:抄送
             mailpara.add("企业申请注册成功");// 3:标题
             mailpara.add(mailContent);// 4:内容
+            System.out.println("mailContent:" + mailContent);
             // 5:附件
 
             try {
