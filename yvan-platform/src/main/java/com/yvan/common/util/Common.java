@@ -453,6 +453,10 @@ public class Common {
             put("maintainModeCustom", "ee66976e1b3d453bae8839e6e9458b2f");
             //maintainModePeriod 9a05a30aa81e4637b498703b14cde8b1 按周期
             put("maintainModePeriod", "9a05a30aa81e4637b498703b14cde8b1");
+
+        //生产类型 148e26d09b6b474793f2b4fa95eae86c
+        put("produceType", "148e26d09b6b474793f2b4fa95eae86c");
+
     }};
 
     ///////////////--菜单名称--///////////////////////////////////////////////////////////////////

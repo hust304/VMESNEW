@@ -38,7 +38,7 @@
             (replace(uuid(), '-', ''),'producePlanDetail','parentId','生产计划id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','unitId','单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','count','计划数量(单据单位)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','count','计划数量',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','beginDate','计划开始日期(yyyy-MM-dd)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','endDate','计划结束日期(yyyy-MM-dd)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','planDate','计划完成日期(业务反写字段)(yyyy-MM-dd)',7, '1','1','1','0',now(), 'admin'),
@@ -129,10 +129,10 @@
         detail.isdisable isdisable,
 
         CASE
-        WHEN plan.state = '0' THEN '待生产'
-        WHEN plan.state = '1' THEN '生产中'
-        WHEN plan.state = '2' THEN '已完成'
-        WHEN plan.state = '-1' THEN '已取消'
+        WHEN detail.state = '0' THEN '待生产'
+        WHEN detail.state = '1' THEN '生产中'
+        WHEN detail.state = '2' THEN '已完成'
+        WHEN detail.state = '-1' THEN '已取消'
         ELSE null
         END stateName,
 
