@@ -57,6 +57,8 @@
             (replace(uuid(), '-', ''),'producePlanDetail','productProperty','自定义属性',19, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','unitName','单位',20, '1','0','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'producePlanDetail','orderDtlId','销售订单明细id',21, '1','0','1','0',now(), 'admin'),
+
     </insert>
 
 
@@ -157,7 +159,10 @@
 
         prodUnit.pn_formula p2nFormula,
         prodUnit.p2n_is_scale p2nIsScale,
-        prodUnit.p2n_decimal_count p2nDecimalCount
+        prodUnit.p2n_decimal_count p2nDecimalCount,
+
+        <!--页面传递参数字段 -->
+        '' orderDtlId
 
         from vmes_produce_plan_detail detail
             left join vmes_product product on detail.product_id = product.id
