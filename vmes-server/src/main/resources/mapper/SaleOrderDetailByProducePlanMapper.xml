@@ -14,44 +14,46 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'id', 'id', 0, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'parentId', '订单id', 1, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'state', '明细状态id', 2, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productId', '货品id', 3, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderUnit', '单位id', 4, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'id', 'id', 0, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'orderDtlId', '订单明细id', 1, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'parentId', '订单id', 2, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'state', '明细状态id', 3, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'productId', '货品id', 4, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'orderUnit', '单位id', 5, '1', '0', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'deliverDate', '约定交期', 5, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'remark', '备注', 6, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderCount', '订购数量', 7, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'lockCount', '锁定货品数量', 8, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'stateName', '状态', 9, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'sysCode', '订单编号', 17, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'producePlanName', '排产状态', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'deliverDate', '约定交期', 6, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'remark', '备注', 7, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'orderCount', '订购数量', 8, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'lockCount', '锁定货品数量', 9, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'stateName', '状态', 10, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'sysCode', '订单编号', 11, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'producePlanName', '排产状态', 12, '1', '1', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productCode', '货品编码', 10, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productName', '货品名称', 11, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productSpec', '规格型号', 12, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productProperty', '自定义属性', 16, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'productGenre', '货品属性id', 13, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'orderUnitName', '单位', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'productCode', '货品编码', 13, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'productName', '货品名称', 14, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'productSpec', '规格型号', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'productProperty', '自定义属性', 16, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'productGenre', '货品属性id', 17, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'orderUnitName', '单位', 18, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'producePlanCount', '计划数量', 19, '1', '1', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'producePlanCount', '计划数量', 18, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'p2nFormula', 'p2nFormula', 20, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'p2nIsScale', 'p2n:是否需要四舍五入', 21, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'p2nDecimalCount', 'p2n:保留小数位数', 22, '1', '0', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'p2nFormula', 'p2nFormula', 20, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'p2nIsScale', 'p2n:是否需要四舍五入', 21, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'p2nDecimalCount', 'p2n:保留小数位数', 22, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'n2pFormula', 'n2pFormula', 23, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'n2pIsScale', 'n2p:是否需要四舍五入', 24, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'n2pDecimalCount', 'n2p:保留小数位数', 25, '1', '0', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'n2pFormula', 'n2pFormula', 23, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'n2pIsScale', 'n2p:是否需要四舍五入', 24, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'n2pDecimalCount', 'n2p:保留小数位数', 25, '1', '0', '1', '0', now(), 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'safetyCount', '安全库存', 26, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByPurchasePlan', 'allowStockCount', '库存数量', 27, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'safetyCount', '安全库存', 26, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'allowStockCount', '库存数量', 27, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'customerName', '客户名称', 28, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
     <select id="listOrderDetaiByProducePlan" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            orderDtl.id id,
+            md5(uuid()) id,
+            orderDtl.id orderDtlId,
             orderDtl.parent_id parentId,
             orderDtl.state state,
             orderDtl.product_id productId,
@@ -71,11 +73,13 @@
                 WHEN orderDtl.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
+
             saleOrder.sys_code sysCode,
+            customer.name customerName,
 
             CASE
             WHEN planDtlChild.plan_dtl_id is not null THEN '已排产'
-            WHEN planDtlChild.plan_dtl_id is null or CHAR_LENGTH(TRIM(planDtlChild.plan_dtl_id)) = 0 '未排产'
+            WHEN planDtlChild.plan_dtl_id is null or CHAR_LENGTH(TRIM(planDtlChild.plan_dtl_id)) = 0 THEN '未排产'
             ELSE null
             END producePlanName,
 
@@ -121,6 +125,9 @@
             <!--vmes_produce_plan_detail_child (销售订单明细,生产计划明细)关联关系-->
             left join vmes_produce_plan_detail_child planDtlChild on orderDtl.id = planDtlChild.sale_order_dtl_id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
             <if test="sysCode != null and sysCode != ''" >
                 and saleOrder.sys_code = #{sysCode}
             </if>

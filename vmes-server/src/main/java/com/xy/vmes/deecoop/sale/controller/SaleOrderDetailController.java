@@ -38,6 +38,8 @@ public class SaleOrderDetailController {
     private SaleOrderDetailByChangeService saleOrderDetailByChangeService;
     @Autowired
     private SaleOrderDetailByPurchasePlanService saleOrderDetailByPurchasePlanService;
+    @Autowired
+    private SaleOrderDetailByProducePlanService saleOrderDetailByProducePlanService;
 
     @Autowired
     private SaleDeliverService saleDeliverService;
@@ -130,6 +132,21 @@ public class SaleOrderDetailController {
         ResultModel model = saleOrderDetailByPurchasePlanService.listPageOrderDetaiByPurchasePlan(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByPurchasePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+    /**
+     * 销售订单明细查询
+     * 生产-生产计划管理-弹出界面查询
+     * @date 2020-01-29
+     */
+    @PostMapping("/sale/saleOrderDetail/listPageOrderDetaiByProducePlan")
+    public ResultModel listPageOrderDetaiByProducePlan() throws Exception {
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByProducePlan 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleOrderDetailByProducePlanService.listPageOrderDetaiByProducePlan(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleOrderDetail/listPageOrderDetaiByProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
