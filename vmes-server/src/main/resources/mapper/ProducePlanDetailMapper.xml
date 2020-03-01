@@ -37,7 +37,7 @@
             (replace(uuid(), '-', ''),'producePlanDetail','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','parentId','生产计划id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','unitId','单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','unitId','计量单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','count','计划数量',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','beginDate','计划开始日期(yyyy-MM-dd)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','endDate','计划结束日期(yyyy-MM-dd)',6, '1','1','1','0',now(), 'admin'),
@@ -55,7 +55,7 @@
             (replace(uuid(), '-', ''),'producePlanDetail','productSpec','规格型号',17, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','productGenre','属性ID',18, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','productProperty','自定义属性',19, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','unitName','单位',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','unitName','计量单位',20, '1','0','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'producePlanDetail','orderDtlId','销售订单明细id',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','jsonStr','按货品合并JsonString',22, '1','0','1','0',now(), 'admin'),

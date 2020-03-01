@@ -48,6 +48,10 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'safetyCount', '安全库存', 26, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'allowStockCount', '库存数量', 27, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'customerName', '客户名称', 28, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'prodUnitId', '计量单位id', 29, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'prodUnitName', '计量单位', 30, '1', '1', '1', '0', now(), 'admin')
+
     </insert>
 
     <select id="listOrderDetaiByProducePlan" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -96,6 +100,8 @@
             product.property productProperty,
             product.genre productGenre,
             round(ifnull(product.safety_count, 0), 2) safetyCount,
+            prodUnit.unit prodUnitId,
+            prodUnitName.name prodUnitName,
 
             <!--(单据)货品单位-->
             prodUnitPrice.np_formula n2pFormula,
@@ -122,6 +128,11 @@
             left join vmes_dictionary orderUnit on orderDtl.order_unit = orderUnit.id
             left join vmes_dictionary genre on product.genre = genre.id
             left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.order_unit = prodUnitPrice.unit)
+
+            <!--货品计量单位-->
+            left join vmes_product_unit prodUnit on orderDtl.product_id = prodUnit.product_id and prodUnit.type = 1
+            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+
             <!--vmes_produce_plan_detail_child (销售订单明细,生产计划明细)关联关系-->
             left join vmes_produce_plan_detail_child planDtlChild on orderDtl.id = planDtlChild.sale_order_dtl_id
         <where>
