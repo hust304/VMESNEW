@@ -377,7 +377,7 @@ public class ProducePlanController {
         //删除生产计划明细表
         columnMap = new HashMap();
         columnMap.put("parent_id", parentId);
-        producePlanDetailChildService.deleteByColumnMap(columnMap);
+        producePlanDetailService.deleteByColumnMap(columnMap);
 
         //删除生产计划表
         producePlanService.deleteById(parentId);
