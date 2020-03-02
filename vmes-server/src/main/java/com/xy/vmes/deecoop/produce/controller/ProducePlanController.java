@@ -133,6 +133,14 @@ public class ProducePlanController {
         String makeId = pageData.getString("makeId");
         addPlan.setMakeId(makeId);
 
+        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        addPlan.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            addPlan.setState("1");
+        }
+
         producePlanService.save(addPlan);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //添加生产计划明细
