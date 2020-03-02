@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.produce.service;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailMapper;
 import com.xy.vmes.entity.ProducePlanDetail;
 import com.xy.vmes.service.ProducePlanDetailService;
@@ -195,7 +196,22 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
         return this.findProducePlanDetailList(findMap);
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
 
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", parentIds);
+
+        producePlanDetailMapper.updateStateByDetail(pageData);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData
