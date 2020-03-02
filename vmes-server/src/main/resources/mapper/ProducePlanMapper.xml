@@ -40,8 +40,8 @@
         (replace(uuid(), '-', ''),'producePlan','sysCode','生产计划单号(系统生成)',3, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','custCode','生产计划单号(用户自定义单号)',4, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','produceType','生产类型id',5, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','begin_date','计划开始日期',6, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'producePlan','end_date','计划结束日期',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','beginDate','计划开始日期',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','endDate','计划结束日期',7, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','planDate','计划完成日期(业务反写字段)(yyyy-MM-dd)',8, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','state','状态id',9, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','cuser','创建用户id',10, '1','1','1','0',now(), 'admin'),
@@ -115,8 +115,8 @@
             plan.cust_code custCode,
 
             plan.produce_type produceType,
-            DATE_FORMAT(plan.begin_date,'%Y-%m-%d %T') beginDate,
-            DATE_FORMAT(plan.end_date,'%Y-%m-%d %T') endDate,
+            DATE_FORMAT(plan.begin_date,'%Y-%m-%d') beginDate,
+            DATE_FORMAT(plan.end_date,'%Y-%m-%d') endDate,
             plan.plan_date planDate,
             plan.state state,
 

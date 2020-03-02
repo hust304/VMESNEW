@@ -128,7 +128,7 @@
         detail.parent_id parentId,
         detail.product_id productId,
         detail.unit_id unitId,
-        detail.count count,
+        round(ifnull(detail.count, 0), 2) count,
 
         detail.begin_date beginDate,
         detail.end_date endDate,
