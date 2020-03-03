@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.Scanner;
 
 /**
  * Created by 46368 on 2018/12/19.
@@ -119,13 +120,101 @@ public class MacUtils {
     }
 
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
+//
+//        //****************获取MAC地址*****************//
+////        System.out.println("***MAC地址***");
+////        getMac2();
+////        String mac = getMac();
+////        System.out.println(mac);
+////        "I am an 20-years out--standing @ * -stu- dent";
+//        Scanner in = new Scanner(System.in);
+//
+//        while(in.hasNextLine()){
+//            String input = in.nextLine();
+//            String s = new String(input);
+//            input = input.replaceAll("--"," ");
+//            input = input.replaceAll(" -"," ");
+//            input = input.replaceAll("- "," ");
+//
+//            s = s.replaceAll("[a-z]","");
+//            s = s.replaceAll("[A-Z]","");
+//            s = s.replaceAll("[0-9]","");
+//            s = s.replaceAll("-","");
+//            s = s.replaceAll(" ","");
+//
+//
+//            char[] cs = s.toCharArray();
+//            if(cs!=null&&cs.length>0){
+//                for(int i=0;i<cs.length;i++){
+//                    input = input.replaceAll("["+cs[i]+"]","");
+//                }
+//            }
+//            String[] ss = input.split(" ");
+//            StringBuffer output = new StringBuffer();
+//            if(ss!=null&&ss.length>0){
+//                for(int i=ss.length-1;i>=0;i--){
+//                    if(!ss[i].isEmpty()){
+//                        if(output.length()==0){
+//                            output.append(ss[i]);
+//                        }else{
+//                            output.append(" ").append(ss[i]);
+//                        }
+//
+//                    }
+//                }
+//            }
+//            System.out.println(output);
+//        }
+//    }
 
-        //****************获取MAC地址*****************//
-        System.out.println("***MAC地址***");
-        getMac2();
-        String mac = getMac();
-        System.out.println(mac);
-    }
+
+
+//    public static void main(String[] args) {
+//
+//        Scanner in = new Scanner(System.in);
+//        int money = 300;
+//        while(in.hasNextLine()){
+//            String input = in.nextLine();
+//            String[] ss = input.split(",");
+//            if(ss!=null&&ss.length>0){
+//                int price = ss[0]!=null?Integer.parseInt(ss[0]):-1;
+//                int preDay = ss[1]!=null?Integer.parseInt(ss[1]):-1;
+//                int actDay = ss[2]!=null?Integer.parseInt(ss[2]):-1;
+//                int outPut = 0;
+//
+//                int dayPrice = 0;
+//                if(price>=100){
+//                    if(preDay>=15){
+//                        dayPrice = 5;
+//
+//                    }else{
+//                        dayPrice = 3;
+//                    }
+//
+//
+//                }else if(price<100&&price>=50){
+//                    if(preDay>=15){
+//                        dayPrice = 3;
+//
+//                    }else{
+//                        dayPrice = 2;
+//                    }
+//
+//                }else{
+//                    dayPrice = 1;
+//                }
+//                if(actDay>preDay){
+//                    outPut = money - dayPrice*actDay-actDay-preDay;
+//                }else{
+//                    outPut = money - dayPrice*actDay;
+//                }
+//
+//                System.out.println(outPut+"");
+//            }
+//
+//
+//        }
+//    }
 
 }

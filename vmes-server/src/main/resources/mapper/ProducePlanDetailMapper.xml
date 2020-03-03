@@ -60,6 +60,9 @@
             (replace(uuid(), '-', ''),'producePlanDetail','orderDtlId','销售订单明细id',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','jsonStr','按货品合并JsonString',22, '1','0','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'producePlanDetail','bomId','bomId',0, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','code','产品计划号',14, '1','1','1','0',now(), 'admin')
+
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -125,6 +128,7 @@
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         detail.id id,
+        detail.code code,
         detail.parent_id parentId,
         detail.product_id productId,
         detail.unit_id unitId,
@@ -151,6 +155,7 @@
         END stateName,
 
         <!--货品表-->
+        bom.id bomId,
         product.code sysProductCode,
         product.source_code custProductCode,
         CASE
@@ -163,6 +168,8 @@
         product.genre productGenre,
         product.property productProperty,
         unitName.name unitName,
+
+        round(sum(ifnull(warehouseOut.set_count,0)),2) setCount,
 
         <!--货品单位(单据单位)-->
         prodUnit.np_formula n2pFormula,
@@ -181,6 +188,8 @@
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary unitName on detail.unit_id = unitName.id
             left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
+            left join (select t1.*,t0.prod_id,t0.layer from vmes_bom_tree t0 left join vmes_bom t1 on  t1.id = t0.bom_id where t1.isdefault = '1') bom on product.id = bom.prod_id and bom.layer = 0
+            left join vmes_warehouse_out warehouseOut on warehouseOut.business_code = detail.code
         <where>
             <if test="ids != null and ids != ''" >
                 and detail.id in (${ids})
@@ -198,6 +207,7 @@
             </if>
 
         </where>
+        group by detail.id
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
         </if>

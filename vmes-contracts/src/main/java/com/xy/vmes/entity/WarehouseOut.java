@@ -74,6 +74,17 @@ public class WarehouseOut implements Serializable {
 	@TableField("business_code")
 	private String businessCode;
 
+	@TableField("set_count")
+	private BigDecimal setCount;
+
+
+	public BigDecimal getSetCount() {
+		return setCount;
+	}
+
+	public void setSetCount(BigDecimal setCount) {
+		this.setCount = setCount;
+	}
 
 	public String getBusinessCode() {
 		return businessCode;
