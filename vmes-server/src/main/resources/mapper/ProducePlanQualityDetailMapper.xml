@@ -58,12 +58,13 @@
         product_id productId,
         unit_id unitId,
 
+        in_detail_id inDetailId,
         fine_count fineCount,
         bad_count badCount,
         cuser cuser,
         cdate cdate,
-        uuser uuser,
 
+        uuser uuser,
         udate udate,
         remark remark,
         isdisable isdisable

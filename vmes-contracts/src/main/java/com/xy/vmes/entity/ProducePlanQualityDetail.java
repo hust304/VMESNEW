@@ -31,6 +31,9 @@ public class ProducePlanQualityDetail implements Serializable {
 	@TableField("unit_id")
 	private String unitId;
 
+	//(检验合格入库)入库单明细id
+    @TableField("in_detail_id")
+    private String inDetailId;
 	//(检验)合格数量
 	@TableField("fine_count")
 	private BigDecimal fineCount;
@@ -43,10 +46,10 @@ public class ProducePlanQualityDetail implements Serializable {
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
+
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
-
 	//修改时间
 	@TableField("udate")
 	private Date udate;
@@ -88,7 +91,13 @@ public class ProducePlanQualityDetail implements Serializable {
 	public String getUnitId() {
 		return unitId;
 	}
-	public void setFineCount(BigDecimal fineCount) {
+    public String getInDetailId() {
+        return inDetailId;
+    }
+    public void setInDetailId(String inDetailId) {
+        this.inDetailId = inDetailId;
+    }
+    public void setFineCount(BigDecimal fineCount) {
 		this.fineCount = fineCount;
 	}
 	public BigDecimal getFineCount() {
