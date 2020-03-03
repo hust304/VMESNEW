@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.produce.service;
 
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailMapper;
 import com.xy.vmes.entity.ProducePlanDetail;
@@ -15,6 +16,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -260,6 +263,85 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         model.putResult(result);
         return model;
     }
+
+    @Override
+    public ResultModel listPageMaterialRequisition(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("MaterialRequisition");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        result.put("pageData", pg);
+
+        List<Map> varList = producePlanDetailMapper.getMaterialRequisition(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    @Override
+    public ResultModel listPageMaterialRequisitionGroup(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("MaterialRequisitionGroup");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        Pagination pg = HttpUtils.parsePagination(pd);
+        result.put("pageData", pg);
+
+        List<Map> varList = producePlanDetailMapper.getMaterialRequisitionGroup(pd,pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
 
 }
 

@@ -111,6 +111,10 @@ public interface ProducePlanDetailService {
     ResultModel listPageProducePlanDetail(PageData pd) throws Exception;
 
 
+    ResultModel listPageMaterialRequisition(PageData pd) throws Exception;
+
+
+    ResultModel listPageMaterialRequisitionGroup(PageData pd) throws Exception;
 }
 
 

@@ -899,6 +899,8 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         String typeName = pd.getString("typeName");
         if (typeName != null && "报废处理".equals(typeName)) {
             modelCode = "WarehouseScrapDetail";
+        }else if (typeName != null && "领料明细".equals(typeName)) {
+            modelCode = "MaterialRequisitionDetail";
         }
 
         List<Column> columnList = columnService.findColumnList(modelCode);

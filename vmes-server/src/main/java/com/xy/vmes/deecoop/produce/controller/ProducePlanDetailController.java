@@ -44,6 +44,40 @@ public class ProducePlanDetailController {
         return model;
     }
 
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2020-02-27
+     */
+    @PostMapping("/produce/producePlanDetail/listPageMaterialRequisition")
+    public ResultModel listPageMaterialRequisition() throws Exception {
+        logger.info("################/produce/producePlanDetail/listPageMaterialRequisition 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = producePlanDetailService.listPageMaterialRequisition(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/produce/producePlanDetail/listPageMaterialRequisition 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2020-02-27
+     */
+    @PostMapping("/produce/producePlanDetail/listPageMaterialRequisitionGroup")
+    public ResultModel listPageMaterialRequisitionGroup() throws Exception {
+        logger.info("################/produce/producePlanDetail/listPageMaterialRequisitionGroup 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = producePlanDetailService.listPageMaterialRequisitionGroup(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/produce/producePlanDetail/listPageMaterialRequisitionGroup 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
     /**
      * 按货品合并-生产计划明细
      * @return

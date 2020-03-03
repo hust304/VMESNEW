@@ -628,6 +628,15 @@
                     and detail.id =  #{detailId}
                 </if>
 
+                <if test="businessCode != null and businessCode != ''">
+                    and whout.business_code =  #{businessCode}
+                </if>
+
+                <if test="currentCompanyId != null and currentCompanyId != ''" >
+                    and whout.company_id = #{currentCompanyId}
+                </if>
+
+
                 <if test="productCode != null and productCode != ''">
                     and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
                 </if>

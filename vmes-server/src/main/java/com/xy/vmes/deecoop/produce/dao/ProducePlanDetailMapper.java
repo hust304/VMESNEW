@@ -49,6 +49,10 @@ public interface ProducePlanDetailMapper extends BaseMapper<ProducePlanDetail> {
      * 创建时间：2020-02-27
      */
     void updateStateByDetail(PageData pd);
+
+    List<Map> getMaterialRequisition(PageData pd, Pagination pg);
+
+    List<Map> getMaterialRequisitionGroup(PageData pd, Pagination pg);
 }
 
 
