@@ -62,7 +62,7 @@ public class ProducePlanDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-	//生产计划号
+	//产品计划号
 	@TableField("code")
 	private String code;
 

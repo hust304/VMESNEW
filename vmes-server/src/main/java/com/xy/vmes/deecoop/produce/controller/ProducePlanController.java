@@ -171,6 +171,13 @@ public class ProducePlanController {
                 //四舍五入到2位小数
                 count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 addPlanDtl.setCount(count);
+
+                //生产明细-产品计划号
+                String pd_code = coderuleService.createCoderCdateOnShortYearByDate(companyID,
+                        "vmes_produce_plan_detail",
+                        "PD",
+                        Common.CODE_RULE_LENGTH_SHORTYEAR);
+                addPlanDtl.setCode(pd_code);
                 producePlanDetailService.save(addPlanDtl);
 
                 //生产计划明细子表对象

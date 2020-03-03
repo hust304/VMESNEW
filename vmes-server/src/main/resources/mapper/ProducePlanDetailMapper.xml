@@ -185,11 +185,16 @@
         '' jsonStr
 
         from vmes_produce_plan_detail detail
+            left join vmes_produce_plan plan on detail.parent_id = plan.id
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary unitName on detail.unit_id = unitName.id
             left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
-            left join (select t1.*,t0.prod_id,t0.layer from vmes_bom_tree t0 left join vmes_bom t1 on  t1.id = t0.bom_id where t1.isdefault = '1') bom on product.id = bom.prod_id and bom.layer = 0
-            left join vmes_warehouse_out warehouseOut on warehouseOut.business_code = detail.code
+            left join vmes_warehouse_out warehouseOut on (detail.code = warehouseOut.business_code and plan.company_id = warehouseOut.company_id)
+            left join (
+                select t1.*,t0.prod_id,t0.layer
+                from vmes_bom_tree t0 left join vmes_bom t1 on  t1.id = t0.bom_id
+                where t1.isdefault = '1'
+            ) bom on product.id = bom.prod_id and bom.layer = 0
         <where>
             <if test="ids != null and ids != ''" >
                 and detail.id in (${ids})
