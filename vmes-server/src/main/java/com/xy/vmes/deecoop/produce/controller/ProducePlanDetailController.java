@@ -44,6 +44,22 @@ public class ProducePlanDetailController {
         return model;
     }
 
+    /**
+     * 生产计划明细(检验)报工
+     * @author 陈刚
+     * @date 2020-02-27
+     */
+    @PostMapping("/produce/producePlanDetail/listPageProducePlanDetailByQuality")
+    public ResultModel listPageProducePlanDetailByQuality() throws Exception {
+        logger.info("################/produce/producePlanDetail/listPageProducePlanDetailByQuality 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = producePlanDetailService.listPageProducePlanDetailByQuality(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/produce/producePlanDetail/listPageProducePlanDetailByQuality 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * @author 陈刚 自动创建，可以修改

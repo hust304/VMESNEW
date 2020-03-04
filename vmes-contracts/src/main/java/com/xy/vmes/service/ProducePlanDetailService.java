@@ -109,12 +109,13 @@ public interface ProducePlanDetailService {
     * @throws Exception
     */
     ResultModel listPageProducePlanDetail(PageData pd) throws Exception;
-
+    //生产计划明细(检验)报工
+    ResultModel listPageProducePlanDetailByQuality(PageData pd) throws Exception;
 
     ResultModel listPageMaterialRequisition(PageData pd) throws Exception;
-
-
     ResultModel listPageMaterialRequisitionGroup(PageData pd) throws Exception;
+
+
 }
 
 
