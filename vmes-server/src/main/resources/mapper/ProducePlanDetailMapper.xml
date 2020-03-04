@@ -26,105 +26,6 @@
         </foreach>
     </update>
 
-    <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'producePlanDetail' ;
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-            (replace(uuid(), '-', ''),'producePlanDetail','id','id',0, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','parentId','生产计划id',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','unitId','计量单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','count','计划数量',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','beginDate','计划开始日期(yyyy-MM-dd)',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','endDate','计划结束日期(yyyy-MM-dd)',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','planDate','计划完成日期(业务反写字段)(yyyy-MM-dd)',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','state','状态 (0:待生产 1:生产中 2:已完成 -1:已取消)',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','remark','备注',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'producePlanDetail','productCode','货品编码',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','productName','货品名称',16, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','productSpec','规格型号',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','productGenre','属性ID',18, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','productProperty','自定义属性',19, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','unitName','计量单位',20, '1','0','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'producePlanDetail','orderDtlId','销售订单明细id',21, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','jsonStr','按货品合并JsonString',22, '1','0','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'producePlanDetail','bomId','bomId',0, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','code','产品计划号',14, '1','1','1','0',now(), 'admin')
-
-
-
-
-
-
-
-
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
-                    (replace(uuid(), '-', ''),'MaterialRequisitionGroup','unitName','计量单位',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','warehouseOutCode','领料出库单号',7, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productProperty','自定义属性',8, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','warehouseOutId',' 领料出库ID',10, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','code','产品计划号',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','deptName','申请部门',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','makeName','申请人',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','setCount','领取套数',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','cdate','申请时间',16, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','remark','备注',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','id','id',0, '1','0','1','0',now(), 'admin')
-
-
-
-
-
-
-        insert into vmes_column (
-        id,model_code,title_key,title_name,serial_number,
-        isdisable,ishide,isedit,ismust,cdate,
-        cuser
-        ) VALUES
-            (replace(uuid(), '-', ''),'MaterialRequisition','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
-                    (replace(uuid(), '-', ''),'MaterialRequisition','unitName','计量单位',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','warehouseOutCode','领料出库单号',7, '1','1','1','0',now(), 'admin'),
-
-            (replace(uuid(), '-', ''),'MaterialRequisition','productProperty','自定义属性',8, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','warehouseOutId',' 领料出库ID',10, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','code','产品计划号',12, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','deptName','申请部门',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','makeName','申请人',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','setCount','领取套数',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','cdate','申请时间',16, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','remark','备注',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'MaterialRequisition','id','id',0, '1','0','1','0',now(), 'admin')
-
-    </insert>
-
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
         update vmes_produce_plan_detail set
         state = #{state},
@@ -136,8 +37,6 @@
         </where>
     </update>
 
-
-    <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.ProducePlanDetail">
         select
         id id,
@@ -184,65 +83,102 @@
         </if>
     </select>
 
-    <!-- 自动创建，可以修改 -->
+    <!-- ********************************************************************************************************** -->
+    <insert id="producePlanDetail" >
+        delete from vmes_column where model_code = 'producePlanDetail' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'producePlanDetail','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','parentId','生产计划id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productId','货品id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','unitId','计量单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','count','计划数量',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','beginDate','计划开始日期(yyyy-MM-dd)',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','endDate','计划结束日期(yyyy-MM-dd)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','planDate','计划完成日期(业务反写字段)(yyyy-MM-dd)',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','state','状态 (0:待生产 1:生产中 2:已完成 -1:已取消)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','remark','备注',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'producePlanDetail','productCode','货品编码',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productName','货品名称',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productSpec','规格型号',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productGenre','属性ID',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','productProperty','自定义属性',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','unitName','计量单位',20, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'producePlanDetail','orderDtlId','销售订单明细id',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','jsonStr','按货品合并JsonString',22, '1','0','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'producePlanDetail','bomId','bomId',0, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','code','产品计划号',14, '1','1','1','0',now(), 'admin')
+    </insert>
+
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        detail.id id,
-        detail.code code,
-        detail.parent_id parentId,
-        detail.product_id productId,
-        detail.unit_id unitId,
-        round(ifnull(detail.count, 0), 2) count,
+            detail.id id,
+            detail.code code,
+            detail.parent_id parentId,
+            detail.product_id productId,
+            detail.unit_id unitId,
+            round(ifnull(detail.count, 0), 2) count,
 
-        detail.begin_date beginDate,
-        detail.end_date endDate,
-        detail.plan_date planDate,
-        detail.state state,
-        detail.cuser cuser,
+            detail.begin_date beginDate,
+            detail.end_date endDate,
+            detail.plan_date planDate,
+            detail.state state,
+            detail.cuser cuser,
 
-        detail.cdate cdate,
-        detail.uuser uuser,
-        detail.udate udate,
-        detail.remark remark,
-        detail.isdisable isdisable,
+            detail.cdate cdate,
+            detail.uuser uuser,
+            detail.udate udate,
+            detail.remark remark,
+            detail.isdisable isdisable,
 
-        CASE
-        WHEN detail.state = '0' THEN '待生产'
-        WHEN detail.state = '1' THEN '生产中'
-        WHEN detail.state = '2' THEN '已完成'
-        WHEN detail.state = '-1' THEN '已取消'
-        ELSE null
-        END stateName,
+            CASE
+            WHEN detail.state = '0' THEN '待生产'
+            WHEN detail.state = '1' THEN '生产中'
+            WHEN detail.state = '2' THEN '已完成'
+            WHEN detail.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
 
-        <!--货品表-->
-        bom.id bomId,
-        product.code sysProductCode,
-        product.source_code custProductCode,
-        CASE
-        WHEN product.source_code is null THEN product.code
-        WHEN product.source_code is not null THEN product.source_code
-        ELSE null
-        END productCode,
-        product.name productName,
-        product.spec productSpec,
-        product.genre productGenre,
-        product.property productProperty,
-        unitName.name unitName,
+            <!--货品表-->
+            bom.id bomId,
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            unitName.name unitName,
 
-        round(sum(ifnull(warehouseOut.set_count,0)),2) setCount,
+            round(sum(ifnull(warehouseOut.set_count,0)),2) setCount,
 
-        <!--货品单位(单据单位)-->
-        prodUnit.np_formula n2pFormula,
-        prodUnit.n2p_is_scale n2pIsScale,
-        prodUnit.n2p_decimal_count n2pDecimalCount,
+            <!--货品单位(单据单位)-->
+            prodUnit.np_formula n2pFormula,
+            prodUnit.n2p_is_scale n2pIsScale,
+            prodUnit.n2p_decimal_count n2pDecimalCount,
 
-        prodUnit.pn_formula p2nFormula,
-        prodUnit.p2n_is_scale p2nIsScale,
-        prodUnit.p2n_decimal_count p2nDecimalCount,
+            prodUnit.pn_formula p2nFormula,
+            prodUnit.p2n_is_scale p2nIsScale,
+            prodUnit.p2n_decimal_count p2nDecimalCount,
 
-        <!--页面传递参数字段 -->
-        '' orderDtlId,
-        '' jsonStr
+            <!--页面传递参数字段 -->
+            '' orderDtlId,
+            '' jsonStr
 
         from vmes_produce_plan_detail detail
             left join vmes_produce_plan plan on detail.parent_id = plan.id
@@ -278,99 +214,63 @@
         </if>
     </select>
 
+    <!-- ********************************************************************************************************** -->
+    <insert id="MaterialRequisitionGroup" >
+        delete from vmes_column where model_code = 'MaterialRequisitionGroup' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','unitName','计量单位',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','warehouseOutCode','领料出库单号',7, '1','1','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productProperty','自定义属性',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','warehouseOutId',' 领料出库ID',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','code','产品计划号',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','deptName','申请部门',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','makeName','申请人',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','setCount','领取套数',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','cdate','申请时间',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','remark','备注',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisitionGroup','id','id',0, '1','0','1','0',now(), 'admin')
 
+    </insert>
 
-    <!-- 自动创建，可以修改 -->
-    <select id="getMaterialRequisition" parameterType="com.yvan.PageData" resultType="java.util.Map">
-        select
-        detail.id id,
-        detail.code code,
-
-        <!--货品表-->
-        product.id productId,
-        CASE
-        WHEN product.source_code is null THEN product.code
-        WHEN product.source_code is not null THEN product.source_code
-        ELSE null
-        END productCode,
-        product.name productName,
-        product.spec productSpec,
-        product.genre productGenre,
-        product.property productProperty,
-        unitName.name unitName,
-
-
-
-        warehouseOut.id warehouseOutId,
-        warehouseOut.code warehouseOutCode,
-        dept.name deptName,
-        user.user_name makeName,
-        DATE_FORMAT(warehouseOut.cdate,'%Y-%m-%d') cdate,
-        round(ifnull(warehouseOut.set_count,0),2) setCount
-
-
-        from vmes_produce_plan_detail detail
-        left join vmes_produce_plan plan on detail.parent_id = plan.id
-        left join vmes_product product on detail.product_id = product.id
-        left join vmes_dictionary unitName on detail.unit_id = unitName.id
-        left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
-        left join vmes_warehouse_out warehouseOut on (detail.code = warehouseOut.business_code and plan.company_id = warehouseOut.company_id)
-        left join vmes_user user on user.id = warehouseOut.make_id
-        left join vmes_department dept on dept.id = user.dept_id
-
-        <where>
-            <if test="ids != null and ids != ''" >
-                and detail.id in (${ids})
-            </if>
-            <if test="parentId != null and parentId != ''" >
-                and detail.parent_id = #{parentId}
-            </if>
-            <if test="state != null and state != ''" >
-                and detail.state = #{state}
-            </if>
-
-            <!--queryStr 自定义sql查询语句-->
-            <if test='queryStr != null and queryStr != ""' >
-                and ${queryStr}
-            </if>
-
-        </where>
-        <if test='orderStr != null and orderStr != ""' >
-            order by ${orderStr}
-        </if>
-    </select>
-
-    <!-- 自动创建，可以修改 -->
     <select id="getMaterialRequisitionGroup" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        detail.id id,
-        detail.code code,
+            detail.id id,
+            detail.code code,
 
-        <!--货品表-->
-        product.id productId,
-        CASE
-        WHEN product.source_code is null THEN product.code
-        WHEN product.source_code is not null THEN product.source_code
-        ELSE null
-        END productCode,
-        product.name productName,
-        product.spec productSpec,
-        product.genre productGenre,
-        product.property productProperty,
-        unitName.name unitName,
+            <!--货品表-->
+            product.id productId,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            unitName.name unitName,
 
-        round(sum(ifnull(warehouseOut.set_count,0)),2) setCount
-
+            round(sum(ifnull(warehouseOut.set_count,0)),2) setCount
 
         from vmes_produce_plan_detail detail
-        left join vmes_produce_plan plan on detail.parent_id = plan.id
-        left join vmes_product product on detail.product_id = product.id
-        left join vmes_dictionary unitName on detail.unit_id = unitName.id
-        left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
-        left join vmes_warehouse_out warehouseOut on (detail.code = warehouseOut.business_code and plan.company_id = warehouseOut.company_id)
-        left join vmes_user user on user.id = warehouseOut.make_id
-        left join vmes_department dept on dept.id = user.dept_id
+            left join vmes_produce_plan plan on detail.parent_id = plan.id
+            left join vmes_product product on detail.product_id = product.id
+            left join vmes_dictionary unitName on detail.unit_id = unitName.id
+            left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
+            left join vmes_warehouse_out warehouseOut on (detail.code = warehouseOut.business_code and plan.company_id = warehouseOut.company_id)
+            left join vmes_user user on user.id = warehouseOut.make_id
+            left join vmes_department dept on dept.id = user.dept_id
 
         <where>
             <if test="ids != null and ids != ''" >
@@ -395,7 +295,90 @@
         </if>
     </select>
 
+    <!-- ********************************************************************************************************** -->
+    <insert id="MaterialRequisition" >
+        delete from vmes_column where model_code = 'MaterialRequisition' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'MaterialRequisition','productCode','货品编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','productName','货品名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','productSpec',' 规格/型号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','productGenre','货品属性ID',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','productGenreName','货品属性',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','unitName','计量单位',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','warehouseOutCode','领料出库单号',7, '1','1','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'MaterialRequisition','productProperty','自定义属性',8, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','warehouseOutId',' 领料出库ID',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','productId','产品ID',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','code','产品计划号',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','deptName','申请部门',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','makeName','申请人',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','setCount','领取套数',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','cdate','申请时间',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','remark','备注',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'MaterialRequisition','id','id',0, '1','0','1','0',now(), 'admin')
+
+    </insert>
+
+    <select id="getMaterialRequisition" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        detail.id id,
+        detail.code code,
+
+        <!--货品表-->
+        product.id productId,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        product.property productProperty,
+        unitName.name unitName,
+
+        warehouseOut.id warehouseOutId,
+        warehouseOut.code warehouseOutCode,
+        dept.name deptName,
+        user.user_name makeName,
+        DATE_FORMAT(warehouseOut.cdate,'%Y-%m-%d') cdate,
+        round(ifnull(warehouseOut.set_count,0),2) setCount
+
+        from vmes_produce_plan_detail detail
+        left join vmes_produce_plan plan on detail.parent_id = plan.id
+        left join vmes_product product on detail.product_id = product.id
+        left join vmes_dictionary unitName on detail.unit_id = unitName.id
+        left join vmes_product_unit prodUnit on (detail.product_id = prodUnit.product_id and detail.unit_id = prodUnit.unit)
+        left join vmes_warehouse_out warehouseOut on (detail.code = warehouseOut.business_code and plan.company_id = warehouseOut.company_id)
+        left join vmes_user user on user.id = warehouseOut.make_id
+        left join vmes_department dept on dept.id = user.dept_id
+
+        <where>
+            <if test="ids != null and ids != ''" >
+                and detail.id in (${ids})
+            </if>
+            <if test="parentId != null and parentId != ''" >
+                and detail.parent_id = #{parentId}
+            </if>
+            <if test="state != null and state != ''" >
+                and detail.state = #{state}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
 
 
 </mapper>
