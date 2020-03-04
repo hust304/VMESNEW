@@ -142,6 +142,10 @@
             left join vmes_dictionary produceType on plan.produce_type = produceType.id
             left join vmes_user makeUser on plan.make_id = makeUser.id
         <where>
+            <if test="planId != null and planId != ''" >
+                and plan.id = #{planId}
+            </if>
+
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and plan.company_id = #{currentCompanyId}
             </if>
