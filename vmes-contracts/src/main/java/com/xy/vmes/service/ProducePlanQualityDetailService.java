@@ -1,7 +1,10 @@
 package com.xy.vmes.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.entity.ProducePlanQualityDetail;
 import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +74,13 @@ public interface ProducePlanQualityDetailService {
      * 创建时间：2020-03-03
      */
     List<ProducePlanQualityDetail> dataList(PageData pd) throws Exception;
+    /**
+     * 创建人：陈刚 自动创建，禁止修改
+     * 创建时间：2020-03-03
+     */
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
+
+    /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     ProducePlanQualityDetail findPlanQualityDetail(PageData object) throws Exception;
     ProducePlanQualityDetail findPlanQualityDetailById(String id) throws Exception;
@@ -79,6 +89,15 @@ public interface ProducePlanQualityDetailService {
     List<ProducePlanQualityDetail> findPlanQualityDetailListByPlanId(String planId) throws Exception;
     List<ProducePlanQualityDetail> findPlanQualityDetailListByPlanDtlId(String planDtlId) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 分页查询
+     * @param pd    查询参数对象PageData
+     * @return      返回对象ResultModel
+     * @throws Exception
+     */
+    ResultModel listPageProducePlanQualityDetail(PageData pd) throws Exception;
+
     /**
      * vmes_produce_plan_quality_detail:生产计划明细检验报工表
      * 返回货品入库Map

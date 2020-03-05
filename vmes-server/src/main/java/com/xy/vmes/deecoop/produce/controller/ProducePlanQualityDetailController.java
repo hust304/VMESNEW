@@ -47,6 +47,22 @@ public class ProducePlanQualityDetailController {
     private WarehouseInCreateService warehouseInCreateService;
     @Autowired
     private RoleMenuService roleMenuService;
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2020-02-27
+     */
+    @PostMapping("/produce/producePlanQualityDetail/listPageProducePlanQualityDetail")
+    public ResultModel listPageProducePlanQualityDetail() throws Exception {
+        logger.info("################/produce/producePlanQualityDetail/listPageProducePlanQualityDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = planQualityDetailService.listPageProducePlanQualityDetail(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/produce/producePlanQualityDetail/listPageProducePlanQualityDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
      * (添加)生产计划明细(检验)报工
      * @author 陈刚
