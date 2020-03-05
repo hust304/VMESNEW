@@ -164,18 +164,20 @@ public class ProducePlanQualityDetailController {
 
         if (productByInMap != null) {
             for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
-                ProducePlanQualityDetail editDetail = new ProducePlanQualityDetail();
+                //生产计划明细检验报工id (vmes_produce_plan_quality_detail:生产计划明细检验报工表)
+                String mapKey_businessId = (String)iterator.next();
 
-                String id = (String)iterator.next();
-                editDetail.setId(id);
+                if (mapKey_businessId != null) {
+                    ProducePlanQualityDetail editDetail = new ProducePlanQualityDetail();
+                    editDetail.setId(mapKey_businessId);
 
-                Map<String, Object> mapValue = productByInMap.get(id);
-                //inDtlId:   入库明细id
-                String inDtlId = (String)mapValue.get("inDtlId");
+                    Map<String, Object> mapValue = productByInMap.get(mapKey_businessId);
+                    //inDtlId:   入库明细id
+                    String inDtlId = (String)mapValue.get("inDtlId");
 
-                editDetail.setInDetailId(inDtlId);
-
-                planQualityDetailService.update(editDetail);
+                    editDetail.setInDetailId(inDtlId);
+                    planQualityDetailService.update(editDetail);
+                }
             }
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

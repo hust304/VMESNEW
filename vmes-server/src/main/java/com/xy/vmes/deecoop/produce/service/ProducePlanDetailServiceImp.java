@@ -197,7 +197,7 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
         PageData findMap = new PageData();
         findMap.put("parentId", parentId);
-        findMap.put("orderStr", "order_id asc");
+        findMap.put("orderStr", "cdate asc");
 
         return this.findProducePlanDetailList(findMap);
     }

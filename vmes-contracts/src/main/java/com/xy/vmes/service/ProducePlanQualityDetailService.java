@@ -80,8 +80,9 @@ public interface ProducePlanQualityDetailService {
     List<ProducePlanQualityDetail> findPlanQualityDetailListByPlanDtlId(String planDtlId) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
+     * vmes_produce_plan_quality_detail:生产计划明细检验报工表
      * 返回货品入库Map
-     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品入库Map<生产计划明细检验报工id, 货品Map<String, Object>>
      * 货品Map<String, Object>
      *     productId: 货品id
      *     inDtlId:   入库明细id
