@@ -4,23 +4,15 @@ import com.xy.vmes.deecoop.produce.dao.ProducePlanQualityDetailMapper;
 import com.xy.vmes.entity.ProducePlanQualityDetail;
 import com.xy.vmes.service.ProducePlanQualityDetailService;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
-import com.yvan.springmvc.ResultModel;
+import com.yvan.common.util.Common;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_produce_plan_quality_detail:生产计划明细检验报工表 实现类
@@ -189,6 +181,46 @@ public class ProducePlanQualityDetailServiceImp implements ProducePlanQualityDet
         findMap.put("orderStr", "cdate asc");
 
         return this.findPlanQualityDetailList(findMap);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 返回货品入库Map
+     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param detailList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductMapByIn(List<ProducePlanQualityDetail> detailList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<>();
+        if (detailList == null || detailList.size() == 0) {return productByInMap;}
+
+        for (ProducePlanQualityDetail dtlObject : detailList) {
+            String detailId = dtlObject.getId();
+
+            String productId = dtlObject.getProductId();
+
+            //fineCount:(检验)合格数量(计量数量) := inCount 入库数量
+            BigDecimal fineCount = BigDecimal.valueOf(0D);
+            if (dtlObject.getFineCount() != null) {
+                fineCount = dtlObject.getFineCount();
+            }
+            //四舍五入到2位小数
+            fineCount = fineCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            Map<String, Object> productMap = new HashMap<>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", fineCount);
+
+            productByInMap.put(detailId, productMap);
+        }
+
+        return productByInMap;
     }
 
 
