@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+说明：生产计划明细(检验)报工查询汇总 Mapper.xml
+创建人：陈刚
+创建时间：2020-03-04
+ -->
+<mapper namespace="com.xy.vmes.deecoop.produce.dao.ProducePlanDetailByQualityCollectMapper">
+    <!--按(生产计划id)查询条件-按(生产明细id)字段汇总-->
+    <select id="findProducePlanDetailByQuality" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            planDtl.id dtlId,
+            round(ifnull(planDtl.count, 0), 2) dtlCount,
+            round(ifnull(qualityDtl.fineCount, 0), 2) fineCount,
+            round(ifnull(qualityDtl.badCount, 0), 2) badCount
+        from vmes_produce_plan_detail planDtl
+            left join (
+                <!--按(plan_dtl_id生产明细id)字段汇总 查询 vmes_produce_plan_quality_detail -->
+                select
+                    plan_dtl_id,
+                    sum(fine_count) fineCount,
+                    sum(bad_count) badCount
+                from vmes_produce_plan_quality_detail
+                <where>
+                    and plan_id = #{planId}
+                </where>
+                group by plan_dtl_id
+            ) qualityDtl on planDtl.id = qualityDtl.plan_dtl_id
+        <where>
+            and planDtl.parent_id = #{planId}
+        </where>
+    </select>
+
+
+</mapper>

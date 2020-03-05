@@ -201,6 +201,53 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
         return this.findProducePlanDetailList(findMap);
     }
+
+    /**
+     * 获取生产计划状态-根据生产计划明细状态
+     * 生产计划状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+     * 生产计划明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+     *
+     * @param dtlList      生产计划明细List<SaleOrderDetail>
+     * @return
+     */
+    public String findParentStateByDetail(List<ProducePlanDetail> dtlList) {
+        if (dtlList == null || dtlList.size() == 0) {return null;}
+
+        //生产计划明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        int dtl_dsc = 0;  //0:待生产
+        int dtl_scz = 0;  //1:生产中
+        int dtl_ywc = 0;  //2:已完成
+        int dtl_yqx = 0;  //-1:已取消
+
+        for (ProducePlanDetail dtlObject : dtlList) {
+            if ("-1".equals(dtlObject.getState())) {
+                dtl_yqx = dtl_yqx + 1;
+            } else if ("0".equals(dtlObject.getState())) {
+                dtl_dsc = dtl_dsc + 1;
+            } else if ("1".equals(dtlObject.getState())) {
+                dtl_scz = dtl_scz + 1;
+            } else if ("2".equals(dtlObject.getState())) {
+                dtl_ywc = dtl_ywc + 1;
+            }
+        }
+
+        //明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        if (dtl_yqx > 0 && dtl_yqx == dtlList.size()) {
+            return "-1";
+
+            //明细状态:2:已完成 全是已完成状态  主表状态:2:已完成
+        } else if (dtl_ywc > 0 && dtl_yqx >= 0
+            && (dtl_dsc == 0 && dtl_scz == 0)
+        ) {
+            return "2";
+
+            //明细状态:1:生产中 明细中存在(一个或多个)生产中状态 主表状态:1:生产中
+        } else if (dtl_scz > 0) {
+            return "1";
+        }
+
+        return null;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

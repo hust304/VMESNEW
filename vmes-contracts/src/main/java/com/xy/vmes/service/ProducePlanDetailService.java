@@ -98,6 +98,16 @@ public interface ProducePlanDetailService {
 
     List<ProducePlanDetail> findProducePlanDetailList(PageData object) throws Exception;
     List<ProducePlanDetail> findProducePlanDetailListByParentId(String parentId) throws Exception;
+
+    /**
+     * 获取生产计划状态-根据生产计划明细状态
+     * 生产计划状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+     * 生产计划明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+     *
+     * @param dtlList      生产计划明细List<SaleOrderDetail>
+     * @return
+     */
+    String findParentStateByDetail(List<ProducePlanDetail> dtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
