@@ -4,6 +4,8 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailByQualityMapper;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailMapper;
 import com.xy.vmes.entity.ProducePlanDetail;
+import com.xy.vmes.entity.ProducePlanDetailChild;
+import com.xy.vmes.service.ProducePlanDetailChildService;
 import com.xy.vmes.service.ProducePlanDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -12,12 +14,12 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -33,6 +35,10 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
     private ProducePlanDetailMapper producePlanDetailMapper;
     @Autowired
     private ProducePlanDetailByQualityMapper producePlanDetailByQualityMapper;
+
+    @Autowired
+    private ProducePlanDetailChildService planDetailChildService;
+
     @Autowired
     private ColumnService columnService;
 
@@ -303,7 +309,30 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        //isNeedChild 是否需要生产明细子表 true:需要
+        String isNeedChild = pd.getString("isNeedChild");
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if ("true".equals(isNeedChild) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //planDtlId 生产计划明细id
+                String planDtlId = (String)mapObject.get("id");
+
+                List<ProducePlanDetailChild> planDtlChildList = planDetailChildService.findPlanDetailChildListByPlanDtlId(planDtlId);
+                String jsonStr = this.findJsonStringByList(planDtlChildList);
+                mapObject.put("jsonStr", jsonStr);
+            }
+        }
+
+        //pageType 页面类型 edit:修改页面
+        String pageType = pd.getString("pageType");
+        if ("edit".equals(pageType) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //operType 操作类型(add:添加, edit:修改)
+                mapObject.put("operType", "edit");
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -447,6 +476,39 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         }
 
         return mapList;
+    }
+
+    private String findJsonStringByList(List<ProducePlanDetailChild> ObjectList) {
+        if (ObjectList == null || ObjectList.size() == 0) {return new String();}
+
+        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        Map<String, String> orderDetailMap = new LinkedHashMap<>();
+        for (ProducePlanDetailChild object : ObjectList) {
+            //saleOrderDtlId:销售订单明细ID
+            String saleOrderDtlId = object.getSaleOrderDtlId();
+            if (saleOrderDtlId != null && saleOrderDtlId.trim().length() > 0) {
+                orderDetailMap.put(saleOrderDtlId, saleOrderDtlId);
+            }
+        }
+
+        List<Map<String, String>> childMapList = new ArrayList<>();
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        if (orderDetailMap != null) {
+            for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey_orderDtlId = iterator.next().toString().trim();
+                if (mapKey_orderDtlId != null && mapKey_orderDtlId.trim().length() > 0) {
+                    Map<String, String> childMap = new LinkedHashMap<>();
+                    childMap.put("orderDtlId", mapKey_orderDtlId);
+                    childMapList.add(childMap);
+                }
+            }
+        }
+
+        if (childMapList.size() > 0) {
+            return YvanUtil.toJson(childMapList);
+        }
+
+        return new String();
     }
 
 }

@@ -123,12 +123,15 @@
             (replace(uuid(), '-', ''),'producePlanDetail','orderDtlId','销售订单明细id',21, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','jsonStr','按货品合并JsonString',22, '1','0','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'producePlanDetail','bomId','bomId',0, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'producePlanDetail','code','产品计划号',14, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'producePlanDetail','bomId','bomId',23, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','code','产品计划号',24, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','operType','操作类型(add:添加, edit:修改)',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','planDtlId','生产计划明细id',26, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
+            detail.id planDtlId,
             detail.id id,
             detail.code code,
             detail.parent_id parentId,
@@ -183,6 +186,7 @@
             prodUnit.p2n_decimal_count p2nDecimalCount,
 
             <!--页面传递参数字段 -->
+            '' operType,
             '' orderDtlId,
             '' jsonStr
 

@@ -193,32 +193,45 @@ public class ProducePlanDetailController {
     private String findJsonStringByMapList(List<Map<String, String>> mapList) {
         if (mapList == null || mapList.size() == 0) {return new String();}
 
-        List<Map<String, String>> childMapList = new ArrayList<>();
+        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        Map<String, String> orderDetailMap = new LinkedHashMap<>();
         for (Map<String, String> mapData : mapList) {
-            Map<String, String> childMap = new HashMap<>();
+
+            //jsonStr 按货品合并JsonString
+            String jsonStr = mapData.get("jsonStr");
+            if (jsonStr != null && jsonStr.trim().length() > 0) {
+                List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                if (jsonMapList != null && jsonMapList.size() > 0) {
+                    for (Map<String, String> jsonMap : jsonMapList) {
+                        String json_orderDtlId = jsonMap.get("orderDtlId");
+                        if (json_orderDtlId != null && json_orderDtlId.trim().length() > 0) {
+                            orderDetailMap.put(json_orderDtlId, json_orderDtlId);
+                        }
+                    }
+                }
+            }
 
             //orderDtlId 销售订单明细id
             String orderDtlId = new String();
             if (mapData.get("orderDtlId") != null) {
                 orderDtlId = mapData.get("orderDtlId").trim();
             }
-            childMap.put("orderDtlId", orderDtlId);
+            if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+                orderDetailMap.put(orderDtlId, orderDtlId);
+            }
+        }
 
-//            //count 计划数量
-//            BigDecimal count = BigDecimal.valueOf(0D);
-//            String countStr = mapData.get("count");
-//            if (countStr != null && countStr.trim().length() > 0) {
-//                try {
-//                    count = new BigDecimal(countStr);
-//                } catch (NumberFormatException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            //四舍五入到2位小数
-//            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//            childMap.put("count", count.toString());
-
-            childMapList.add(childMap);
+        List<Map<String, String>> childMapList = new ArrayList<>();
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        if (orderDetailMap != null) {
+            for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey_orderDtlId = iterator.next().toString().trim();
+                if (mapKey_orderDtlId != null && mapKey_orderDtlId.trim().length() > 0) {
+                    Map<String, String> childMap = new LinkedHashMap<>();
+                    childMap.put("orderDtlId", mapKey_orderDtlId);
+                    childMapList.add(childMap);
+                }
+            }
         }
 
         if (childMapList.size() > 0) {

@@ -449,12 +449,238 @@ public class ProducePlanController {
     public ResultModel updateProducePlan() throws Exception {
         logger.info("################/produce/producePlan/updateProducePlan 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        ResultModel model = producePlanService.listPageProducePlan(pd);
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        String planId = pageData.getString("planId");
+        if (planId == null || planId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("生产计划id为空或空字符串！");
+            return model;
+        }
+        String companyID = pageData.getString("currentCompanyId");
+        if (companyID == null || companyID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (jsonMapList == null || jsonMapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("Json字符串-转换成List错误！");
+            return model;
+        }
+
+        //1. 修改生产计划
+        ProducePlan editPlan = new ProducePlan();
+        editPlan.setId(planId);
+
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        //beginDate 计划开始日期
+        Date beginDate = sysDate;
+        String beginDateStr = pageData.getString("beginDate");
+        if (beginDateStr != null && beginDateStr.trim().length() > 0) {
+            beginDate = DateFormat.dateString2Date(beginDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        editPlan.setBeginDate(beginDate);
+
+        //endDate 计划结束日期
+        Date endDate = null;
+        String endDateStr = pageData.getString("endDate");
+        if (endDateStr != null && endDateStr.trim().length() > 0) {
+            endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        editPlan.setEndDate(endDate);
+
+        //produceType 生产类型
+        String produceType = pageData.getString("produceType");
+        editPlan.setProduceType(produceType);
+
+        //makeId 制单人id
+        String makeId = pageData.getString("makeId");
+        editPlan.setMakeId(makeId);
+
+        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        editPlan.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            editPlan.setState("1");
+        }
+        producePlanService.update(editPlan);
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Map<String, List<Map<String, String>>> valueMap = this.findAddEditMap(jsonMapList);
+
+        //界面添加行数据
+        //List<ProducePlanDetailChild> dtlChildList = new ArrayList<>();
+        List<Map<String, String>> addMapList = valueMap.get("addList");
+        for (Map<String, String> mapObject : addMapList) {
+            ProducePlanDetail addPlanDtl = new ProducePlanDetail();
+            addPlanDtl.setParentId(editPlan.getId());
+            addPlanDtl.setCuser(cuser);
+            addPlanDtl.setState(editPlan.getState());
+
+            String productId = mapObject.get("productId");
+            addPlanDtl.setProductId(productId);
+            String unitId = mapObject.get("unitId");
+            addPlanDtl.setUnitId(unitId);
+
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String countStr = mapObject.get("count");
+            if (countStr != null && countStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(countStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            addPlanDtl.setCount(count);
+
+            //生产明细-产品计划号
+            String pd_code = coderuleService.createCoderCdateOnShortYearByDate(companyID,
+                    "vmes_produce_plan_detail",
+                    "PD",
+                    Common.CODE_RULE_LENGTH_SHORTYEAR);
+            addPlanDtl.setCode(pd_code);
+            producePlanDetailService.save(addPlanDtl);
+
+            //生产计划明细子表对象
+            String jsonStr = mapObject.get("jsonStr");
+            if (jsonStr == null || jsonStr.trim().length() == 0) {
+                //界面没有点击(按货品合并)按钮
+
+                ProducePlanDetailChild addDtlChile = new ProducePlanDetailChild();
+                addDtlChile.setCuser(cuser);
+                addDtlChile.setPlanId(editPlan.getId());
+                addDtlChile.setPlanDtlId(addPlanDtl.getId());
+
+                addDtlChile.setProductId(addPlanDtl.getProductId());
+                addDtlChile.setUnitId(addPlanDtl.getUnitId());
+
+                String orderDtlId = mapObject.get("orderDtlId");
+                if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+                    addDtlChile.setSaleOrderDtlId(orderDtlId);
+                }
+
+                producePlanDetailChildService.save(addDtlChile);
+            } else if (jsonStr != null && jsonStr.trim().length() > 0) {
+                //界面点击(按货品合并)按钮
+                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                if (childMapList != null && childMapList.size() > 0) {
+                    for (Map<String, String> childMap : childMapList) {
+                        ProducePlanDetailChild addDtlChile = new ProducePlanDetailChild();
+                        addDtlChile.setCuser(cuser);
+                        addDtlChile.setPlanId(editPlan.getId());
+                        addDtlChile.setPlanDtlId(addPlanDtl.getId());
+
+                        addDtlChile.setProductId(addPlanDtl.getProductId());
+                        addDtlChile.setUnitId(addPlanDtl.getUnitId());
+
+                        //orderDtlId 销售订单明细id
+                        String orderDtlId = childMap.get("orderDtlId");
+                        addDtlChile.setSaleOrderDtlId(orderDtlId);
+
+                        producePlanDetailChildService.save(addDtlChile);
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //界面修改行数据
+        List<Map<String, String>> editMapList = valueMap.get("editList");
+        for (Map<String, String> mapObject : editMapList) {
+            //planDtlId 生产计划明细id
+            String planDtlId = mapObject.get("planDtlId");
+
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String countStr = mapObject.get("count");
+            if (countStr != null && countStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(countStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            ProducePlanDetail editPlanDtl = new ProducePlanDetail();
+            editPlanDtl.setId(planDtlId);
+            editPlanDtl.setCount(count);
+            producePlanDetailService.update(editPlanDtl);
+
+            //生产计划明细子表对象
+            String jsonStr = mapObject.get("jsonStr");
+            if (jsonStr != null && jsonStr.trim().length() > 0) {
+                Map columnMap = new HashMap();
+                columnMap.put("plan_dtl_id", planDtlId);
+                producePlanDetailChildService.deleteByColumnMap(columnMap);
+
+                //界面点击(按货品合并)按钮
+                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                if (childMapList != null && childMapList.size() > 0) {
+                    for (Map<String, String> childMap : childMapList) {
+                        ProducePlanDetailChild addDtlChile = new ProducePlanDetailChild();
+                        addDtlChile.setCuser(cuser);
+                        addDtlChile.setPlanId(editPlan.getId());
+                        addDtlChile.setPlanDtlId(editPlanDtl.getId());
+
+                        addDtlChile.setProductId(editPlanDtl.getProductId());
+                        addDtlChile.setUnitId(editPlanDtl.getUnitId());
+
+                        //orderDtlId 销售订单明细id
+                        String orderDtlId = childMap.get("orderDtlId");
+                        addDtlChile.setSaleOrderDtlId(orderDtlId);
+
+                        producePlanDetailChildService.save(addDtlChile);
+                    }
+                }
+            }
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/produce/producePlan/updateProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private Map<String, List<Map<String, String>>> findAddEditMap(List<Map<String, String>> jsonMapList) {
+        Map<String, List<Map<String, String>>> valueMap = new HashMap<>();
+
+        List<Map<String, String>> addMapList = new ArrayList<>();
+        List<Map<String, String>> editMapList = new ArrayList<>();
+        //遍历 jsonMapList 添加生产计划明细
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> mapObject : jsonMapList) {
+                //operType 操作类型(add:添加, edit:修改)
+                String operType = mapObject.get("operType");
+
+                if ("add".equals(operType)) {
+                    addMapList.add(mapObject);
+                } else if ("edit".equals(operType)) {
+                    editMapList.add(mapObject);
+                }
+            }
+        }
+
+        valueMap.put("addList", addMapList);
+        valueMap.put("editList", editMapList);
+        return valueMap;
+    }
 }
 
