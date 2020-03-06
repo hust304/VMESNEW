@@ -204,19 +204,19 @@ public class ProducePlanDetailController {
             }
             childMap.put("orderDtlId", orderDtlId);
 
-            //count 计划数量
-            BigDecimal count = BigDecimal.valueOf(0D);
-            String countStr = mapData.get("count");
-            if (countStr != null && countStr.trim().length() > 0) {
-                try {
-                    count = new BigDecimal(countStr);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            //四舍五入到2位小数
-            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            childMap.put("count", count.toString());
+//            //count 计划数量
+//            BigDecimal count = BigDecimal.valueOf(0D);
+//            String countStr = mapData.get("count");
+//            if (countStr != null && countStr.trim().length() > 0) {
+//                try {
+//                    count = new BigDecimal(countStr);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            //四舍五入到2位小数
+//            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            childMap.put("count", count.toString());
 
             childMapList.add(childMap);
         }

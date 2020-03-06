@@ -193,7 +193,7 @@ public class ProducePlanController {
 
                     addDtlChile.setProductId(addPlanDtl.getProductId());
                     addDtlChile.setUnitId(addPlanDtl.getUnitId());
-                    addDtlChile.setCount(addPlanDtl.getCount());
+                    //addDtlChile.setCount(addPlanDtl.getCount());
 
                     if (orderDtlId != null && orderDtlId.trim().length() > 0) {
                         addDtlChile.setSaleOrderDtlId(orderDtlId);
@@ -217,19 +217,19 @@ public class ProducePlanController {
                             String orderDtlId = childMap.get("orderDtlId");
                             addDtlChile.setSaleOrderDtlId(orderDtlId);
 
-                            //count 计划数量
-                            BigDecimal count_child = BigDecimal.valueOf(0D);
-                            String count_child_str = childMap.get("count");
-                            if (count_child_str != null && count_child_str.trim().length() > 0) {
-                                try {
-                                    count_child = new BigDecimal(count_child_str);
-                                } catch (NumberFormatException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            //四舍五入到2位小数
-                            count_child = count_child.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                            addDtlChile.setCount(count_child);
+//                            //count 计划数量
+//                            BigDecimal count_child = BigDecimal.valueOf(0D);
+//                            String count_child_str = childMap.get("count");
+//                            if (count_child_str != null && count_child_str.trim().length() > 0) {
+//                                try {
+//                                    count_child = new BigDecimal(count_child_str);
+//                                } catch (NumberFormatException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                            //四舍五入到2位小数
+//                            count_child = count_child.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                            addDtlChile.setCount(count_child);
 
                             dtlChildList.add(addDtlChile);
                         }
