@@ -352,7 +352,7 @@
         product.property productProperty,
         unitName.name unitName,
 
-        warehouseOut.id warehouseOutId,
+        ifnull(warehouseOut.id,'null') warehouseOutId,
         warehouseOut.code warehouseOutCode,
         dept.name deptName,
         user.user_name makeName,
