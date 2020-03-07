@@ -73,6 +73,15 @@ spring:
       username: guest
       password: guest
 
+  mail:
+      host: smtp.163.com #smtp服务器主机 smtp.163.com
+      username: chen_gang7906@163.com  #邮箱账号 #邮箱账号@163.com
+      password: wdmzjcg790412 #邮箱账号密码或者第三方登录授权码 (邮箱账号密码:wdmzjcg79 第三方授权码:wdmzjcg790412)
+      port: 25
+      #port: 465 使用端口范围[1025-65534]
+      protocol: smtp #邮件协议 smtp
+      default-encoding: UTF-8
+
 #mybatis
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

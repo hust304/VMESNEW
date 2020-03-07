@@ -61,6 +61,8 @@ dependencies {
     compile 'com.aliyun:aliyun-java-sdk-core:4.4.0'
     compile 'com.aliyun:aliyun-java-sdk-dysmsapi:1.0.0'
 
+    //邮件配置
+    compile 'org.springframework.boot:spring-boot-starter-mail'
 
 
 }
