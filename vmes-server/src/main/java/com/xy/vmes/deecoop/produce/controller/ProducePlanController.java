@@ -60,7 +60,7 @@ public class ProducePlanController {
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = producePlanService.listPageProducePlan(pd);
 
-        mailServiceTest.sendSimpleMail();
+        //mailServiceTest.sendSimpleMail();
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/produce/producePlan/listPageProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
