@@ -76,9 +76,9 @@ spring:
   mail:
       host: smtp.163.com #smtp服务器主机 smtp.163.com
       username: chen_gang7906@163.com  #邮箱账号 #邮箱账号@163.com
-      password: wdmzjcg790412 #邮箱账号密码或者第三方登录授权码 (邮箱账号密码:wdmzjcg79 第三方授权码:wdmzjcg790412)
+      password: wdmzjcg790412 #第三方登录授权码-必须使用授权码 (第三方授权码:wdmzjcg790412)
       #port: 25 #本地测使用端口:25
-      port: 587
+      port: 587 #真实使用端口:587
       protocol: smtp #邮件协议 smtp
       default-encoding: UTF-8
 
