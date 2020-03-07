@@ -14,7 +14,9 @@ public class MailServiceTest {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom("chen_gang7906@163.com");//发送邮箱
-        mailMessage.setTo("chen_gang7906@163.com");//接收邮箱
+        mailMessage.setTo("chen_gang7906@163.com");//主送人 setTo(String[] to) 支持多人
+        mailMessage.setCc("chen_gang7906@163.com");//抄送人 setCc(String[] cc) 支持多人
+        mailMessage.setBcc("chen_gang7906@163.com");//密送人 setBcc(String[] bcc) 支持多人
 
         mailMessage.setSubject("测试邮件主题"); //邮件主题
         mailMessage.setText("邮件正文"); //邮件正文
