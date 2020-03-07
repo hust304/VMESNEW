@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.produce.controller;
 
 import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.deecoop.system.service.MailServiceTest;
 import com.xy.vmes.entity.ProducePlan;
 import com.xy.vmes.entity.ProducePlanDetail;
 import com.xy.vmes.entity.ProducePlanDetailChild;
@@ -42,6 +43,10 @@ public class ProducePlanController {
     private ProducePlanDetailChildService producePlanDetailChildService;
 
     @Autowired
+    private MailServiceTest mailServiceTest;
+
+
+    @Autowired
     private CoderuleService coderuleService;
 
     /**
@@ -54,6 +59,9 @@ public class ProducePlanController {
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = producePlanService.listPageProducePlan(pd);
+
+        mailServiceTest.sendSimpleMail();
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/produce/producePlan/listPageProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
