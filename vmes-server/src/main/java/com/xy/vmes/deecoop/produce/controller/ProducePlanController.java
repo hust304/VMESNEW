@@ -546,6 +546,20 @@ public class ProducePlanController {
             addPlanDtl.setCuser(cuser);
             addPlanDtl.setState(editPlan.getState());
 
+            Date beginDate_dtl = sysDate;
+            String beginDate_dtl_Str = mapObject.get("beginDate");
+            if (beginDate_dtl_Str != null && beginDate_dtl_Str.trim().length() > 0) {
+                beginDate_dtl = DateFormat.dateString2Date(beginDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            addPlanDtl.setBeginDate(beginDate_dtl);
+
+            Date endDate_dtl = sysDate;
+            String endDate_dtl_Str = mapObject.get("endDate");
+            if (endDate_dtl_Str != null && endDate_dtl_Str.trim().length() > 0) {
+                endDate_dtl = DateFormat.dateString2Date(endDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            addPlanDtl.setEndDate(endDate_dtl);
+
             String productId = mapObject.get("productId");
             addPlanDtl.setProductId(productId);
             String unitId = mapObject.get("unitId");
@@ -636,6 +650,21 @@ public class ProducePlanController {
             ProducePlanDetail editPlanDtl = new ProducePlanDetail();
             editPlanDtl.setId(planDtlId);
             editPlanDtl.setCount(count);
+
+            Date beginDate_dtl = sysDate;
+            String beginDate_dtl_Str = mapObject.get("beginDate");
+            if (beginDate_dtl_Str != null && beginDate_dtl_Str.trim().length() > 0) {
+                beginDate_dtl = DateFormat.dateString2Date(beginDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            editPlanDtl.setBeginDate(beginDate_dtl);
+
+            Date endDate_dtl = sysDate;
+            String endDate_dtl_Str = mapObject.get("endDate");
+            if (endDate_dtl_Str != null && endDate_dtl_Str.trim().length() > 0) {
+                endDate_dtl = DateFormat.dateString2Date(endDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            editPlanDtl.setEndDate(endDate_dtl);
+
             producePlanDetailService.update(editPlanDtl);
 
             //生产计划明细子表对象

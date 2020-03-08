@@ -140,8 +140,8 @@
             detail.unit_id unitId,
             round(ifnull(detail.count, 0), 2) count,
 
-            detail.begin_date beginDate,
-            detail.end_date endDate,
+            DATE_FORMAT(detail.begin_date,'%Y-%m-%d') beginDate,
+            DATE_FORMAT(detail.end_date,'%Y-%m-%d') endDate,
             detail.plan_date planDate,
             detail.state state,
             detail.cuser cuser,
