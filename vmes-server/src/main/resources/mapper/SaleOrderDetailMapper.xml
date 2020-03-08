@@ -261,6 +261,7 @@
             detail.isdisable isdisable,
             detail.version_lock_count versionLockCount,
 
+            saleOrder.sys_code sysCode,
             saleOrder.price_type priceType,
             saleOrder.customer_id customerId,
             customer.name customerName,
