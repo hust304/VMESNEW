@@ -127,6 +127,7 @@
             (replace(uuid(), '-', ''),'producePlanDetail','code','产品计划号',24, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','operType','操作类型(add:添加, edit:修改)',25, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','planDtlId','生产计划明细id',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','sysDate','系统时间(yyyy-MM-dd)',27, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -186,6 +187,7 @@
             prodUnit.p2n_decimal_count p2nDecimalCount,
 
             <!--页面传递参数字段 -->
+            DATE_FORMAT(now(),'%Y-%m-%d') sysDate,
             '' operType,
             '' orderDtlId,
             '' jsonStr
