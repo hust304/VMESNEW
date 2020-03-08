@@ -130,6 +130,9 @@
             (replace(uuid(), '-', ''),'producePlanDetail','sysDate','系统时间(yyyy-MM-dd)',27, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','orderCode','订单号',28, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''), 'producePlanDetail', 'expectDate', '约定交期', 29, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'producePlanDetail','fineCount','合格数',30, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','badCount','不合格数',31, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -188,6 +191,10 @@
             prodUnit.p2n_is_scale p2nIsScale,
             prodUnit.p2n_decimal_count p2nDecimalCount,
 
+            <!--生产计划明细检验报工-->
+            round(ifnull(qualityDtl.fine_count, 0), 2) fineCount,
+            round(ifnull(qualityDtl.bad_count, 0), 2) badCount,
+
             <!--页面传递参数字段 -->
             DATE_FORMAT(now(),'%Y-%m-%d') sysDate,
             '' operType,
@@ -206,6 +213,22 @@
                 from vmes_bom_tree t0 left join vmes_bom t1 on  t1.id = t0.bom_id
                 where t1.isdefault = '1'
             ) bom on product.id = bom.prod_id and bom.layer = 0
+
+            <!--按(生产计划明细id)汇总查询-生产计划明细检验报工表-->
+            left join (
+                select
+                    a.plan_dtl_id,
+                    round(sum(ifnull(a.fine_count,0)), 2) fine_count,
+                    round(sum(ifnull(a.bad_count,0)), 2) bad_count
+                from vmes_produce_plan_quality_detail a
+                    left join vmes_produce_plan b on a.plan_id = b.id
+                <where>
+                    <if test="currentCompanyId != null and currentCompanyId != ''" >
+                        and b.company_id = #{currentCompanyId}
+                    </if>
+                </where>
+                group by a.plan_dtl_id
+            ) qualityDtl on detail.id = qualityDtl.plan_dtl_id
         <where>
             <if test="ids != null and ids != ''" >
                 and detail.id in (${ids})
