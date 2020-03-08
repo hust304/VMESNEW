@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SaleOrderDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -35,9 +36,11 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
     private ProducePlanDetailMapper producePlanDetailMapper;
     @Autowired
     private ProducePlanDetailByQualityMapper producePlanDetailByQualityMapper;
-
     @Autowired
     private ProducePlanDetailChildService planDetailChildService;
+
+    @Autowired
+    private SaleOrderDetailService orderDetailService;
 
     @Autowired
     private ColumnService columnService;
@@ -309,10 +312,10 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             result.put("pageData", pg);
         }
 
+        List<Map> varList = this.getDataListPage(pd, pg);
+
         //isNeedChild 是否需要生产明细子表 true:需要
         String isNeedChild = pd.getString("isNeedChild");
-
-        List<Map> varList = this.getDataListPage(pd, pg);
         if ("true".equals(isNeedChild) && varList != null && varList.size() > 0) {
             for (Map<String, Object> mapObject : varList) {
                 //planDtlId 生产计划明细id
@@ -321,6 +324,9 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                 List<ProducePlanDetailChild> planDtlChildList = planDetailChildService.findPlanDetailChildListByPlanDtlId(planDtlId);
                 String jsonStr = this.findJsonStringByList(planDtlChildList);
                 mapObject.put("jsonStr", jsonStr);
+
+                String orderCodes = this.findOrderCodeByList(planDtlChildList);
+                mapObject.put("orderCode", orderCodes);
             }
         }
 
@@ -509,6 +515,56 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         }
 
         return new String();
+    }
+
+    private String findOrderCodeByList(List<ProducePlanDetailChild> ObjectList) throws Exception {
+        if (ObjectList == null || ObjectList.size() == 0) {return new String();}
+
+        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        Map<String, String> orderDetailMap = new LinkedHashMap<>();
+        for (ProducePlanDetailChild object : ObjectList) {
+            //saleOrderDtlId:销售订单明细ID
+            String saleOrderDtlId = object.getSaleOrderDtlId();
+            if (saleOrderDtlId != null && saleOrderDtlId.trim().length() > 0) {
+                orderDetailMap.put(saleOrderDtlId, saleOrderDtlId);
+            }
+        }
+
+        StringBuffer orderDtlIdBuf = new StringBuffer();
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        if (orderDetailMap != null) {
+            for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey_orderDtlId = iterator.next().toString().trim();
+                if (mapKey_orderDtlId != null && mapKey_orderDtlId.trim().length() > 0) {
+                    orderDtlIdBuf.append(mapKey_orderDtlId).append(",");
+                }
+            }
+        }
+
+        StringBuffer orderCodeBuf = new StringBuffer();
+        if (orderDtlIdBuf != null && orderDtlIdBuf.toString().trim().length() > 0) {
+            String orderDtlIds = StringUtil.stringTrimSpace(orderDtlIdBuf.toString().trim());
+            orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("ids", orderDtlIds);
+            List<Map> tableMapList = orderDetailService.getDataListPage(findMap, null);
+            if (tableMapList != null && tableMapList.size() > 0) {
+                for (Map<String, Object> mapData : tableMapList) {
+                    String sysCode = (String)mapData.get("sysCode");
+                    if (sysCode != null && sysCode.trim().length() > 0) {
+                        orderCodeBuf.append(sysCode).append(",");
+                    }
+                }
+            }
+        }
+
+        String orderCodes = new String();
+        if (orderCodeBuf != null && orderCodeBuf.toString().trim().length() > 0) {
+            orderCodes = StringUtil.stringTrimSpace(orderCodeBuf.toString().trim());
+        }
+
+        return orderCodes;
     }
 
 }

@@ -1,7 +1,9 @@
 package com.xy.vmes.deecoop.produce.controller;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.service.ProducePlanDetailService;
 
+import com.xy.vmes.service.SaleOrderDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -28,6 +30,9 @@ public class ProducePlanDetailController {
 
     @Autowired
     private ProducePlanDetailService producePlanDetailService;
+
+    @Autowired
+    private SaleOrderDetailService orderDetailService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -100,7 +105,7 @@ public class ProducePlanDetailController {
      * @throws Exception
      */
     @PostMapping("/produce/producePlanDetail/mergeProductByProducePlanDetail")
-    public ResultModel mergeProductByProducePlanDetail() {
+    public ResultModel mergeProductByProducePlanDetail() throws Exception {
         logger.info("################/produce/producePlanDetail/mergeProductByProducePlanDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
@@ -153,6 +158,10 @@ public class ProducePlanDetailController {
             //jsonStr 按货品合并JsonString
             String jsonStr = this.findJsonStringByMapList(mapTempList);
             productMap.put("jsonStr", jsonStr);
+
+            //获取订单编号',' 逗号分隔的字符串
+            String orderCodes = this.findOrderCodeByMapList(mapTempList);
+            productMap.put("orderCode", orderCodes);
 
             mergeProductMapList.add(productMap);
         }
@@ -241,6 +250,74 @@ public class ProducePlanDetailController {
         return new String();
     }
 
+
+    private String findOrderCodeByMapList(List<Map<String, String>> mapList) throws Exception {
+        if (mapList == null || mapList.size() == 0) {return new String();}
+
+        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        Map<String, String> orderDetailMap = new LinkedHashMap<>();
+        for (Map<String, String> mapData : mapList) {
+
+            //jsonStr 按货品合并JsonString
+            String jsonStr = mapData.get("jsonStr");
+            if (jsonStr != null && jsonStr.trim().length() > 0) {
+                List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                if (jsonMapList != null && jsonMapList.size() > 0) {
+                    for (Map<String, String> jsonMap : jsonMapList) {
+                        String json_orderDtlId = jsonMap.get("orderDtlId");
+                        if (json_orderDtlId != null && json_orderDtlId.trim().length() > 0) {
+                            orderDetailMap.put(json_orderDtlId, json_orderDtlId);
+                        }
+                    }
+                }
+            }
+
+            //orderDtlId 销售订单明细id
+            String orderDtlId = new String();
+            if (mapData.get("orderDtlId") != null) {
+                orderDtlId = mapData.get("orderDtlId").trim();
+            }
+            if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+                orderDetailMap.put(orderDtlId, orderDtlId);
+            }
+        }
+
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        StringBuffer orderDtlIdBuf = new StringBuffer();
+        if (orderDetailMap != null) {
+            for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey_orderDtlId = iterator.next().toString().trim();
+                if (mapKey_orderDtlId != null && mapKey_orderDtlId.trim().length() > 0) {
+                    orderDtlIdBuf.append(mapKey_orderDtlId).append(",");
+                }
+            }
+        }
+
+        StringBuffer orderCodeBuf = new StringBuffer();
+        if (orderDtlIdBuf != null && orderDtlIdBuf.toString().trim().length() > 0) {
+            String orderDtlIds = StringUtil.stringTrimSpace(orderDtlIdBuf.toString().trim());
+            orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("ids", orderDtlIds);
+            List<Map> tableMapList = orderDetailService.getDataListPage(findMap, null);
+            if (tableMapList != null && tableMapList.size() > 0) {
+                for (Map<String, Object> mapData : tableMapList) {
+                    String sysCode = (String)mapData.get("sysCode");
+                    if (sysCode != null && sysCode.trim().length() > 0) {
+                        orderCodeBuf.append(sysCode).append(",");
+                    }
+                }
+            }
+        }
+
+        String orderCodes = new String();
+        if (orderCodeBuf != null && orderCodeBuf.toString().trim().length() > 0) {
+            orderCodes = StringUtil.stringTrimSpace(orderCodeBuf.toString().trim());
+        }
+
+        return orderCodes;
+    }
 
 }
 
