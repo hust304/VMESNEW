@@ -93,88 +93,62 @@ public class SaleOrderDetailByProducePlanServiceImp implements SaleOrderDetailBy
         }
 
         List<Map> varList = this.listOrderDetaiByProducePlan(pd, pg);
-//        if (varList != null && varList.size() > 0) {
-//            for(int i=0; i < varList.size(); i++){
-//                Map<String, Object> objectMap = varList.get(i);
-//                //(n2p:计量转换计价)///////////////////////////////////////////////////////////////////////////////////////////
-//                String n2pFormula = (String)objectMap.get("npFormula");
-//
-//                //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-//                String n2pIsScale = new String();
-//                if (objectMap.get("n2pIsScale") != null) {
-//                    n2pIsScale = objectMap.get("n2pIsScale").toString().trim();
-//                }
-//
-//                //n2pDecimalCount 小数位数 (最小:0位 最大:4位)
-//                Integer n2pDecimalCount = Integer.valueOf(2);
-//                if (objectMap.get("n2pDecimalCount") != null) {
-//                    n2pDecimalCount = (Integer)objectMap.get("n2pDecimalCount");
-//                }
-//                //(计量单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
-//                //allowStockCount (计量单位)可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量
-//                BigDecimal allowStockCount = BigDecimal.valueOf(0D);
-//                if (objectMap.get("allowStockCount") != null) {
-//                    allowStockCount = (BigDecimal)objectMap.get("allowStockCount");
-//                }
-//
-//                //safetyCount 安全库存
-//                BigDecimal safetyCount = BigDecimal.valueOf(0D);
-//                if (objectMap.get("safetyCount") != null) {
-//                    safetyCount = (BigDecimal)objectMap.get("safetyCount");
-//                }
-//
-//                //(单据单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
-//                //orderCount 订购数量
-//                BigDecimal orderCount = BigDecimal.valueOf(0D);
-//                if (objectMap.get("orderCount") != null) {
-//                    orderCount = (BigDecimal)objectMap.get("orderCount");
-//                }
-//
-//                //allowStockCount (计量单位)可用库存数量 -- (n2pFormula)计量单位转换计价单位
-//                allowStockCount = EvaluateUtil.countFormulaN2P(allowStockCount, n2pFormula);
-//                allowStockCount = StringUtil.scaleDecimal(allowStockCount, n2pIsScale, n2pDecimalCount);
-//                objectMap.put("allowStockCount", allowStockCount.toString());
-//
-//                //safetyCount 安全库存 -- (n2pFormula)计量单位转换计价单位
-//                safetyCount = EvaluateUtil.countFormulaN2P(safetyCount, n2pFormula);
-//                safetyCount = StringUtil.scaleDecimal(safetyCount, n2pIsScale, n2pDecimalCount);
-//                objectMap.put("safetyCount", safetyCount.toString());
-//
-//                //purchasePlanCount 计划数量///////////////////////////////////////////////////////////////////////////////////////////
-//                BigDecimal purchasePlanCount = BigDecimal.valueOf(0D);
-//
-//                //safetyCount 安全库存(0)
-//                if (safetyCount.doubleValue() == 0D) {
-//                    //purchasePlanCount 计划数量 := 可用库存数量 - 订购数量
-//                    BigDecimal bigTemp = BigDecimal.valueOf(allowStockCount.doubleValue() - orderCount.doubleValue());
-//                    if (bigTemp.doubleValue() < 0) {
-//                        purchasePlanCount = BigDecimal.valueOf(bigTemp.doubleValue() * -1);
-//                    } else if (bigTemp.doubleValue() >= 0) {
-//                        purchasePlanCount = orderCount;
-//                    }
-//                } else if (safetyCount.doubleValue() > 0D) {
-//                    //purchasePlanCount 计划数量 := (可用库存数量 - 订购数量) - 安全库存
-//                    BigDecimal bigTemp = BigDecimal.valueOf(allowStockCount.doubleValue() - orderCount.doubleValue() - safetyCount.doubleValue());
-//                    if (bigTemp.doubleValue() < 0) {
-//                        purchasePlanCount = BigDecimal.valueOf(bigTemp.doubleValue() * -1);
-//                    } else if (bigTemp.doubleValue() >= 0) {
-//                        purchasePlanCount = orderCount;
-//                    }
-//                }
-//
-//                purchasePlanCount = StringUtil.scaleDecimal(purchasePlanCount, n2pIsScale, n2pDecimalCount);
-//                objectMap.put("purchasePlanCount", purchasePlanCount.toString());
-//
-//                //isNeedPurchase 是否需要采购(0:不需要 1:需要)
-//                String isNeedPurchase = new String("0");
-//                if (objectMap.get("isNeedPurchase") != null
-//                        && "0,1".indexOf(objectMap.get("isNeedPurchase").toString().trim()) != 0
-//                        ) {
-//                    isNeedPurchase = objectMap.get("isNeedPurchase").toString().trim();
-//                }
-//                objectMap.put("isNeedPurchase", isNeedPurchase);
-//            }
-//        }
+        if (varList != null && varList.size() > 0) {
+            for(int i=0; i < varList.size(); i++){
+                Map<String, Object> objectMap = varList.get(i);
+                //(p2n:计价转换计量)///////////////////////////////////////////////////////////////////////////////////////////
+                String p2nFormula = (String)objectMap.get("p2nFormula");
+
+                //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String p2nIsScale = new String();
+                if (objectMap.get("p2nIsScale") != null) {
+                    p2nIsScale = objectMap.get("p2nIsScale").toString().trim();
+                }
+
+                //p2nDecimalCount 小数位数 (最小:0位 最大:4位)
+                Integer p2nDecimalCount = Integer.valueOf(2);
+                if (objectMap.get("p2nDecimalCount") != null) {
+                    p2nDecimalCount = (Integer)objectMap.get("p2nDecimalCount");
+                }
+
+                //(计量单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+                //allowStockCount (计量单位)可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量
+                BigDecimal allowStockCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("allowStockCount") != null) {
+                    allowStockCount = (BigDecimal)objectMap.get("allowStockCount");
+                }
+
+                //safetyCount 安全库存
+                BigDecimal safetyCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("safetyCount") != null) {
+                    safetyCount = (BigDecimal)objectMap.get("safetyCount");
+                }
+
+                //(单据单位-计价单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
+                //orderCount 订购数量
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("orderCount") != null) {
+                    orderCount = (BigDecimal)objectMap.get("orderCount");
+                }
+
+                //orderCount (单据单位-计价单位)订购数量 -- (p2nFormula)计价单位转换计量单位
+                orderCount = EvaluateUtil.countFormulaP2N(orderCount, p2nFormula);
+                orderCount = StringUtil.scaleDecimal(orderCount, p2nIsScale, p2nDecimalCount);
+                objectMap.put("orderCount", orderCount.toString());
+
+                //endDeliverCount 已发货数量
+                BigDecimal endDeliverCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("endDeliverCount") != null) {
+                    endDeliverCount = (BigDecimal)objectMap.get("endDeliverCount");
+                }
+
+                //endDeliverCount (单据单位-计价单位)已发货数量 -- (p2nFormula)计价单位转换计量单位
+                endDeliverCount = EvaluateUtil.countFormulaP2N(endDeliverCount, p2nFormula);
+                endDeliverCount = StringUtil.scaleDecimal(endDeliverCount, p2nIsScale, p2nDecimalCount);
+                objectMap.put("endDeliverCount", endDeliverCount.toString());
+
+            }
+        }
 
         List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 

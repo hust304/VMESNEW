@@ -50,7 +50,11 @@
             (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'customerName', '客户名称', 28, '1', '1', '1', '0', now(), 'admin'),
 
             (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'prodUnitId', '计量单位id', 29, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'prodUnitName', '计量单位', 30, '1', '1', '1', '0', now(), 'admin')
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'prodUnitName', '计量单位', 30, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'orderDate', '下单日期', 31, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'endDeliverCount', '已发货数量', 32, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailByProducePlan', 'expectDate', '约定交期', 33, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -77,9 +81,13 @@
                 WHEN orderDtl.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
+            <!--获取已发货数量-->
+            round(ifnull(deliverDtl.count, 0), 2) endDeliverCount,
 
             saleOrder.sys_code sysCode,
             customer.name customerName,
+            DATE_FORMAT(saleOrder.order_date,'%Y-%m-%d') orderDate,
+            DATE_FORMAT(saleOrder.expect_date,'%Y-%m-%d') expectDate,
 
             CASE
             WHEN planDtlChild.plan_dtl_id is not null THEN '已排产'
@@ -135,6 +143,14 @@
 
             <!--vmes_produce_plan_detail_child (销售订单明细,生产计划明细)关联关系-->
             left join vmes_produce_plan_detail_child planDtlChild on orderDtl.id = planDtlChild.sale_order_dtl_id
+
+            <!--获取已发货数量 按(销售订单明细id)汇总发货明细表-->
+            left join (
+                select order_detai_id, sum(order_count) count
+                from vmes_sale_deliver_detail
+                where state = '1'
+                group by order_detai_id
+            ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
