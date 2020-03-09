@@ -108,6 +108,19 @@ public interface ProducePlanDetailService {
      * @return
      */
     String findParentStateByDetail(List<ProducePlanDetail> dtlList);
+
+    /**
+     * 判断生产计划明细是否允许删除
+     * 明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+     *
+     * false: 不允许删除: 生产计划明细中含有(1:生产中 2:已完成)
+     * true:  允许删除
+     *
+     * @param dtlList
+     * @return
+     */
+    boolean isAllowDeleteByDetail(List<ProducePlanDetail> dtlList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 

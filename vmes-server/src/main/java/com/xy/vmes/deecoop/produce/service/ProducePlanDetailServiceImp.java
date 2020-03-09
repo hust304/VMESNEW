@@ -257,6 +257,44 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
         return null;
     }
+
+    /**
+     * 判断生产计划明细是否允许删除
+     * 明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+     *
+     * false: 不允许删除: 生产计划明细中含有(1:生产中 或 2:已完成)
+     * true:  允许删除
+     *
+     * @param dtlList
+     * @return
+     */
+    public boolean isAllowDeleteByDetail(List<ProducePlanDetail> dtlList) {
+        if (dtlList == null || dtlList.size() == 0) {return true;}
+
+        //生产计划明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        int dtl_dsc = 0;  //0:待生产
+        int dtl_scz = 0;  //1:生产中
+        int dtl_ywc = 0;  //2:已完成
+        int dtl_yqx = 0;  //-1:已取消
+
+        for (ProducePlanDetail dtlObject : dtlList) {
+            if ("-1".equals(dtlObject.getState())) {
+                dtl_yqx = dtl_yqx + 1;
+            } else if ("0".equals(dtlObject.getState())) {
+                dtl_dsc = dtl_dsc + 1;
+            } else if ("1".equals(dtlObject.getState())) {
+                dtl_scz = dtl_scz + 1;
+            } else if ("2".equals(dtlObject.getState())) {
+                dtl_ywc = dtl_ywc + 1;
+            }
+        }
+
+        if (dtl_scz >= 1 || dtl_ywc >= 1) {
+            return false;
+        }
+
+        return true;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

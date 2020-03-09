@@ -134,6 +134,7 @@
             (replace(uuid(), '-', ''),'producePlanDetail','fineCount','合格数',30, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','badCount','不合格数',31, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','prodInfo','货品',32, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','stateName','状态',33, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">

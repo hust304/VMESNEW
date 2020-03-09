@@ -133,13 +133,8 @@ public class ProducePlanController {
         String makeId = pageData.getString("makeId");
         addPlan.setMakeId(makeId);
 
-        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        addPlan.setState("0");
-        //isAutoCommit true:自动提交 false:手动提交
-        String isAutoCommit = pageData.getString("isAutoCommit");
-        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-            addPlan.setState("1");
-        }
+        //状态 (1:未完成 2:已完成 -1:已取消)
+        addPlan.setState("1");
 
         producePlanService.save(addPlan);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +147,8 @@ public class ProducePlanController {
                 ProducePlanDetail addPlanDtl = new ProducePlanDetail();
                 addPlanDtl.setParentId(addPlan.getId());
                 addPlanDtl.setCuser(addPlan.getCuser());
-                addPlanDtl.setState(addPlan.getState());
+                //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+                addPlanDtl.setState("0");
 
                 Date beginDate_dtl = sysDate;
                 String beginDate_dtl_Str = mapObject.get("beginDate");
@@ -358,6 +354,18 @@ public class ProducePlanController {
         if (parentId == null || parentId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("生产计划id为空或空字符串！");
+            return model;
+        }
+
+        //根据(生产计划id)获取生产计划明细List
+        List<ProducePlanDetail> dtlList = producePlanDetailService.findProducePlanDetailListByParentId(parentId);
+        //判断生产计划明细是否允许删除
+        // 明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        // false: 不允许删除: 生产计划明细中含有(1:生产中 2:已完成)
+        // true:  允许删除
+        if (!producePlanDetailService.isAllowDeleteByDetail(dtlList)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("该生产计划明细中含有(生产中, 已完成)状态，不可取消操作！");
             return model;
         }
 
