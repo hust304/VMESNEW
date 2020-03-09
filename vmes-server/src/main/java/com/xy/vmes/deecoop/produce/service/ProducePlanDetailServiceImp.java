@@ -333,6 +333,13 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             }
         }
 
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = this.findProductInfo(mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
         //pageType 页面类型 edit:修改页面
         String pageType = pd.getString("pageType");
         if ("edit".equals(pageType) && varList != null && varList.size() > 0) {
@@ -478,6 +485,41 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         result.put("varList",varMapList);
         model.putResult(result);
         return model;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    String findProductInfo(Map<String, Object> mapObject) {
+        StringBuffer prodBuf = new StringBuffer();
+
+        if (mapObject != null) {
+
+            String productCode = (String)mapObject.get("productCode");
+            if (productCode != null && productCode.trim().length() > 0) {
+                prodBuf.append(productCode.trim()).append("_");
+            }
+
+            String productName = (String)mapObject.get("productName");
+            if (productName != null && productName.trim().length() > 0) {
+                prodBuf.append(productName.trim()).append("_");
+            }
+
+            String productSpec = (String)mapObject.get("productSpec");
+            if (productSpec != null && productSpec.trim().length() > 0) {
+                prodBuf.append(productSpec.trim());
+            }
+
+//            String unitName = (String)mapObject.get("unitName");
+//            if (unitName != null && unitName.trim().length() > 0) {
+//                prodBuf.append(unitName.trim());
+//            }
+
+            String productProperty = (String)mapObject.get("productProperty");
+            if (productProperty != null && productProperty.trim().length() > 0) {
+                prodBuf.append("<br/>");
+                prodBuf.append(productProperty);
+            }
+        }
+
+        return prodBuf.toString();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
