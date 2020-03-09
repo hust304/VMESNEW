@@ -39,6 +39,7 @@
         (replace(uuid(), '-', ''),'producePlanDetailByQuality','code','产品计划号',21, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlanDetailByQuality','fineCount','合格',22, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlanDetailByQuality','badCount','不合格',23, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlanDetailByQuality','stateName','状态',24, '1','0','1','0',now(), 'admin'),
     </insert>
 
     <select id="listProducePlanDetailByQuality" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -100,6 +101,9 @@
             </if>
             <if test="state != null and state != ''" >
                 and detail.state = #{state}
+            </if>
+            <if test="inStates != null and inStates != ''" >
+                and detail.state in (${inStates})
             </if>
 
             <!--queryStr 自定义sql查询语句-->

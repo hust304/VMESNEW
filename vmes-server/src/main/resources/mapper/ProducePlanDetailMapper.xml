@@ -243,6 +243,9 @@
             <if test="state != null and state != ''" >
                 and detail.state = #{state}
             </if>
+            <if test="inStates != null and inStates != ''" >
+                and detail.state in (${inStates})
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >

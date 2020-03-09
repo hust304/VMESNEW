@@ -219,6 +219,11 @@ public class ProducePlanQualityDetailController {
                     && (fineCount.doubleValue() - dtlCount.doubleValue()) >= 0
                 ) {
                     editPlanDetail.setState("2");
+                } else if (dtlCount != null && fineCount != null
+                    && fineCount.doubleValue() > 0
+                    && (dtlCount.doubleValue() - fineCount.doubleValue()) > 0
+                ) {
+                    editPlanDetail.setState("1");
                 }
             }
             planDetailService.update(editPlanDetail);

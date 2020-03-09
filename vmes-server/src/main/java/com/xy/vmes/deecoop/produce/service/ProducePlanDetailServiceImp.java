@@ -333,6 +333,13 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
+        String inStates = pd.getString("inStates");
+        if (inStates != null && inStates.trim().length() > 0) {
+            inStates = StringUtil.stringTrimSpace(inStates);
+            inStates = "'" + inStates.replace(",", "','") + "'";
+            pd.put("inStates", inStates);
+        }
+
         //设置查询排序方式
         //pd.put("orderStr", "a.cdate asc");
         String orderStr = pd.getString("orderStr");
