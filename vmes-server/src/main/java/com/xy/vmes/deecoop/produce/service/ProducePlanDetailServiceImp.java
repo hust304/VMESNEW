@@ -368,6 +368,13 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
+        String ids = pd.getString("ids");
+        if (ids != null && ids.trim().length() > 0) {
+            ids = StringUtil.stringTrimSpace(ids);
+            ids = "'" + ids.replace(",", "','") + "'";
+            pd.put("ids", ids);
+        }
+
         //设置查询排序方式
         //pd.put("orderStr", "a.cdate asc");
         String orderStr = pd.getString("orderStr");
