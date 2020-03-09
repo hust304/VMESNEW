@@ -261,79 +261,79 @@ public class ProducePlanController {
         return model;
     }
 
-    /**
-     * 提交生产计划
-     * @author 陈刚
-     * @date 2020-02-26
-     * @throws Exception
-     */
-    @PostMapping("/produce/producePlan/submitProducePlan")
-    @Transactional(rollbackFor=Exception.class)
-    public ResultModel submitProducePlan() throws Exception {
-        logger.info("################/produce/producePlan/submitProducePlan 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
+//    /**
+//     * 提交生产计划
+//     * @author 陈刚
+//     * @date 2020-02-26
+//     * @throws Exception
+//     */
+//    @PostMapping("/produce/producePlan/submitProducePlan")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel submitProducePlan() throws Exception {
+//        logger.info("################/produce/producePlan/submitProducePlan 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        String parentId = pageData.getString("id");
+//        if (parentId == null || parentId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("生产计划id为空或空字符串！");
+//            return model;
+//        }
+//
+//        //修改明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+//        producePlanDetailService.updateStateByDetail("1", parentId);
+//
+//        //修改抬头表状态
+//        ProducePlan editPlan = new ProducePlan();
+//        editPlan.setId(parentId);
+//        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+//        editPlan.setState("1");
+//        producePlanService.update(editPlan);
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/produce/producePlan/submitProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        String parentId = pageData.getString("id");
-        if (parentId == null || parentId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("生产计划id为空或空字符串！");
-            return model;
-        }
-
-        //修改明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        producePlanDetailService.updateStateByDetail("1", parentId);
-
-        //修改抬头表状态
-        ProducePlan editPlan = new ProducePlan();
-        editPlan.setId(parentId);
-        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        editPlan.setState("1");
-        producePlanService.update(editPlan);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/produce/producePlan/submitProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-    /**
-     * 撤回提交
-     * @author 陈刚
-     * @date 2020-02-26
-     * @throws Exception
-     */
-    @PostMapping("/produce/producePlan/rebackSubmitProducePlan")
-    @Transactional(rollbackFor=Exception.class)
-    public ResultModel rebackSubmitProducePlan() throws Exception {
-        logger.info("################/produce/producePlan/rebackSubmitProducePlan 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        String parentId = pageData.getString("id");
-        if (parentId == null || parentId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("生产计划id为空或空字符串！");
-            return model;
-        }
-
-        //修改明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        producePlanDetailService.updateStateByDetail("0", parentId);
-
-        //修改抬头表状态
-        ProducePlan editPlan = new ProducePlan();
-        editPlan.setId(parentId);
-        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        editPlan.setState("0");
-        producePlanService.update(editPlan);
-
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/produce/producePlan/rebackSubmitProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//    /**
+//     * 撤回提交
+//     * @author 陈刚
+//     * @date 2020-02-26
+//     * @throws Exception
+//     */
+//    @PostMapping("/produce/producePlan/rebackSubmitProducePlan")
+//    @Transactional(rollbackFor=Exception.class)
+//    public ResultModel rebackSubmitProducePlan() throws Exception {
+//        logger.info("################/produce/producePlan/rebackSubmitProducePlan 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        String parentId = pageData.getString("id");
+//        if (parentId == null || parentId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("生产计划id为空或空字符串！");
+//            return model;
+//        }
+//
+//        //修改明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+//        producePlanDetailService.updateStateByDetail("0", parentId);
+//
+//        //修改抬头表状态
+//        ProducePlan editPlan = new ProducePlan();
+//        editPlan.setId(parentId);
+//        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+//        editPlan.setState("0");
+//        producePlanService.update(editPlan);
+//
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/produce/producePlan/rebackSubmitProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 取消生产计划
@@ -375,7 +375,7 @@ public class ProducePlanController {
         //修改抬头表状态
         ProducePlan editPlan = new ProducePlan();
         editPlan.setId(parentId);
-        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+        //状态 (1:未完成 2:已完成 -1:已取消)
         editPlan.setState("-1");
         producePlanService.update(editPlan);
 
@@ -411,8 +411,8 @@ public class ProducePlanController {
         //修改抬头表状态
         ProducePlan editPlan = new ProducePlan();
         editPlan.setId(parentId);
-        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        editPlan.setState("0");
+        //状态 (1:未完成 2:已完成 -1:已取消)
+        editPlan.setState("1");
         producePlanService.update(editPlan);
 
         Long endTime = System.currentTimeMillis();
@@ -534,13 +534,6 @@ public class ProducePlanController {
         String makeId = pageData.getString("makeId");
         editPlan.setMakeId(makeId);
 
-        //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
-        editPlan.setState("0");
-        //isAutoCommit true:自动提交 false:手动提交
-        String isAutoCommit = pageData.getString("isAutoCommit");
-        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-            editPlan.setState("1");
-        }
         producePlanService.update(editPlan);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Map<String, List<Map<String, String>>> valueMap = this.findAddEditMap(jsonMapList);
@@ -552,7 +545,8 @@ public class ProducePlanController {
             ProducePlanDetail addPlanDtl = new ProducePlanDetail();
             addPlanDtl.setParentId(editPlan.getId());
             addPlanDtl.setCuser(cuser);
-            addPlanDtl.setState(editPlan.getState());
+            //状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
+            addPlanDtl.setState("0");
 
             Date beginDate_dtl = sysDate;
             String beginDate_dtl_Str = mapObject.get("beginDate");
