@@ -199,6 +199,7 @@
             DATE_FORMAT(now(),'%Y-%m-%d') sysDate,
             '' operType,
             '' orderCode,
+            '' expectDate,
             '' orderDtlId,
             '' jsonStr
 

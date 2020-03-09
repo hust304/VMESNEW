@@ -325,8 +325,11 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                 String jsonStr = this.findJsonStringByList(planDtlChildList);
                 mapObject.put("jsonStr", jsonStr);
 
-                String orderCodes = this.findOrderCodeByList(planDtlChildList);
-                mapObject.put("orderCode", orderCodes);
+                //Map<"orderCodes", 订单编号>
+                //Map<"expectDate", 订单约定交期>
+                Map<String, String> valueMap = this.findOrderCodeByList(planDtlChildList);
+                mapObject.put("orderCode", valueMap.get("orderCodes"));
+                mapObject.put("expectDate", valueMap.get("expectDate"));
             }
         }
 
@@ -517,8 +520,14 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         return new String();
     }
 
-    private String findOrderCodeByList(List<ProducePlanDetailChild> ObjectList) throws Exception {
-        if (ObjectList == null || ObjectList.size() == 0) {return new String();}
+    //Map<"orderCodes", 订单编号>
+    //Map<"expectDate", 订单约定交期>
+    private Map<String, String> findOrderCodeByList(List<ProducePlanDetailChild> ObjectList) throws Exception {
+        Map<String, String> valueMap = new HashMap<>();
+        valueMap.put("orderCodes", new String());
+        valueMap.put("expectDate", new String());
+
+        if (ObjectList == null || ObjectList.size() == 0) {return valueMap;}
 
         //orderDetailMap<销售订单明细id, 销售订单明细id>
         Map<String, String> orderDetailMap = new LinkedHashMap<>();
@@ -540,8 +549,7 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                 }
             }
         }
-
-        StringBuffer orderCodeBuf = new StringBuffer();
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (orderDtlIdBuf != null && orderDtlIdBuf.toString().trim().length() > 0) {
             String orderDtlIds = StringUtil.stringTrimSpace(orderDtlIdBuf.toString().trim());
             orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
@@ -549,6 +557,9 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             PageData findMap = new PageData();
             findMap.put("ids", orderDtlIds);
             List<Map> tableMapList = orderDetailService.getDataListPage(findMap, null);
+
+            //获取订单编号
+            StringBuffer orderCodeBuf = new StringBuffer();
             if (tableMapList != null && tableMapList.size() > 0) {
                 for (Map<String, Object> mapData : tableMapList) {
                     String sysCode = (String)mapData.get("sysCode");
@@ -557,14 +568,26 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                     }
                 }
             }
+
+            //orderCodes 订单编号
+            String orderCodes = new String();
+            if (orderCodeBuf != null && orderCodeBuf.toString().trim().length() > 0) {
+                orderCodes = StringUtil.stringTrimSpace(orderCodeBuf.toString().trim());
+            }
+            valueMap.put("orderCodes", orderCodes);
+
+            //订单约定交期
+            if (tableMapList != null && tableMapList.size() == 1) {
+                Map<String, Object> mapData = tableMapList.get(0);
+                String expectDate = new String();
+                if (mapData.get("expectDate") != null) {
+                    expectDate = mapData.get("expectDate").toString().trim();
+                }
+                valueMap.put("expectDate", expectDate);
+            }
         }
 
-        String orderCodes = new String();
-        if (orderCodeBuf != null && orderCodeBuf.toString().trim().length() > 0) {
-            orderCodes = StringUtil.stringTrimSpace(orderCodeBuf.toString().trim());
-        }
-
-        return orderCodes;
+        return valueMap;
     }
 
 }
