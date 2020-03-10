@@ -54,6 +54,9 @@
         (replace(uuid(), '-', ''),'producePlan','planStateName','状态',16, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','produceTypeName','生产类型',17, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'producePlan','makeName','制单人',18, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'producePlan','isExceedTime','是否逾期(1:逾期 0:非逾期)',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'producePlan','dayCount','剩余/逾期',20, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -117,7 +120,7 @@
             plan.produce_type produceType,
             DATE_FORMAT(plan.begin_date,'%Y-%m-%d') beginDate,
             DATE_FORMAT(plan.end_date,'%Y-%m-%d') endDate,
-            plan.plan_date planDate,
+            DATE_FORMAT(plan.plan_date,'%Y-%m-%d') planDate,
             plan.state state,
 
             plan.cuser cuser,
@@ -135,7 +138,12 @@
             ELSE null
             END planStateName,
             produceType.name produceTypeName,
-            makeUser.user_name makeName
+            makeUser.user_name makeName,
+
+            <!--java 类实现(isExceedTime,dayCount) -->
+            <!--isExceedTime:是否逾期 1:逾期 0:非逾期 -->
+            '' isExceedTime,
+            '' dayCount
 
         from vmes_produce_plan plan
             left join vmes_dictionary produceType on plan.produce_type = produceType.id

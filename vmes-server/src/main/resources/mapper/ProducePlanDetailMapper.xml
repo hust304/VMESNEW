@@ -135,6 +135,9 @@
             (replace(uuid(), '-', ''),'producePlanDetail','badCount','不合格数',31, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','prodInfo','货品',32, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','stateName','状态',33, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'producePlanDetail','isExceedTime','是否逾期(1:逾期 0:非逾期)',34, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','dayCount','剩余/逾期',35, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -149,7 +152,7 @@
 
             DATE_FORMAT(detail.begin_date,'%Y-%m-%d') beginDate,
             DATE_FORMAT(detail.end_date,'%Y-%m-%d') endDate,
-            detail.plan_date planDate,
+            DATE_FORMAT(detail.plan_date,'%Y-%m-%d') planDate,
             detail.state state,
             detail.cuser cuser,
 
@@ -196,6 +199,11 @@
             <!--生产计划明细检验报工-->
             round(ifnull(qualityDtl.fine_count, 0), 2) fineCount,
             round(ifnull(qualityDtl.bad_count, 0), 2) badCount,
+
+            <!--java 类实现(isExceedTime,dayCount) -->
+            <!--isExceedTime:是否逾期 1:逾期 0:非逾期 -->
+            '' isExceedTime,
+            '' dayCount,
 
             <!--页面传递参数字段 -->
             DATE_FORMAT(now(),'%Y-%m-%d') sysDate,

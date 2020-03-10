@@ -108,6 +108,23 @@ public class DateFormat {
         return days;
     }
 
+    /**
+     * 获取两个日期的差值(secondDate - firstDate)
+     * @param firstDate
+     * @param secondDate
+     * @return
+     */
+    public static int findDayOfYear (Date firstDate, Date secondDate) {
+        Calendar firstCalendar = Calendar.getInstance();
+        firstCalendar.setTime(firstDate);
+
+        Calendar secondCalendar = Calendar.getInstance();
+        secondCalendar.setTime(secondDate);
+
+        int days = secondCalendar.get(Calendar.DAY_OF_YEAR) - firstCalendar.get(Calendar.DAY_OF_YEAR);
+        return days;
+    }
+
     public static int findDayByWeekMin(int dayOfWeek) {
         int toWeekMin = 0;
         List<Integer> dayList = Common.SYS_DAYOFWEEK_LIST;
@@ -160,11 +177,22 @@ public class DateFormat {
     }
 
     public static void main(String args[]) throws ParseException {
-        //Date date = DateFormat.dateString2Date("201902", "yyyyMM");
+//        //Date date = DateFormat.dateString2Date("201902", "yyyyMM");
+//
+//        String dateStr = DateFormat.getAddDay("201901", DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+//
+//        //String dateStr = date2String(date, "yyyy-MM-dd");
+//        System.out.println("dateStr: " + dateStr);
 
-        String dateStr = DateFormat.getAddDay("201901", DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+        /////////////////////////////////////////////////////////////////////////////
+        String day_1 = "2020-03-10";
+        Date day_1_Date = DateFormat.dateString2Date(day_1, DateFormat.DEFAULT_DATE_FORMAT);
 
-        //String dateStr = date2String(date, "yyyy-MM-dd");
-        System.out.println("dateStr: " + dateStr);
+        String day_2 = "2020-03-12";
+        Date day_2_Date = DateFormat.dateString2Date(day_2, DateFormat.DEFAULT_DATE_FORMAT);
+
+        int days = DateFormat.findDayOfYear(day_2_Date , day_1_Date);
+        System.out.println("days: " + days);
+
     }
 }

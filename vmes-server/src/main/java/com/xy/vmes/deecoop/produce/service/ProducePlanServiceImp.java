@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.produce.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanMapper;
 import com.xy.vmes.entity.ProducePlan;
 import com.xy.vmes.service.ProducePlanService;
@@ -228,6 +229,75 @@ public class ProducePlanServiceImp implements ProducePlanService {
         }
 
         List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            //获取系统时间(yyyy-MM-dd)
+            String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+            Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+            for (Map<String, Object> mapObject : varList) {
+                //state 生产计划状态(1:未完成 2:已完成 -1:已取消)
+                String state = (String)mapObject.get("state");
+                Integer stateInt = Integer.valueOf(state);
+
+                //isExceedTime:是否逾期 1:逾期 0:非逾期
+                String isExceedTime = new String("0");
+                //dayCount 剩余/逾期 天数
+                String dayCount = new String();
+
+                //生产计划状态 1:未完成
+                if (1 == stateInt.intValue()) {
+                    //(计划结束日期 - 当前系统日期) 差值
+
+                    //endDate 计划结束日期(yyyy-MM-dd)
+                    String endDateStr = (String)mapObject.get("endDate");
+                    if (endDateStr != null && endDateStr.trim().length() > 0) {
+                        Date endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+                        //(计划结束日期 - 当前系统日期) 差值 --> findDayOfYear(当前系统日期 , 计划结束日期)
+                        int days = DateFormat.findDayOfYear(sysDate, endDate);
+                        if (days < 0) {
+                            //isExceedTime:是否逾期 1:逾期 0:非逾期
+                            isExceedTime = "1";
+                            dayCount = Integer.valueOf(days * -1).toString() + " 天";
+                        } else if (days > 0) {
+                            isExceedTime = "0";
+                            dayCount = Integer.valueOf(days).toString() + " 天";
+                        }
+                    }
+
+                    //生产计划状态 2:已完成
+                } else if (2 == stateInt.intValue()) {
+                    //(计划完成日期 - 计划结束日期) 差值
+
+                    //planDate 计划完成日期 (yyyy-MM-dd)
+                    String planDateStr = (String)mapObject.get("planDate");
+                    //endDate 计划结束日期(yyyy-MM-dd)
+                    String endDateStr = (String)mapObject.get("endDate");
+
+                    if (planDateStr != null && planDateStr.trim().length() > 0 && endDateStr != null && endDateStr.trim().length() > 0) {
+                        Date planDate = DateFormat.dateString2Date(planDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+                        Date endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+                        //(计划结束日期 - 计划完成日期) 差值 --> findDayOfYear(计划完成日期 , 计划结束日期)
+                        int days = DateFormat.findDayOfYear(planDate , endDate);
+                        if (days < 0) {
+                            //isExceedTime:是否逾期 1:逾期 0:非逾期
+                            isExceedTime = "1";
+                            dayCount = Integer.valueOf(days * -1).toString() + " 天";
+                        }
+//                        else if (days > 0) {
+//                            isExceedTime = "0";
+//                            dayCount = Integer.valueOf(days).toString() + " 天";
+//                        }
+                    }
+                }
+
+                //设置 isExceedTime:是否逾期 1:逾期 0:非逾期
+                mapObject.put("isExceedTime", isExceedTime);
+                //设置 dayCount 剩余/逾期 天数
+                mapObject.put("dayCount", dayCount);
+            }
+        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
