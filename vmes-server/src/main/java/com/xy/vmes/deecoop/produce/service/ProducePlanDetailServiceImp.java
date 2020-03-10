@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.produce.service;
 
 import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailByQualityMapper;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailMapper;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -596,6 +598,113 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         List<Map> varList = producePlanDetailMapper.getMaterialRequisitionGroup(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+
+    @Override
+    public ResultModel listPageMaterialRequisitionGroupDetail(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+
+        //出库单明细表 (出库模块与报废模块)
+        //modelCode:WarehouseOutDetail 出库模块
+        //modelCode:WarehouseScrapDetail 报废模块
+        String modelCode = "WarehouseOutDetail";
+        String typeName = pd.getString("typeName");
+        if (typeName != null && "报废处理".equals(typeName)) {
+            modelCode = "WarehouseScrapDetail";
+        }else if (typeName != null && "领料明细".equals(typeName)) {
+            modelCode = "MaterialRequisitionDetail";
+        }
+
+        List<Column> columnList = columnService.findColumnList(modelCode);
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        Pagination pg =  HttpUtils.parsePagination(pd);
+        result.put("pageData", pg);
+
+        List<Map> varList = producePlanDetailMapper.getMaterialRequisitionGroupDetail(pd,pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //priceCount 计价单位数量
+                BigDecimal priceCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("priceCount") != null) {
+                    priceCount = (BigDecimal)mapObject.get("priceCount");
+                }
+
+                //n2pIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String n2pIsScale = new String();
+                if (mapObject.get("n2pIsScale") != null) {
+                    n2pIsScale = mapObject.get("n2pIsScale").toString().trim();
+                }
+
+                //小数位数 (最小:0位 最大:4位)
+                Integer n2pDecimalCount = Integer.valueOf(2);
+                if (mapObject.get("n2pDecimalCount") != null) {
+                    n2pDecimalCount = (Integer)mapObject.get("n2pDecimalCount");
+                }
+                priceCount = StringUtil.scaleDecimal(priceCount, n2pIsScale, n2pDecimalCount);
+                mapObject.put("priceCount", priceCount.toString());
+
+                //n2pFormula (计量单位转换计价单位公式)
+                String n2pFormula = (String)mapObject.get("n2pFormula");
+                //stockCount (计量单位)库存数量
+                BigDecimal stockCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("stockCount") != null) {
+                    stockCount = (BigDecimal)mapObject.get("stockCount");
+                }
+
+                //stockCountByPrice        (计价单位)库存数量
+                BigDecimal stockCountByPrice = EvaluateUtil.countFormulaN2P(stockCount, n2pFormula);
+                stockCountByPrice = StringUtil.scaleDecimal(stockCountByPrice, n2pIsScale, n2pDecimalCount);
+                mapObject.put("stockCountByPrice", stockCountByPrice.toString());
+
+                //count 出库数量(计量单位)
+                BigDecimal count = BigDecimal.valueOf(0D);
+                if (mapObject.get("count") != null) {
+                    count = (BigDecimal)mapObject.get("count");
+                }
+                //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
+                String p2nIsScale = new String();
+                if (mapObject.get("p2nIsScale") != null) {
+                    p2nIsScale = mapObject.get("p2nIsScale").toString().trim();
+                }
+
+                //小数位数 (最小:0位 最大:4位)
+                Integer p2nDecimalCount = Integer.valueOf(2);
+                if (mapObject.get("p2nDecimalCount") != null) {
+                    p2nDecimalCount = (Integer)mapObject.get("p2nDecimalCount");
+                }
+                count = StringUtil.scaleDecimal(count, p2nIsScale, p2nDecimalCount);
+                mapObject.put("count", count.toString());
+
+                //executeCount 已完成数量(计量单位)
+                BigDecimal executeCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("executeCount") != null) {
+                    executeCount = (BigDecimal)mapObject.get("executeCount");
+                }
+                executeCount = StringUtil.scaleDecimal(executeCount, p2nIsScale, p2nDecimalCount);
+                mapObject.put("executeCount", executeCount.toString());
+            }
+        }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);

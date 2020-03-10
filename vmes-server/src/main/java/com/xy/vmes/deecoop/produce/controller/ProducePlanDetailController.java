@@ -98,6 +98,21 @@ public class ProducePlanDetailController {
     }
 
 
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2020-02-27
+     */
+    @PostMapping("/produce/producePlanDetail/listPageMaterialRequisitionGroupDetail")
+    public ResultModel listPageMaterialRequisitionGroupDetail() throws Exception {
+        logger.info("################/produce/producePlanDetail/listPageMaterialRequisitionGroupDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = producePlanDetailService.listPageMaterialRequisitionGroupDetail(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/produce/producePlanDetail/listPageMaterialRequisitionGroupDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
     /**
      * 按货品合并-生产计划明细

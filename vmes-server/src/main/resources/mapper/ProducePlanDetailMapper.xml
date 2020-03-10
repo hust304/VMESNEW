@@ -434,4 +434,139 @@
     </select>
 
 
+
+
+
+    <select id="getMaterialRequisitionGroupDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        parentId,warehouseId,productId,code,round(sum(ifnull(count,0)),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,pathName,warehouseName,
+        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
+        priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,warehouseProductId,
+        n2pFormula,n2pIsScale,n2pDecimalCount,
+        p2nFormula,p2nIsScale,p2nDecimalCount,stockCount,stockCountByPrice,
+        price,productPrice,priceSum,productPriceSum,warehouseProductStockCount,
+        round(sum(ifnull(executeCount,0)),2) executeCount
+        from (
+        select
+        detail.id id,
+        detail.parent_id parentId,
+        detail.warehouse_id warehouseId,
+        warehouse.path_name pathName,
+        warehouse.name warehouseName,
+        detail.product_id productId,
+        detail.code code,
+        detail.count count,
+        detail.state state,
+        case when detail.state=-1 then '已取消' when detail.state=0 then '待派单' when detail.state=1 then '执行中' when detail.state=2 then '已完成' else null end stateName,
+        detail.cuser cuser,
+        DATE_FORMAT(detail.cdate,'%Y-%m-%d %T') cdate,
+        detail.uuser uuser,
+        DATE_FORMAT(detail.udate,'%Y-%m-%d %T') udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+        detail.qrcode qrcode,
+        detail.business_id businessId,
+        detail.warehouse_product_id warehouseProductId,
+
+        detail.product_unit productUnit,
+        detail.product_count productCount,
+        detail.price_unit priceUnit,
+        detail.price_count priceCount,
+        ifnull(detail.price, 0) price,
+        round(ifnull(detail.product_price, 0), 2)  productPrice,
+
+        round((ifnull(detail.price_count, 0) * ifnull(detail.price, 0)), 2) priceSum,
+        round((ifnull(detail.count, 0) * ifnull(detail.product_price, 0)), 2) productPriceSum,
+        round(ifnull(warehouseProduct.stock_count,0),2) warehouseProductStockCount,
+
+        prod.code sysProductCode,
+        prod.source_code custProductCode,
+        CASE
+        WHEN prod.source_code is null THEN prod.code
+        WHEN prod.source_code is not null THEN prod.source_code
+        ELSE null
+        END productCode,
+        prod.name productName,
+        prod.spec productSpec,
+        prod.genre productGenre,
+        genre.name productGenreName,
+        productUnit.name productUnitName,
+        priceUnit.name priceUnitName,
+        ifnull(prod.stock_count, 0) stockCount,
+        '' stockCountByPrice,
+
+        priceUnitFormula.np_formula n2pFormula,
+        priceUnitFormula.n2p_is_scale n2pIsScale,
+        priceUnitFormula.n2p_decimal_count n2pDecimalCount,
+
+        priceUnitFormula.pn_formula p2nFormula,
+        priceUnitFormula.p2n_is_scale p2nIsScale,
+        priceUnitFormula.p2n_decimal_count p2nDecimalCount,
+
+        whout.code warehouseOutCode,
+        whout.warehouse_id parentWarehouseId,
+        outexecute.count executeCount
+        from
+        vmes_warehouse_out_detail detail
+        left join vmes_warehouse_out whout on whout.id = detail.parent_id
+        left join vmes_warehouse_out_execute outexecute on outexecute.detail_id = detail.id and outexecute.isdisable = '1'
+        left join vmes_warehouse warehouse on warehouse.id = detail.warehouse_id
+        left join vmes_product prod on prod.id = detail.product_id
+        left join vmes_dictionary genre on prod.genre = genre.id
+        left join vmes_dictionary productUnit on detail.product_unit = productUnit.id
+        left join vmes_dictionary priceUnit on detail.price_unit = priceUnit.id
+        <!--货品计价单位公式-->
+        left join vmes_product_unit priceUnitFormula on detail.product_id = priceUnitFormula.product_id and detail.price_unit = priceUnitFormula.unit and priceUnitFormula.isdisable = '1'
+        left join vmes_warehouse_product warehouseProduct on detail.warehouse_product_id = warehouseProduct.id
+        <where>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and detail.parent_id =  #{parentId}
+            </if>
+            <if test="detailId != null and detailId != ''">
+                and detail.id =  #{detailId}
+            </if>
+
+            <if test="businessCode != null and businessCode != ''">
+                and whout.business_code =  #{businessCode}
+            </if>
+
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and whout.company_id = #{currentCompanyId}
+            </if>
+
+
+            <if test="productCode != null and productCode != ''">
+                and prod.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                and prod.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
+            </if>
+            <if test="productSpec != null and productSpec != ''">
+                and prod.spec LIKE CONCAT(CONCAT('%', #{productSpec}),'%')
+            </if>
+            <if test="productGenreName != null and productGenreName != ''">
+                and genre.name LIKE CONCAT(CONCAT('%', #{productGenreName}),'%')
+            </if>
+            <if test="productUnitName != null and productUnitName != ''">
+                and unit.name LIKE CONCAT(CONCAT('%', #{productUnitName}),'%')
+            </if>
+
+            <if test="detailState != null and detailState != ''">
+                and detail.state =  #{detailState}
+            </if>
+        </where>
+        ) tab
+        group by productId
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
 </mapper>

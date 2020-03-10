@@ -53,6 +53,8 @@ public interface ProducePlanDetailMapper extends BaseMapper<ProducePlanDetail> {
     List<Map> getMaterialRequisition(PageData pd, Pagination pg);
 
     List<Map> getMaterialRequisitionGroup(PageData pd, Pagination pg);
+
+    List<Map> getMaterialRequisitionGroupDetail(PageData pd, Pagination pg);
 }
 
 
