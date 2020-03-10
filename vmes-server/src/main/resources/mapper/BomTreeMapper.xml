@@ -198,6 +198,47 @@
             (replace(uuid(), '-', ''),'BomTreeProduct','id','id',0, '1','0','1','0',now(), 'admin')
 
 
+
+
+
+
+            delete from vmes_column where model_code = 'BomTreeProductPlan' ;
+            insert into vmes_column (
+            id,model_code,title_key,title_name,serial_number,
+            isdisable,ishide,isedit,ismust,cdate,
+            cuser
+            ) VALUES
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','code','产品编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','name','产品名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','spec','规格型号',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','genre','产品属性',4, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','unit','计量单位',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','ratio','物料用量',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','sumRatio','产品转化用量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','splitCount','拆分数量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','planCount','领料数量',6, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','stockCount','库存数量',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','assembledCount','可组装数量',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','maxCount','最大可生产数量',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','expectCount','期望生产数量',10, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','lackCount','缺少数量',11, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','bomId','vmes_bom id',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','bomTreeId','产品BomTreeId',13, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','pid','上级产品id',14, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','layer','级别',15, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','cuser','创建用户id',16, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','cdate','创建时间',17, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','uuser','修改用户id',18, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','udate','修改时间',19, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','isdisable','是否启用',20, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','remark','备注',21, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','pathId','路径',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','edate','期望到货日期',23, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'BomTreeProductPlan','id','id',0, '1','0','1','0',now(), 'admin')
+
+
+
+
             delete from vmes_column where model_code = 'BomTreeProductChildren' ;
             insert into vmes_column (
             id,model_code,title_key,title_name,serial_number,

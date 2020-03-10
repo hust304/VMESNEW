@@ -220,6 +220,11 @@ public class BomTreeServiceImp implements BomTreeService {
         ResultModel model = new ResultModel();
         Map result = new HashMap();
         List<Column> columnList = columnService.findColumnList("BomTreeProduct");
+        String modelCode = pd.getString("modelCode");
+        if(!StringUtils.isEmpty(modelCode)){
+            columnList = columnService.findColumnList(modelCode);
+        }
+
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
