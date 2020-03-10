@@ -4,6 +4,8 @@ import com.xy.vmes.entity.ProducePlanDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -120,6 +122,22 @@ public interface ProducePlanDetailService {
      * @return
      */
     boolean isAllowDeleteByDetail(List<ProducePlanDetail> dtlList);
+
+    /**
+     * 获取jsonMapList中 (计划开始日期, 计划结束日期)
+     * 遍历jsonMapList
+     *   计划开始日期: jsonMapList中最小值(计划开始日期)
+     *   计划结束日期: jsonMapList中最大值(计划结束日期)
+     *
+     * 返回值 Map<String, Date>
+     *     mapKey:
+     *       beginDate: 计划开始日期
+     *       endDate  : 计划结束日期
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Date> findBeginEndDate(List<Map<String, String>> jsonMapList);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;

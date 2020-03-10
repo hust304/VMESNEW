@@ -18,6 +18,7 @@ import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -296,6 +297,86 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
         return true;
     }
+
+    /**
+     * 获取jsonMapList中 (计划开始日期, 计划结束日期)
+     * 遍历jsonMapList
+     *   计划开始日期: jsonMapList中最小值(计划开始日期)
+     *   计划结束日期: jsonMapList中最大值(计划结束日期)
+     *
+     * 返回值 Map<String, Date>
+     *     mapKey:
+     *       beginDate: 计划开始日期
+     *       endDate  : 计划结束日期
+     *
+     * @param jsonMapList
+     * @return
+     */
+    public Map<String, Date> findBeginEndDate(List<Map<String, String>> jsonMapList) {
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+        Map<String, Date> valueMap = new HashMap<>();
+        valueMap.put("beginDate", sysDate);
+        valueMap.put("endDate", sysDate);
+        if (jsonMapList == null || jsonMapList.size() == 0) {return valueMap;}
+
+        //遍历 jsonMapList 添加生产计划明细
+        List<ProducePlanDetail> dtlList = new ArrayList<>();
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> mapObject : jsonMapList) {
+                ProducePlanDetail dtlObj = new ProducePlanDetail();
+
+                Date beginDate_dtl = sysDate;
+                String beginDate_dtl_Str = mapObject.get("beginDate");
+                if (beginDate_dtl_Str != null && beginDate_dtl_Str.trim().length() > 0) {
+                    beginDate_dtl = DateFormat.dateString2Date(beginDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+                }
+                dtlObj.setBeginDate(beginDate_dtl);
+
+                //计划结束日期 默认(计划开始日期)
+                Date endDate_dtl = beginDate_dtl;
+                String endDate_dtl_Str = mapObject.get("endDate");
+                if (endDate_dtl_Str != null && endDate_dtl_Str.trim().length() > 0) {
+                    endDate_dtl = DateFormat.dateString2Date(endDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+                }
+                dtlObj.setEndDate(endDate_dtl);
+
+                dtlList.add(dtlObj);
+            }
+        }
+
+        long minBeginLong = -1;
+        long maxEndLong = -1;
+        for (int i = 0; i < dtlList.size(); i++) {
+            ProducePlanDetail dtlObj = dtlList.get(i);
+
+            //beginDate 计划开始日期
+            Date beginDate = dtlObj.getBeginDate();
+            long beginL = beginDate.getTime();
+
+            //endDate 计划结束日期
+            Date endDate = dtlObj.getEndDate();
+            long endL = endDate.getTime();
+
+            if (i == 0) {
+                minBeginLong = beginDate.getTime();
+                maxEndLong = endDate.getTime();
+            } else if (i > 0) {
+                if (beginL < minBeginLong) {minBeginLong = beginL;}
+                if (endL > maxEndLong) {maxEndLong = endL;}
+            }
+        }
+
+        Date beginDate = new Date(minBeginLong);
+        valueMap.put("beginDate", beginDate);
+
+        Date maxDate = new Date(maxEndLong);
+        valueMap.put("endDate", maxDate);
+
+        return valueMap;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
@@ -753,6 +834,40 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         }
 
         return valueMap;
+    }
+
+    public static void main(String args[]) throws Exception {
+        ProducePlanDetailServiceImp testService = new ProducePlanDetailServiceImp();
+
+        List<Map<String, String>> jsonMapList = new ArrayList<>();
+        Map<String, String> map_1 = new HashMap<>();
+        map_1.put("beginDate", "2020-03-05");
+        map_1.put("endDate", "2020-03-05");
+//        map_1.put("beginDate", null);
+//        map_1.put("endDate", null);
+        jsonMapList.add(map_1);
+
+        Map<String, String> map_2 = new HashMap<>();
+        map_2.put("beginDate", "2020-03-01");
+        map_2.put("endDate", "2020-03-03");
+//        map_2.put("beginDate", null);
+//        map_2.put("endDate", null);
+        jsonMapList.add(map_2);
+
+        Map<String, String> map_3 = new HashMap<>();
+        map_3.put("beginDate", "2020-02-06");
+        map_3.put("endDate", "2020-02-10");
+        jsonMapList.add(map_3);
+
+        Map<String, Date> valueMap = testService.findBeginEndDate(jsonMapList);
+        Date beginDate = valueMap.get("beginDate");
+        String beginDateStr = DateFormat.date2String(beginDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        Date endDate = valueMap.get("endDate");
+        String endDateStr = DateFormat.date2String(endDate, DateFormat.DEFAULT_DATE_FORMAT);
+
+        System.out.println("beginDateStr:" + beginDateStr + " endDateStr:" + endDateStr);
+
     }
 
 }
