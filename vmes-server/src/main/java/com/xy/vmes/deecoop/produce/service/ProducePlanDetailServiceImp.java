@@ -415,6 +415,8 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                         } else if (days > 0) {
                             isExceedTime = "0";
                             dayCount = Integer.valueOf(days).toString() + " 天";
+                        } else if (days == 0) {
+                            dayCount = "0 天";
                         }
                     }
 
@@ -437,6 +439,8 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                             //isExceedTime:是否逾期 1:逾期 0:非逾期
                             isExceedTime = "1";
                             dayCount = Integer.valueOf(days * -1).toString() + " 天";
+                        } else if (days == 0) {
+                            dayCount = "0 天";
                         }
 //                        else if (days > 0) {
 //                            isExceedTime = "0";
