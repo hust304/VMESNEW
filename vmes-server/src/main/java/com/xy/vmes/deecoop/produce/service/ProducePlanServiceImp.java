@@ -267,7 +267,7 @@ public class ProducePlanServiceImp implements ProducePlanService {
 
                     //生产计划状态 2:已完成
                 } else if (2 == stateInt.intValue()) {
-                    //(计划完成日期 - 计划结束日期) 差值
+                    //(计划结束日期 - 计划完成日期) 差值
 
                     //planDate 计划完成日期 (yyyy-MM-dd)
                     String planDateStr = (String)mapObject.get("planDate");
