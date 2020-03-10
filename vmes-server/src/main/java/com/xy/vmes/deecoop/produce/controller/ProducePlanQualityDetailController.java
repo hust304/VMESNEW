@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.produce.controller;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
@@ -17,10 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：vmes_produce_plan_quality_detail:生产计划明细检验报工表 Controller
@@ -198,6 +196,11 @@ public class ProducePlanQualityDetailController {
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //3. 修改(生产计划明细, 生产计划)状态
+
+        //获取系统时间 (yyyy-MM-dd)
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
         //获取(生产明细id,计划数量,合格数量,不合格数量)Map<String, Map<String, Object>>结构体
         Map<String, Map<String, Object>> detailMap = planDetailToolService.findProducePlanDetailMap(planId);
         for (ProducePlanQualityDetail dtlObject : qualityDtlList) {
@@ -219,6 +222,8 @@ public class ProducePlanQualityDetailController {
                     && (fineCount.doubleValue() - dtlCount.doubleValue()) >= 0
                 ) {
                     editPlanDetail.setState("2");
+                    //planDate 计划完成日期(yyyy-MM-dd)
+                    editPlanDetail.setPlanDate(sysDate);
                 } else if (dtlCount != null && fineCount != null
                     && fineCount.doubleValue() > 0
                     && (dtlCount.doubleValue() - fineCount.doubleValue()) > 0
@@ -234,8 +239,14 @@ public class ProducePlanQualityDetailController {
         editPlan.setId(planId);
 
         List<ProducePlanDetail> planDtlList = planDetailService.findProducePlanDetailListByParentId(planId);
+        //状态 (1:未完成 2:已完成 -1:已取消)
         String planState = planDetailService.findParentStateByDetail(planDtlList);
         editPlan.setState(planState);
+        //planDate 计划完成日期(yyyy-MM-dd)
+        if ("2".equals(planState)) {
+            editPlan.setPlanDate(sysDate);
+        }
+
         planService.update(editPlan);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
