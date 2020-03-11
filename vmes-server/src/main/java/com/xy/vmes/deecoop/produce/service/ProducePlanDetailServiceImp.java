@@ -931,15 +931,30 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             }
             valueMap.put("orderCodes", orderCodes);
 
-            //订单约定交期
-            if (tableMapList != null && tableMapList.size() == 1) {
-                Map<String, Object> mapData = tableMapList.get(0);
-                String expectDate = new String();
-                if (mapData.get("expectDate") != null) {
-                    expectDate = mapData.get("expectDate").toString().trim();
+            //获取最小订单约定交期 expectDate(yyyy-MM-dd)
+            long minExpectDateLong = -1;
+            if (tableMapList != null && tableMapList.size() > 0) {
+                for (int i = 0; i < tableMapList.size(); i++) {
+                    Map<String, Object> mapData = tableMapList.get(i);
+
+                    String expectDateStr = (String)mapData.get("expectDate");
+                    Date expectDate = DateFormat.dateString2Date(expectDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    long expectL = expectDate.getTime();
+
+                    if (i == 0) {
+                        minExpectDateLong = expectL;
+                    } else if (i > 0) {
+                        if (expectL < minExpectDateLong) {minExpectDateLong = expectL;}
+                    }
                 }
-                valueMap.put("expectDate", expectDate);
             }
+
+            String expectDateStr = new String();
+            if (minExpectDateLong != -1) {
+                Date expectDate = new Date(minExpectDateLong);
+                expectDateStr = DateFormat.date2String(expectDate, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            valueMap.put("expectDate", expectDateStr);
         }
 
         return valueMap;
