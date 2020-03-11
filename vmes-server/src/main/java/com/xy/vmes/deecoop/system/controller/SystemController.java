@@ -5,18 +5,15 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
 import com.xy.vmes.service.*;
-import com.yvan.Conv;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.cache.RedisClient;
 import com.yvan.common.util.Common;
-import com.yvan.common.util.MailUtil;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -270,38 +267,6 @@ public class SystemController {
 //        logger.info("################/system/createSecurityCode 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
 //        return model;
 //    }
-
-    @GetMapping("/system/emailTest")
-    public ResultModel emailTest() throws Exception {
-        logger.info("################/system/emailTest 执行开始 ################# ");
-
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        //邮箱: email
-        String email = pageData.getString("email").trim();
-        //标题
-        String title = pageData.getString("title").trim();
-        //内容
-        String content = pageData.getString("content").trim();
-
-        List<String> mailpara = new ArrayList();
-        mailpara.add("");// 0:发送人
-        mailpara.add(email);// 1:主送
-        mailpara.add("");// 2:抄送
-        mailpara.add(title);// 3:标题
-        mailpara.add(content);// 4:内容
-        // 5:附件
-
-        try {
-            MailUtil.mailSend(mailpara);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        logger.info("################/system/emailTest 执行结束 ################# ");
-        return model;
-    }
 
     /**
      * 主页企业试用申请

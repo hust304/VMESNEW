@@ -4,9 +4,6 @@ import java.util.*;
 
 public class Common {
     //系统邮件服务配置
-    public final static String SYS_MAIL_SERVER_SMTP = "smtp.163.com";
-    public final static String SYS_MAIL_USER_NAME = "chen_gang7906";
-    public final static String SYS_MAIL_PASSWORD = "wdmzjcg79";
     public final static String SYS_MAIL_SEND = "chen_gang7906@163.com";
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     //linux系统:文件系统根路径
