@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：生产计划明细检验报工关联入库明细 Mapper.xml
+创建人：陈刚
+创建时间：2020-03-11
+ -->
+<mapper namespace="com.xy.vmes.deecoop.produce.dao.ProducePlanQualityDetailOnInMapper">
+
+    <select id="findProducePlanQualityDetailOnInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            qualityDtl.id id,
+            qualityDtl.plan_id planId,
+            qualityDtl.plan_dtl_id planDtlId,
+            qualityDtl.product_id productId,
+            qualityDtl.unit_id unitId,
+
+            qualityDtl.in_detail_id inDetailId,
+            round(ifnull(qualityDtl.fine_count, 0), 2) fineCount,
+            round(ifnull(qualityDtl.bad_count, 0), 2) badCount,
+            qualityDtl.cuser cuser,
+            DATE_FORMAT(qualityDtl.cdate,'%Y-%m-%d') cdate,
+
+            qualityDtl.uuser uuser,
+            qualityDtl.udate udate,
+            qualityDtl.remark remark,
+            qualityDtl.isdisable isdisable
+        from vmes_produce_plan_quality_detail qualityDtl
+        <where>
+            <!--入库单明细-->
+            <if test="inParentId != null and inParentId != ''" >
+                and qualityDtl.in_detail_id in (
+                    select id from vmes_warehouse_in_detail
+                    where parent_id = #{inParentId}
+                )
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

@@ -34,6 +34,9 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
     @Autowired
     private PurchaseRetreatDetailOnOutService purchaseRetreatService;
 
+    @Autowired
+    private ProducePlanQualityDetailOnInService producePlanService;
+
 //    /**
 //     * 获取仓库属性(复杂版仓库,简版仓库)
 //     * 1. 根据(用户角色id)查询角色菜单表(vmes_role_menu)
@@ -202,8 +205,22 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
             if (mapList != null && mapList.size() > 0) {
                 return Boolean.TRUE;
             }
-
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //生产部分
+        //生产入库 2c4a104aedc046848455f5fa6e3da87c produceIn
+        if (Common.DICTIONARY_MAP.get("produceIn").equals(type.trim())) {
+            PageData findMap = new PageData();
+            findMap.put("inParentId", parentId);
+            //SQL查询语句: ProducePlanQualityDetailOnInMapper.findProducePlanQualityDetailOnInDetail
+            List<Map> mapList = producePlanService.findProducePlanQualityDetailOnInDetail(findMap, null);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+        }
+
+        //8e35209f19804e94940f076c8d71b955 生产退料 -(部门)
 
         return Boolean.FALSE;
     }
