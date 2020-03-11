@@ -4,10 +4,7 @@ import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.ProducePlan;
 import com.xy.vmes.entity.ProducePlanDetail;
 import com.xy.vmes.entity.ProducePlanDetailChild;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.ProducePlanDetailChildService;
-import com.xy.vmes.service.ProducePlanDetailService;
-import com.xy.vmes.service.ProducePlanService;
+import com.xy.vmes.service.*;
 
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -43,6 +40,8 @@ public class ProducePlanController {
 
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private MailService mailService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -54,6 +53,12 @@ public class ProducePlanController {
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
         ResultModel model = producePlanService.listPageProducePlan(pd);
+
+        mailService.sendSimpleMail("邮件主题",
+                "邮件内容",
+                "chen_gang7906@163.com",
+                "chen_gang7906@163.com");
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/produce/producePlan/listPageProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
