@@ -23,18 +23,19 @@ public class MailServiceImp implements MailService {
         if (subject == null || subject.trim().length() == 0) {return;}
         if (content == null || content.trim().length() == 0) {return;}
         if (toWho == null || toWho.trim().length() == 0) {return;}
-        if (ccPeoples == null || ccPeoples.trim().length() == 0) {return;}
-
-        String[] toArry = toWho.split("\\;");
-        String[] ccArry = ccPeoples.split("\\;");
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject(subject); //邮件主题
         mailMessage.setText(content); //邮件正文
-
         mailMessage.setFrom(Common.SYS_MAIL_SEND);//发送邮箱
+
+        String[] toArry = toWho.split("\\;");
         mailMessage.setTo(toArry);//主送人 setTo(String[] to) 支持多人
-        mailMessage.setCc(ccArry);//抄送人 setCc(String[] cc) 支持多人
+
+        if (ccPeoples != null && ccPeoples.trim().length() > 0) {
+            String[] ccArry = ccPeoples.split("\\;");
+            mailMessage.setCc(ccArry);//抄送人 setCc(String[] cc) 支持多人
+        }
 
         mailSender.send(mailMessage);
     }
