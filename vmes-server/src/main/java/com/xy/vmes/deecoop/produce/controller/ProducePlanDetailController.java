@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.produce.controller;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.service.ProducePlanDetailService;
 
@@ -174,13 +175,18 @@ public class ProducePlanDetailController {
             String jsonStr = this.findJsonStringByMapList(mapTempList);
             productMap.put("jsonStr", jsonStr);
 
-            //获取订单编号',' 逗号分隔的字符串
-            String orderCodes = this.findOrderCodeByMapList(mapTempList);
+            //获取(销售订单编号;订单最小约定交期)
+            Map<String, String> valueMap = this.findOrderCodeByMapList(mapTempList);
+            //mapKey:orderCodes:销售订单编号
+            String orderCodes = valueMap.get("orderCodes");
             productMap.put("orderCode", orderCodes);
+
+            //mapKey:minExpectDate:订单最小约定交期
+            String minExpectDate = valueMap.get("minExpectDate");
+            productMap.put("expectDate", minExpectDate);
 
             mergeProductMapList.add(productMap);
         }
-
         model.put("mergeProductList", mergeProductMapList);
 
         Long endTime = System.currentTimeMillis();
@@ -265,14 +271,26 @@ public class ProducePlanDetailController {
         return new String();
     }
 
+    /**
+     * 获取(销售订单编号;订单最小约定交期)
+     * 返回值:Map<String, String>
+     *     mapKey:
+     *         orderCodes:    销售订单编号
+     *         minExpectDate: 订单最小约定交期(yyyy-MM-dd)
+     *
+     * @param mapList
+     * @return
+     * @throws Exception
+     */
+    private Map<String, String> findOrderCodeByMapList(List<Map<String, String>> mapList) throws Exception {
+        Map<String, String> valueMap = new HashMap<>();
+        valueMap.put("orderCodes", new String());
+        valueMap.put("minExpectDate", new String());
+        if (mapList == null || mapList.size() == 0) {return valueMap;}
 
-    private String findOrderCodeByMapList(List<Map<String, String>> mapList) throws Exception {
-        if (mapList == null || mapList.size() == 0) {return new String();}
-
-        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        //orderDetailMap<销售订单明细id, 销售订单明细id> //获取不重复的销售订单明细id
         Map<String, String> orderDetailMap = new LinkedHashMap<>();
         for (Map<String, String> mapData : mapList) {
-
             //jsonStr 按货品合并JsonString
             String jsonStr = mapData.get("jsonStr");
             if (jsonStr != null && jsonStr.trim().length() > 0) {
@@ -296,8 +314,9 @@ public class ProducePlanDetailController {
                 orderDetailMap.put(orderDtlId, orderDtlId);
             }
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 并查询销售订单明细
         StringBuffer orderDtlIdBuf = new StringBuffer();
         if (orderDetailMap != null) {
             for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
@@ -309,6 +328,7 @@ public class ProducePlanDetailController {
         }
 
         StringBuffer orderCodeBuf = new StringBuffer();
+        long minExpectDateLong = -1;
         if (orderDtlIdBuf != null && orderDtlIdBuf.toString().trim().length() > 0) {
             String orderDtlIds = StringUtil.stringTrimSpace(orderDtlIdBuf.toString().trim());
             orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
@@ -316,11 +336,30 @@ public class ProducePlanDetailController {
             PageData findMap = new PageData();
             findMap.put("ids", orderDtlIds);
             List<Map> tableMapList = orderDetailService.getDataListPage(findMap, null);
+
+            //获取(销售订单编号)','分隔的字符串
             if (tableMapList != null && tableMapList.size() > 0) {
                 for (Map<String, Object> mapData : tableMapList) {
                     String sysCode = (String)mapData.get("sysCode");
                     if (sysCode != null && sysCode.trim().length() > 0) {
                         orderCodeBuf.append(sysCode).append(",");
+                    }
+                }
+            }
+
+            //获取(订单最小约定交期)expectDate(yyyy-MM-dd)
+            if (tableMapList != null && tableMapList.size() > 0) {
+                for (int i = 0; i < tableMapList.size(); i++) {
+                    Map<String, Object> mapData = tableMapList.get(i);
+
+                    String expectDateStr = (String)mapData.get("expectDate");
+                    Date expectDate = DateFormat.dateString2Date(expectDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+                    long expectL = expectDate.getTime();
+
+                    if (i == 0) {
+                        minExpectDateLong = expectL;
+                    } else if (i > 0) {
+                        if (expectL < minExpectDateLong) {minExpectDateLong = expectL;}
                     }
                 }
             }
@@ -330,11 +369,17 @@ public class ProducePlanDetailController {
         if (orderCodeBuf != null && orderCodeBuf.toString().trim().length() > 0) {
             orderCodes = StringUtil.stringTrimSpace(orderCodeBuf.toString().trim());
         }
+        valueMap.put("orderCodes", orderCodes);
 
-        return orderCodes;
+        String expectDateStr = new String();
+        if (minExpectDateLong != -1) {
+            Date expectDate = new Date(minExpectDateLong);
+            expectDateStr = DateFormat.date2String(expectDate, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        valueMap.put("minExpectDate", expectDateStr);
+
+        return valueMap;
     }
 
 }
-
-
 
