@@ -116,7 +116,7 @@ public class ProducePlanController {
         addPlan.setBeginDate(beginDate);
 
         //endDate 计划结束日期
-        Date endDate = valueMap.get("endDate");;
+        Date endDate = valueMap.get("endDate");
         addPlan.setEndDate(endDate);
 
         //produceType 生产类型
@@ -505,20 +505,14 @@ public class ProducePlanController {
         String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
         Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
 
+        //遍历jsonMapList 获取(计划开始日期, 计划结束日期)
+        Map<String, Date> valueDateMap = producePlanDetailService.findBeginEndDate(jsonMapList);
         //beginDate 计划开始日期
-        Date beginDate = sysDate;
-        String beginDateStr = pageData.getString("beginDate");
-        if (beginDateStr != null && beginDateStr.trim().length() > 0) {
-            beginDate = DateFormat.dateString2Date(beginDateStr, DateFormat.DEFAULT_DATE_FORMAT);
-        }
+        Date beginDate = valueDateMap.get("beginDate");
         editPlan.setBeginDate(beginDate);
 
         //endDate 计划结束日期
-        Date endDate = null;
-        String endDateStr = pageData.getString("endDate");
-        if (endDateStr != null && endDateStr.trim().length() > 0) {
-            endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
-        }
+        Date endDate = valueDateMap.get("endDate");
         editPlan.setEndDate(endDate);
 
         //produceType 生产类型
