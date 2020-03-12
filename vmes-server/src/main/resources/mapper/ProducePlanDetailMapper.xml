@@ -138,6 +138,7 @@
 
             (replace(uuid(), '-', ''),'producePlanDetail','isExceedTime','是否逾期(1:逾期 0:非逾期)',34, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'producePlanDetail','dayCount','剩余/逾期',35, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'producePlanDetail','fineBadCount','合格/不合格',36, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -204,6 +205,7 @@
             <!--isExceedTime:是否逾期 1:逾期 0:非逾期 -->
             '' isExceedTime,
             '' dayCount,
+            '' fineBadCount,
 
             <!--页面传递参数字段 -->
             DATE_FORMAT(now(),'%Y-%m-%d') sysDate,

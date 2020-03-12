@@ -471,6 +471,12 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                 String prodInfo = this.findProductInfo(mapObject);
                 mapObject.put("prodInfo", prodInfo);
 
+                //合格/不合格 fineBadCount
+                BigDecimal fineCount = (BigDecimal)mapObject.get("fineCount");
+                BigDecimal badCount = (BigDecimal)mapObject.get("fineCount");
+                String fineBadCount = fineCount.toString() + "&nbsp;/&nbsp;" + badCount.toString();
+                mapObject.put("fineBadCount", fineBadCount);
+
                 //state 生产计划明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
                 String state = (String)mapObject.get("state");
                 Integer stateInt = Integer.valueOf(state);
