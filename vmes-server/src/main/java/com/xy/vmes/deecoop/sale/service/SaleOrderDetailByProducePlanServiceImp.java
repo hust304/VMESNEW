@@ -67,14 +67,15 @@ public class SaleOrderDetailByProducePlanServiceImp implements SaleOrderDetailBy
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-//        if (pd.getString("orderDtlIds") != null) {
-//            String orderDtlIds = pd.getString("orderDtlIds").toString().trim();
-//            if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
-//                orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
-//                orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
-//                pd.put("orderDtlIds", orderDtlIds);
-//            }
-//        }
+        //inOrderDtlState Sql查询 in 连接(明细状态) 销售订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成(发货) -1:已取消)
+        String inOrderDtlState = pd.getString("inOrderDtlState");
+        if (inOrderDtlState != null && inOrderDtlState.trim().length() > 0) {
+            inOrderDtlState = inOrderDtlState.trim();
+
+            inOrderDtlState = StringUtil.stringTrimSpace(inOrderDtlState);
+            inOrderDtlState = "'" + inOrderDtlState.replace(",", "','") + "'";
+            pd.put("inOrderDtlState", inOrderDtlState);
+        }
 
         //设置查询排序方式
         //pd.put("orderStr", "a.cdate asc");

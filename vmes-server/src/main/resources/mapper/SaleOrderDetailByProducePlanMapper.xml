@@ -158,6 +158,12 @@
             <if test="sysCode != null and sysCode != ''" >
                 and saleOrder.sys_code = #{sysCode}
             </if>
+
+            <!--销售订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成(发货) -1:已取消)-->
+            <if test="inOrderDtlState != null and inOrderDtlState != ''" >
+                and orderDtl.state in (${inOrderDtlState})
+            </if>
+
             <if test="customerName != null and customerName != ''">
                 and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
             </if>
