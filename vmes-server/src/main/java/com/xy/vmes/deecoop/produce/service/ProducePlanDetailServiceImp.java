@@ -518,7 +518,9 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                     //endDate 计划结束日期(yyyy-MM-dd)
                     String endDateStr = (String)mapObject.get("endDate");
 
-                    if (planDateStr != null && planDateStr.trim().length() > 0) {
+                    if (planDateStr != null && planDateStr.trim().length() > 0
+                        && endDateStr != null && endDateStr.trim().length() > 0
+                    ) {
                         Date planDate = DateFormat.dateString2Date(planDateStr, DateFormat.DEFAULT_DATE_FORMAT);
                         Date endDate = DateFormat.dateString2Date(endDateStr, DateFormat.DEFAULT_DATE_FORMAT);
 
@@ -528,9 +530,10 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                             //isExceedTime:是否逾期 1:逾期 0:非逾期
                             isExceedTime = "1";
                             dayCount = Integer.valueOf(days * -1).toString() + " 天";
-                        } else if (days == 0) {
-                            dayCount = "0 天";
                         }
+//                        else if (days == 0) {
+//                            dayCount = "0 天";
+//                        }
 //                        else if (days > 0) {
 //                            isExceedTime = "0";
 //                            dayCount = Integer.valueOf(days).toString() + " 天";
