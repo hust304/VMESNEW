@@ -262,6 +262,20 @@ public class ProducePlanQualityDetailController {
 
         for (Map<String, String> mapObject : mapList) {
             ProducePlanQualityDetail detail = (ProducePlanQualityDetail) HttpUtils.pageData2Entity(mapObject, new ProducePlanQualityDetail());
+
+            BigDecimal badCount = BigDecimal.valueOf(0D);
+            String badCountStr = mapObject.get("badCount");
+            if (badCountStr != null && badCountStr.trim().length() > 0) {
+                try {
+                    badCount = new BigDecimal(badCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            badCount = badCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setBadCount(badCount);
+
             objectList.add(detail);
         }
 
