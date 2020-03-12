@@ -287,6 +287,21 @@ public class BomTreeServiceImp implements BomTreeService {
 
                 List<TreeEntity> treeList = bomTreeService.getBomTreeProductList(pageData);
 
+                if(!StringUtils.isEmpty(modelCode)){
+
+                    BigDecimal count = pd.getString("count")!=null?BigDecimal.valueOf(Double.parseDouble(pd.getString("count"))):BigDecimal.ZERO;
+                    BigDecimal setCount = pd.getString("setCount")!=null?BigDecimal.valueOf(Double.parseDouble(pd.getString("setCount"))):BigDecimal.ZERO;
+
+                    if(treeList!=null&&treeList.size()>0){
+                        for(int k=0;k<treeList.size();k++){
+                            TreeEntity treeEntity = treeList.get(k);
+                            treeEntity.setCount(count.setScale(2,BigDecimal.ROUND_HALF_UP));
+                            treeEntity.setSetCount(setCount.setScale(2,BigDecimal.ROUND_HALF_UP));
+                        }
+                    }
+                }
+
+
                 Map map = new HashMap();
                 map.put("productId",productId);
                 map.put("planCount",planCount);

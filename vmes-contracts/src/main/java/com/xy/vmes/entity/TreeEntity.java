@@ -69,6 +69,7 @@ public class TreeEntity implements Cloneable {
     private BigDecimal lackCount;
     private BigDecimal planCount;
     private BigDecimal count;
+    private BigDecimal setCount;
     //子集表头信息
     private List<String> hideTitles;
     private List<LinkedHashMap> titles;
@@ -84,6 +85,14 @@ public class TreeEntity implements Cloneable {
 
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
+
+    public BigDecimal getSetCount() {
+        return setCount;
+    }
+
+    public void setSetCount(BigDecimal setCount) {
+        this.setCount = setCount;
+    }
 
     public String getDataType() {
         return dataType;
