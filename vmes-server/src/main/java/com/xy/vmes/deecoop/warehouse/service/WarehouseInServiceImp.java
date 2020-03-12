@@ -30,12 +30,7 @@ public class WarehouseInServiceImp implements WarehouseInService {
 
     @Autowired
     private WarehouseInMapper warehouseInMapper;
-    @Autowired
-    private CoderuleService coderuleService;
-    @Autowired
-    private FileService fileService;
-    @Autowired
-    private ColumnService columnService;
+
     @Autowired
     private WarehouseService warehouseService;
     @Autowired
@@ -47,8 +42,14 @@ public class WarehouseInServiceImp implements WarehouseInService {
     @Autowired
     private WarehouseInWarehouseProductService warehouseInWarehouseProductService;
 
-
-
+    @Autowired
+    private CoderuleService coderuleService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private ColumnService columnService;
+    @Autowired
+    private WarehouseToolService warehouseToolService;
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2018-10-16
@@ -354,6 +355,21 @@ public class WarehouseInServiceImp implements WarehouseInService {
         }
 
         List<Map> varList = this.getDataListPage(pd,pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String id = (String)mapObject.get("id");
+                String type =(String)mapObject.get("type");
+
+                //isNeedShowEdit 是否显示编辑按钮(1:显示 0:不显示)
+                String isNeedShowEdit = new String("1");
+                Boolean isExist = warehouseToolService.isExistBusinessByWarehouseIn(id, type);
+                if (isExist != null && isExist.booleanValue()) {
+                    isNeedShowEdit = "0";
+                }
+                mapObject.put("isNeedShowEdit", isNeedShowEdit);
+            }
+        }
+
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));

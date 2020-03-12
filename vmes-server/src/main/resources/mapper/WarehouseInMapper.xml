@@ -153,7 +153,8 @@
             (replace(uuid(), '-', ''),'warehouseIn','pid','仓库父节点id',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseIn','pathId','当前仓库路径id',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'warehouseIn','businessCode','业务单号',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'warehouseIn','priceSum','金额',16, '1','1','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''),'warehouseIn','priceSum','金额',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'warehouseIn','isNeedShowEdit','是否显示编辑按钮(1:显示 0:不显示)',17, '1','1','1','0',now(), 'admin')
     </insert>
 
 
@@ -271,8 +272,9 @@
 
             b.name warehouseName,
             b.pid pid,
-            b.path_id pathId
+            b.path_id pathId,
 
+            '' isNeedShowEdit
             <if test="'true' == isNeedPrice">
                 ,inDetail.priceSum
             </if>
