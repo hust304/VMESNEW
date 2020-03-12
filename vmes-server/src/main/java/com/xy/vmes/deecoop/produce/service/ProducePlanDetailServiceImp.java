@@ -473,7 +473,7 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
                 //合格/不合格 fineBadCount
                 BigDecimal fineCount = (BigDecimal)mapObject.get("fineCount");
-                BigDecimal badCount = (BigDecimal)mapObject.get("fineCount");
+                BigDecimal badCount = (BigDecimal)mapObject.get("badCount");
                 String fineBadCount = fineCount.toString() + "&nbsp;/&nbsp;" + badCount.toString();
                 mapObject.put("fineBadCount", fineBadCount);
 
