@@ -2,6 +2,7 @@ package com.xy.vmes.common.util;
 
 import com.xy.vmes.entity.Column;
 import org.apache.commons.lang.StringUtils;
+import org.flowable.task.api.Task;
 
 import java.util.*;
 
@@ -159,6 +160,39 @@ public class ColumnUtil {
         return mapObject;
     }
 
+    public static void addColumnByColumnList(List<Column> columnList, Map<String, String> addColumnMap) {
+        if (addColumnMap == null) {return;}
+
+        List<String> columnKeyList = new ArrayList<>();
+        if (addColumnMap.get("columnKey") != null && addColumnMap.get("columnKey").trim().length() > 0) {
+            String columnKey = addColumnMap.get("columnKey").trim();
+            String[] tempArry = columnKey.split(",");
+            for (String tempStr : tempArry) {
+                columnKeyList.add(tempStr);
+            }
+        }
+
+        List<String> columnNameList = new ArrayList<>();
+        if (addColumnMap.get("columnName") != null && addColumnMap.get("columnName").trim().length() > 0) {
+            String columnName = addColumnMap.get("columnName").trim();
+            String[] tempArry = columnName.split(",");
+            for (String tempStr : tempArry) {
+                columnNameList.add(tempStr);
+            }
+        }
+
+        for (int i = 0; i < columnKeyList.size(); i++) {
+            Column addColumn = new Column();
+
+            addColumn.setModelCode(columnList.get(0).getModelCode());
+            String columnKey = columnKeyList.get(i);
+            addColumn.setTitleKey(columnKey);
+            String columnName = columnNameList.get(i);
+            addColumn.setTitleName(columnName);
+
+            columnList.add(addColumn);
+        }
+    }
 
     public static List<Map> getVarMapList(List<Map> varList,Map<String, Object> titleMap) {
         List<Map> varMapList = new ArrayList();

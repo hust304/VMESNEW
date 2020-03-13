@@ -8,6 +8,7 @@ import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByProducePlanMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleOrderDetailByProducePlanService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -35,6 +36,8 @@ public class SaleOrderDetailByProducePlanServiceImp implements SaleOrderDetailBy
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     public List<Map> listOrderDetaiByProducePlan(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
@@ -58,6 +61,12 @@ public class SaleOrderDetailByProducePlanServiceImp implements SaleOrderDetailBy
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
+        }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
         }
 
         //获取指定栏位字符串-重新调整List<Column>
@@ -95,8 +104,14 @@ public class SaleOrderDetailByProducePlanServiceImp implements SaleOrderDetailBy
 
         List<Map> varList = this.listOrderDetaiByProducePlan(pd, pg);
         if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
             for(int i=0; i < varList.size(); i++){
                 Map<String, Object> objectMap = varList.get(i);
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
+                objectMap.put("prodInfo", prodInfo);
                 //(p2n:计价转换计量)///////////////////////////////////////////////////////////////////////////////////////////
                 String p2nFormula = (String)objectMap.get("p2nFormula");
 
