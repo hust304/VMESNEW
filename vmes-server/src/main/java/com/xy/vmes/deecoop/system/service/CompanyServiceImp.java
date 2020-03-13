@@ -794,18 +794,18 @@ public class CompanyServiceImp implements CompanyService {
         return model;
     }
 
-    @Override
-    public ResultModel getCompanyInfo(PageData pd) throws Exception {
-        ResultModel model = new ResultModel();
-        Map companyInfo = companyMapper.getCompanyInfo(pd);
-        if(companyInfo!=null){
-            model.putResult(companyInfo);
-        }else{
-            model.putCode("1");
-            model.putMsg("没有找到公司信息！");
-        }
-        return model;
-    }
+//    @Override
+//    public ResultModel getCompanyInfo(PageData pd) throws Exception {
+//        ResultModel model = new ResultModel();
+//        Map companyInfo = companyMapper.getCompanyInfo(pd);
+//        if(companyInfo!=null){
+//            model.putResult(companyInfo);
+//        }else{
+//            model.putCode("1");
+//            model.putMsg("没有找到公司信息！");
+//        }
+//        return model;
+//    }
 
     @Override
     public ResultModel listPageCompanyAdmins(PageData pd) throws Exception {

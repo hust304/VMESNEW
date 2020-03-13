@@ -1,6 +1,9 @@
 package com.xy.vmes.deecoop.system.controller;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.DateFormat;
+import com.xy.vmes.entity.Department;
+import com.xy.vmes.entity.User;
 import com.xy.vmes.service.*;
 import com.yvan.*;
 import com.yvan.springmvc.ResultModel;
@@ -12,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 说明：企业管理-企业和企业账号或企业管理员Controller
  * @author 陈刚
@@ -21,9 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class CompanyController {
     private Logger logger = LoggerFactory.getLogger(CompanyController.class);
+
     @Autowired
     private CompanyService companyService;
-
+    @Autowired
+    private DepartmentService departmentService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ColumnService columnService;
@@ -120,8 +131,60 @@ public class CompanyController {
     public ResultModel getCompanyInfo() throws Exception {
         logger.info("################/system/company/getCompanyInfo 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        ResultModel model = companyService.getCompanyInfo(pd);
+
+        PageData pageData = HttpUtils.parsePageData();
+        ResultModel model = new ResultModel();
+
+        String companyId = pageData.getString("currentCompanyId");
+        String userId = pageData.getString("cuser");
+
+        PageData findMap = new PageData();
+        findMap.put("id", companyId);
+        //组织类型(1:公司 2:部门)
+        //findMap.put("organizeType", "1");
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        Department companyDB = departmentService.findDepartment(findMap);
+        if (companyDB == null) {
+            model.putCode("1");
+            model.putMsg("系统无该企业信息！");
+        }
+
+        Map<String, String> valueMap = new HashMap<>();
+        //validityDate 到期日期
+        String validityDate = new String();
+        if (companyDB != null && companyDB.getCompanyValidityDate() != null) {
+            //company_validity_date companyValidityDate 有效期(yyyy-MM-dd)
+            validityDate = DateFormat.date2String(companyDB.getCompanyValidityDate(), DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        valueMap.put("validityDate", validityDate);
+
+        //remainingDays 剩余天数
+        String remainingDays = new String();
+        if (companyDB != null && companyDB.getCompanyValidityDate() != null) {
+            //系统日期(yyyy-MM-dd)
+            String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+            Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+            //剩余天数:(到期日期 - 系统日期) -- findDayOfYear(系统日期, 到期日期)
+            int days = DateFormat.findDayOfYear (sysDate, companyDB.getCompanyValidityDate());
+            if (days >= 0) {
+                remainingDays = Integer.valueOf(days).toString();
+            } else if (days < 0) {
+                remainingDays = "已到期";
+            }
+        }
+        valueMap.put("remainingDays", remainingDays);
+
+        //enableDate 启用日期(yyyy-MM-dd)
+        String enableDateStr = new String();
+        User userDB = userService.findUserById(userId);
+        if (userDB != null && userDB.getCdate() != null) {
+            enableDateStr = DateFormat.date2String(userDB.getCdate(), DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        valueMap.put("enableDate", enableDateStr);
+
+        model.putResult(valueMap);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/company/getCompanyInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

@@ -34,5 +34,5 @@ public interface CompanyMapper  {
      */
     void insertWarehouseBySpare(Map<String, Object> valueMap);
 
-    Map getCompanyInfo(PageData pd);
+    //Map getCompanyInfo(PageData pd);
 }

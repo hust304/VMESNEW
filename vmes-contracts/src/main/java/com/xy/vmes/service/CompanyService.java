@@ -97,5 +97,5 @@ public interface CompanyService {
 
     ResultModel listPageCompanyAdmins(PageData pd) throws Exception;
 
-    ResultModel getCompanyInfo(PageData pd) throws Exception;
+    //ResultModel getCompanyInfo(PageData pd) throws Exception;
 }
