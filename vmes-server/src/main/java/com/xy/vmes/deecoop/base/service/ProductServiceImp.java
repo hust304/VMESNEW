@@ -40,6 +40,8 @@ public class ProductServiceImp implements ProductService {
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -582,9 +584,15 @@ public class ProductServiceImp implements ProductService {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //设定指定(是否需要四舍五入, 小数位数)
         if(varList != null && varList.size() > 0) {
-            for (Map<String, Object> mapObject : varList) {
-                //货品(计量单位)
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
 
+            for (Map<String, Object> mapObject : varList) {
+                //货品信息
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+
+                //货品(计量单位)
                 //是否需要四舍五入
                 String n2pIsScale = new String();
                 if (mapObject.get("n2pIsScale") != null) {

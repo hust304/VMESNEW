@@ -241,6 +241,7 @@
             (replace(uuid(), '-', ''), 'product', 'pictureCode', '图号', 32, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
             (replace(uuid(), '-', ''), 'product', 'property', '自定义属性', 33, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+            (replace(uuid(), '-', ''), 'product', 'prodInfo', '货品', 34, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
 
@@ -367,8 +368,10 @@
             produnit.n2p_decimal_count n2pDecimalCount,
 
             produnit.p2n_is_scale p2nIsScale,
-            produnit.p2n_decimal_count p2nDecimalCount
+            produnit.p2n_decimal_count p2nDecimalCount,
 
+            <!--页面传递参数字段 -->
+            '' prodInfo
             <if test="'true' == isNeedCustomerPrice">
                 ,round(ifnull(customerPrice.product_price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) customerPrice
             </if>
