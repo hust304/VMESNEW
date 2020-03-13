@@ -7,19 +7,15 @@ import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailByQualityMapper;
 import com.xy.vmes.deecoop.produce.dao.ProducePlanDetailMapper;
 import com.xy.vmes.entity.ProducePlanDetail;
 import com.xy.vmes.entity.ProducePlanDetailChild;
-import com.xy.vmes.service.ProducePlanDetailChildService;
-import com.xy.vmes.service.ProducePlanDetailService;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.SaleOrderDetailService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
 import com.yvan.springmvc.ResultModel;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +44,8 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -467,8 +465,10 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
             Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
 
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
             for (Map<String, Object> mapObject : varList) {
-                String prodInfo = this.findProductInfo(mapObject);
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
 
                 //合格/不合格 fineBadCount
@@ -800,41 +800,6 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         result.put("varList",varMapList);
         model.putResult(result);
         return model;
-    }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    String findProductInfo(Map<String, Object> mapObject) {
-        StringBuffer prodBuf = new StringBuffer();
-
-        if (mapObject != null) {
-
-            String productCode = (String)mapObject.get("productCode");
-            if (productCode != null && productCode.trim().length() > 0) {
-                prodBuf.append(productCode.trim()).append("_");
-            }
-
-            String productName = (String)mapObject.get("productName");
-            if (productName != null && productName.trim().length() > 0) {
-                prodBuf.append(productName.trim()).append("_");
-            }
-
-            String productSpec = (String)mapObject.get("productSpec");
-            if (productSpec != null && productSpec.trim().length() > 0) {
-                prodBuf.append(productSpec.trim());
-            }
-
-//            String unitName = (String)mapObject.get("unitName");
-//            if (unitName != null && unitName.trim().length() > 0) {
-//                prodBuf.append(unitName.trim());
-//            }
-
-            String productProperty = (String)mapObject.get("productProperty");
-            if (productProperty != null && productProperty.trim().length() > 0) {
-                prodBuf.append("<br/>");
-                prodBuf.append(productProperty);
-            }
-        }
-
-        return prodBuf.toString();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
