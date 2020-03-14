@@ -8,6 +8,7 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleOrderByQueryService;
 import com.xy.vmes.service.SaleOrderDetailByQueryService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,11 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
     private SaleOrderByQueryMapper orderByQueryMapper;
     @Autowired
     private SaleOrderDetailByQueryService orderDetailByQueryService;
+
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     public List<Map> findListPageOrderByQuery(PageData pd, Pagination pg) throws Exception{
         return orderByQueryMapper.findListPageOrderByQuery(pd, pg);
@@ -64,6 +68,13 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("secondAddColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("secondAddColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         String secondFieldCode = pd.getString("secondFieldCode");
         if (secondFieldCode != null && secondFieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(secondFieldCode, columnList);
@@ -74,6 +85,9 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
         List<Map> varMapList = new ArrayList();
         List<Map> varList = this.findListPageOrderByQuery(pd, pg);
         if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
             for(int i = 0; i < varList.size(); i++) {
                 Map map = varList.get(i);
                 Map<String, Object> varMap = new HashMap<String, Object>();
@@ -85,7 +99,7 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
                 varMap.put("titles", secondTitleMap.get("titles"));
                 varMap.put("pid", null);
                 //查询第二层数据
-                varMap.put("children", this.findSecondList(map, secondTitleMap));
+                varMap.put("children", this.findSecondList(map, secondTitleMap, prodColumnKey));
                 varMapList.add(varMap);
             }
         }
@@ -96,7 +110,7 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
         return model;
     }
 
-    private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap) throws Exception {
+    private List<Map> findSecondList(Map firstRowMap, Map<String, Object> secondTitleMap, String prodColumnKey) throws Exception {
         String parentId = (String)firstRowMap.get("parentId");
 
         PageData findMap = new PageData();
@@ -104,6 +118,13 @@ public class SaleOrderByQueryServiceImp implements SaleOrderByQueryService {
 
         List<Map> secondMapList = new ArrayList();
         List<Map> varList = orderDetailByQueryService.findListPageOrderDetaiByQuery(findMap);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
         if(varList != null && varList.size() > 0) {
             for(int i = 0; i < varList.size(); i++) {
                 Map map = varList.get(i);

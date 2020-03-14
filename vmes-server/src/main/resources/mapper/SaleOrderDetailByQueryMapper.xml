@@ -51,6 +51,7 @@
             orderDetaiQuery.productSpec,
             orderDetaiQuery.productGenre,
             orderDetaiQuery.productType,
+            orderDetaiQuery.productProperty,
 
             orderDetaiQuery.productUnitName,
             orderDetaiQuery.priceUnitName,
@@ -143,6 +144,7 @@
                 product.spec productSpec,
                 product.genre productGenre,
                 product.type productType,
+                product.property productProperty,
 
                 productUnit.name productUnitName,
                 priceUnit.name priceUnitName,
@@ -279,7 +281,9 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'n2pFormula', 'n2pFormula', 37, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
 
         (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'orderUnit', '单位id', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
-        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'orderUnitName', '单位', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin')
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'orderUnitName', '单位', 8, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+
+        (replace(uuid(), '-', ''), 'saleOrderDetailByQuery', 'productProperty', '自定义属性', 39, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
