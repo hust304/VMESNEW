@@ -400,6 +400,7 @@
         END productCode,
         product.name productName,
         product.spec,
+        product.property productProperty,
         genre.name genre,
         genre.id genreId,
 

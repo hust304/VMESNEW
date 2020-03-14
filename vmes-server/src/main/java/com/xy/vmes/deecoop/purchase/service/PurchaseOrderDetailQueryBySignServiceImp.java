@@ -6,6 +6,7 @@ import com.xy.vmes.deecoop.purchase.dao.PurchaseOrderDetailQueryBySignMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.PurchaseOrderDetailQueryBySignService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -32,6 +33,8 @@ public class PurchaseOrderDetailQueryBySignServiceImp implements PurchaseOrderDe
     private PurchaseOrderDetailQueryBySignMapper orderDetailQueryBySignMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     public List<Map> listOrderDetaiQueryBySign(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList();
@@ -73,8 +76,15 @@ public class PurchaseOrderDetailQueryBySignServiceImp implements PurchaseOrderDe
         }
 
         List<Map> varList = this.listOrderDetaiQueryBySign(pd, pg);
+
+        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+        String prodColumnKey = pd.getString("prodColumnKey");
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> objectMap : varList) {
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
+                objectMap.put("prodInfo", prodInfo);
+
                 String purchaseQualityType = new String();
                 if (objectMap.get("purchaseQualityType") != null) {
                     purchaseQualityType = objectMap.get("purchaseQualityType").toString().trim();

@@ -11,6 +11,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.PurchasePlanService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -41,6 +42,8 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
     private ColumnService columnService;
     @Autowired
     private PurchasePlanService purchasePlanService;
+    @Autowired
+    private SystemToolService systemToolService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-02-28
@@ -284,6 +287,17 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varList = this.getDataListPage(pd,pg);
+
+        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+        String prodColumnKey = pd.getString("prodColumnKey");
+        if(varList!=null&&varList.size()>0){
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));

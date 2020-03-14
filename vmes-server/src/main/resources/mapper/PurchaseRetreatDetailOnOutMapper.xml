@@ -90,6 +90,7 @@
             product.code productCode,
             product.name productName,
             product.spec productSpec,
+            product.property productProperty,
             product.genre productGenre,
             genre.name productGenreName,
             prodUnit.unit productUnit,

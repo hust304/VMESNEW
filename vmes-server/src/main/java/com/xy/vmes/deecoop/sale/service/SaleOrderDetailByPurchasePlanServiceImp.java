@@ -8,6 +8,7 @@ import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailByPurchasePlanMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleOrderDetailByPurchasePlanService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -35,6 +36,8 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     public List<Map> listOrderDetaiByPurchasePlan(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
@@ -93,9 +96,16 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
         }
 
         List<Map> varList = this.listOrderDetaiByPurchasePlan(pd, pg);
+        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+        String prodColumnKey = pd.getString("prodColumnKey");
+
         if (varList != null && varList.size() > 0) {
             for(int i=0; i < varList.size(); i++){
                 Map<String, Object> objectMap = varList.get(i);
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
+                objectMap.put("prodInfo", prodInfo);
+
                 //(n2p:计量转换计价)///////////////////////////////////////////////////////////////////////////////////////////
                 String n2pFormula = (String)objectMap.get("npFormula");
 

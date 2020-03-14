@@ -1,17 +1,14 @@
 package com.xy.vmes.deecoop.purchase.service;
 
+import com.xy.vmes.service.*;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatDetailMapper;
 import com.xy.vmes.entity.*;
-import com.xy.vmes.service.PurchaseOrderDetailService;
-import com.xy.vmes.service.PurchaseOrderService;
-import com.xy.vmes.service.PurchaseRetreatDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -43,6 +40,9 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
 
     @Autowired
     private ColumnService columnService;
+
+    @Autowired
+    private SystemToolService systemToolService;
     /**
     * 创建人：陈刚 自动创建，禁止修改
     * 创建时间：2019-05-09
@@ -479,6 +479,17 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         }
 
         List<Map> varList = this.getDataListPage(pd,pg);
+
+        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+        String prodColumnKey = pd.getString("prodColumnKey");
+        if(varList!=null&&varList.size()>0){
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

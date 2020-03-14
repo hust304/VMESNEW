@@ -6,6 +6,7 @@ import com.xy.vmes.deecoop.purchase.dao.PurchaseSignDetailOnInMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.PurchaseSignDetailOnInService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -31,6 +32,8 @@ public class PurchaseSignDetailOnInServiceImp implements PurchaseSignDetailOnInS
 
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     public List<Map> findPurchaseSignDetailOnInDetail(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
@@ -88,6 +91,16 @@ public class PurchaseSignDetailOnInServiceImp implements PurchaseSignDetailOnInS
         }
 
         List<Map> varList = this.findPurchaseSignDetailOnInDetail(pd, pg);
+
+        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+        String prodColumnKey = pd.getString("prodColumnKey");
+        if(varList!=null&&varList.size()>0){
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
