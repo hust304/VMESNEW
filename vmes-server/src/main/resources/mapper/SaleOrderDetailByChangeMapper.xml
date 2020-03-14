@@ -65,6 +65,8 @@
             product.spec productSpec,
             product.genre productGenre,
             product.type productType,
+            product.property productProperty,
+
             round(ifnull(product.stock_count, 0), 2) stockCount,
             orderUnit.name orderUnitName,
             genre.name productGenreName,
@@ -196,6 +198,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'retreatCount', '退货数量', 42, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'miniChangeCount', '最小允许变更数量', 43, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'retreatMoneyCount', '(退货退款)退货数量', 44, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailByChange', 'productProperty', '自定义属性', 45, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
 

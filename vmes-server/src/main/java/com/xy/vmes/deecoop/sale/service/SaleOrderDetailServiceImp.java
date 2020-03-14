@@ -57,6 +57,8 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
     private ProductService productService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     /**
     * 创建人：陈刚 自动创建，禁止修改
@@ -969,6 +971,12 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -1008,12 +1016,17 @@ public class SaleOrderDetailServiceImp implements SaleOrderDetailService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.getDataListPage(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
+        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+        String prodColumnKey = pd.getString("prodColumnKey");
         //遍历结果集
         //(计量单位)(库存数量,库存可用数量) 单位换算公式(n2pFormula) (计价单位)(库存数量,库存可用数量)
         for (Map mapObject : varMapList) {
+            String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+            mapObject.put("prodInfo", prodInfo);
+
             //n2pFormula (计量单位转换计价单位公式)
             String n2pFormula = (String)mapObject.get("n2pFormula");
 

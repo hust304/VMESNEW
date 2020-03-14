@@ -62,6 +62,7 @@
             product.spec productSpec,
             product.genre productGenre,
             genre.name productGenreName,
+            product.property productProperty,
 
             <!--发货明细汇总-->
             round(ifnull(deliver.deliverCount, 0),2)  deliverCount,
@@ -176,6 +177,7 @@
         (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'retreatSum', 'retreatSum', 33, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'invoiceCount', 'invoiceCount', 34, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
         (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'invoiceSum', 'invoiceSum', 35, '1', '1', '1', '0', '2018-12-6 09:16:39', 'admin'),
+        (replace(uuid(), '-', ''), 'saleOrderDetailCollectByInfo', 'productProperty', '自定义属性', 36, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
