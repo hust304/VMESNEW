@@ -68,8 +68,8 @@
 
             (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'priceSumBefore', '金额(前)', 27, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
             (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'priceSumAfter', '金额(后)', 28, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
-
-            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'nowDeliverCount', '当前发货单数量', 29, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin')
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'nowDeliverCount', '当前发货单数量', 29, '1', '0', '1', '0', '2018-12-6 09:16:39', 'admin'),
+            (replace(uuid(), '-', ''), 'saleOrderDetailChange', 'productProperty', '自定义属性', 30, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -171,6 +171,7 @@
             product.spec productSpec,
             product.genre productGenre,
             genre.name productGenreName,
+            product.property productProperty,
 
             <!--货品单位(订单单位)-->
             orderDtl.order_unit orderUnit,
