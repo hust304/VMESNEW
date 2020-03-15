@@ -408,6 +408,12 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -470,13 +476,40 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             for (Map<String, Object> mapObject : varList) {
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 //合格/不合格 fineBadCount
                 BigDecimal fineCount = (BigDecimal)mapObject.get("fineCount");
                 BigDecimal badCount = (BigDecimal)mapObject.get("badCount");
                 String fineBadCount = fineCount.toString() + "&nbsp;/&nbsp;" + badCount.toString();
                 mapObject.put("fineBadCount", fineBadCount);
+                //fineBadSum (合格/不合格)总和
+                BigDecimal fineBadSum = BigDecimal.valueOf(fineCount.doubleValue() + badCount.doubleValue());
 
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //合格率(fineRatio) = 合格数量 / (合格数+不合格数量)
+                String fineRatioStr = new String("0.00");
+                if (fineBadSum.doubleValue() != 0) {
+                    BigDecimal fineRatio = BigDecimal.valueOf(fineCount.doubleValue() / fineBadSum.doubleValue() * 100);
+                    //四舍五入到0位小数
+                    fineRatio = fineRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                    fineRatioStr = fineRatio.toString();
+                }
+                mapObject.put("fineRatio", fineRatioStr + " %");
+
+                //count 计划数量
+                BigDecimal count = (BigDecimal)mapObject.get("count");
+                //完成率(endRatio) = 合格数量 / 计划数量
+                String endRatioStr = new String("0.00");
+                if (count.doubleValue() != 0) {
+                    BigDecimal endRatio = BigDecimal.valueOf(fineCount.doubleValue() / count.doubleValue() * 100);
+                    //四舍五入到0位小数
+                    endRatio = endRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                    endRatioStr = endRatio.toString();
+                }
+                mapObject.put("endRatio", endRatioStr + " %");
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //state 生产计划明细状态 (0:待生产 1:生产中 2:已完成 -1:已取消)
                 String state = (String)mapObject.get("state");
                 Integer stateInt = Integer.valueOf(state);
