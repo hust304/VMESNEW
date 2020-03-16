@@ -7,7 +7,7 @@ public class Common {
     public final static String SYS_MAIL_SEND = "chen_gang7906@163.com";
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     //linux系统:文件系统根路径
-    public final static String SYS_LINUX_FILE_ROOT = "/home/vmes/htdocs/web.ouhaicloud.com/";
+    public final static String SYS_LINUX_FILE_ROOT = "/home/vmes/htdocs/web.deecoop.cn/";
 
     //系统应用自定义异常-错误码(ErrorCode)
     //系统通用编码规则 version 锁
