@@ -145,11 +145,14 @@ public class UserLoginServiceImp implements UserLoginService {
             }
         }
 
-        //1. (用户账号, 密码MD5)-
+        //1. (用户账号(小写))-
         String userCode = pageData.get("userCode").toString().trim();
+        userCode = userCode.toLowerCase();
+
         String userPassword = pageData.get("userPassword").toString().trim();
         userPassword = MD5Utils.MD5(userPassword);
-        String queryStr = " (a.user_code = ''{0}'' or a.mobile = ''{0}'') and a.password = ''{1}'' ";
+        //lcase(user_code) Msq 全部转小写
+        String queryStr = " (lcase(a.user_code) = ''{0}'' or a.mobile = ''{0}'') and a.password = ''{1}'' ";
         queryStr = MessageFormat.format(queryStr,
                 userCode,
                 userPassword);
