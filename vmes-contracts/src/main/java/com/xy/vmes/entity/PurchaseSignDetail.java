@@ -88,6 +88,12 @@ public class PurchaseSignDetail implements Serializable {
 	//单据单位id(采购订单单位)
 	@TableField("order_unit")
 	private String orderUnit;
+	//检验合格数
+	@TableField("quality_fine_count")
+	private BigDecimal qualityFineCount;
+	//检验不合格数
+	@TableField("quality_bad_count")
+	private BigDecimal qualityBadCount;
 
 
 	public void setId(String id) {
@@ -228,44 +234,18 @@ public class PurchaseSignDetail implements Serializable {
 	public void setOrderUnit(String orderUnit) {
 		this.orderUnit = orderUnit;
 	}
-
-	//////////////////////////////////////////////////////////////////
-//	public String getN2pFormula() {
-//		return n2pFormula;
-//	}
-//	public void setN2pFormula(String n2pFormula) {
-//		this.n2pFormula = n2pFormula;
-//	}
-//	public String getN2pIsScale() {
-//		return n2pIsScale;
-//	}
-//	public void setN2pIsScale(String n2pIsScale) {
-//		this.n2pIsScale = n2pIsScale;
-//	}
-//	public Integer getN2pDecimalCount() {
-//		return n2pDecimalCount;
-//	}
-//	public void setN2pDecimalCount(Integer n2pDecimalCount) {
-//		this.n2pDecimalCount = n2pDecimalCount;
-//	}
-//	public String getP2nFormula() {
-//		return p2nFormula;
-//	}
-//	public void setP2nFormula(String p2nFormula) {
-//		this.p2nFormula = p2nFormula;
-//	}
-//	public String getP2nIsScale() {
-//		return p2nIsScale;
-//	}
-//	public void setP2nIsScale(String p2nIsScale) {
-//		this.p2nIsScale = p2nIsScale;
-//	}
-//	public Integer getP2nDecimalCount() {
-//		return p2nDecimalCount;
-//	}
-//	public void setP2nDecimalCount(Integer p2nDecimalCount) {
-//		this.p2nDecimalCount = p2nDecimalCount;
-//	}
+	public BigDecimal getQualityFineCount() {
+		return qualityFineCount;
+	}
+	public void setQualityFineCount(BigDecimal qualityFineCount) {
+		this.qualityFineCount = qualityFineCount;
+	}
+	public BigDecimal getQualityBadCount() {
+		return qualityBadCount;
+	}
+	public void setQualityBadCount(BigDecimal qualityBadCount) {
+		this.qualityBadCount = qualityBadCount;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
