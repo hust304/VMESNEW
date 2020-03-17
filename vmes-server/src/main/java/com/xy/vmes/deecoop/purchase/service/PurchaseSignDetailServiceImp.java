@@ -676,6 +676,35 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             //状态(1:检验中 2:已完成 -1:已取消)
             editSignDetail.setState("2");
             signDetailList.add(editSignDetail);
+
+            //qualityCount (实际)检验数量
+            qualityCount = editSignDetail.getQualityCount();
+            //签收数量 arriveCount
+            BigDecimal arriveCount = editSignDetail.getArriveCount();
+            //(检验)退货数量 retreatCount
+            retreatCount = editSignDetail.getRetreatCount();
+
+            //signFineCount 收货合格数(签收数:检验数量-退货数)
+            BigDecimal signFineCount = BigDecimal.valueOf(0D);
+            //qualityType 检验方式 (1:全检 2:抽检)
+            if ("1".equals(qualityType)) {
+                //1:全检:收货合格数 := 检验数量-退货数
+                BigDecimal tempBig = BigDecimal.valueOf(qualityCount.doubleValue() - retreatCount.doubleValue());
+                if (tempBig.doubleValue() >= 0) {
+                    signFineCount = tempBig;
+                }
+            } else if ("2".equals(qualityType) && qualityCount.doubleValue() != 0) {
+                //2:抽检:收货合格数 := 检验数量 - (签收数量/检验数量) * 退货数量
+                //ratio 签收数量/检验数量
+                BigDecimal ratio = BigDecimal.valueOf(arriveCount.doubleValue() / qualityCount.doubleValue());
+                BigDecimal tempBig = BigDecimal.valueOf(qualityCount.doubleValue() - (ratio.doubleValue() * retreatCount.doubleValue()) );
+                if (tempBig.doubleValue() >= 0) {
+                    signFineCount = tempBig;
+                }
+            }
+            //四舍五入到2位小数
+            signFineCount = signFineCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setSignFineCount(signFineCount);
             this.update(editSignDetail);
 
             //采购签收单id
@@ -1088,6 +1117,24 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         editSignDetail.setQualityType(null);
         //状态(1:检验中 2:已完成 -1:已取消)
         editSignDetail.setState("2");
+
+        //qualityCount (实际)检验数量
+        editSignDetail.setQualityCount(BigDecimal.valueOf(0D));
+        //badCount (检验)不合格数量
+        editSignDetail.setBadCount(BigDecimal.valueOf(0D));
+        //retreatCount (检验)退货数量
+        editSignDetail.setRetreatCount(BigDecimal.valueOf(0D));
+        //receiveCount (检验)让步接收数量
+        editSignDetail.setReceiveCount(BigDecimal.valueOf(0D));
+
+        //arriveCount 签收数量
+        BigDecimal arriveCountDB = BigDecimal.valueOf(0D);
+        if (signDetailMap.get("arriveCount") != null) {
+            arriveCountDB = (BigDecimal)signDetailMap.get("arriveCount");
+        }
+        //signFineCount 收货合格数(签收数)
+        editSignDetail.setSignFineCount(arriveCountDB);
+
         this.update(editSignDetail);
 
         //采购签收单id
