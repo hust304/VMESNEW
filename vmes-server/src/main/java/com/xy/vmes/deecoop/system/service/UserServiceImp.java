@@ -490,6 +490,18 @@ public class UserServiceImp implements UserService {
         ResultModel model = new ResultModel();
         User user = (User) HttpUtils.pageData2Entity(pd, new User());
 
+        //系统账号
+        String userCode = user.getUserCode();
+        if (userCode != null && userCode.trim().length() > 0) {
+            if (!StringUtil.isWord(userCode)) {
+                model.putCode(Integer.valueOf(1));
+                String errorTemp = "账号({0})存在非法字符，必须[大小写字母下划线数字]";
+                String msgStr = MessageFormat.format(errorTemp, userCode);
+                model.putMsg(msgStr);
+                return model;
+            }
+        }
+
         //A. 手机号验证
         String mobile = user.getMobile();
         if(mobile == null || mobile.trim().length() == 0){
@@ -544,7 +556,6 @@ public class UserServiceImp implements UserService {
         user.setDeptId(deptId);
 
         //设置用户编码
-        String userCode = user.getUserCode();
         if(userCode == null || userCode.trim().length() == 0){
             String code = coderuleService.createCoder(companyId,"vmes_user");
             if(StringUtils.isEmpty(code)){
