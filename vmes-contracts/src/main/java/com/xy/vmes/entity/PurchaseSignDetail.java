@@ -88,12 +88,9 @@ public class PurchaseSignDetail implements Serializable {
 	//单据单位id(采购订单单位)
 	@TableField("order_unit")
 	private String orderUnit;
-	//检验合格数
-	@TableField("quality_fine_count")
-	private BigDecimal qualityFineCount;
-	//检验不合格数
-	@TableField("quality_bad_count")
-	private BigDecimal qualityBadCount;
+	//收货合格数(签收数-退货数)
+	@TableField("sign_fine_count")
+	private BigDecimal signFineCount;
 
 
 	public void setId(String id) {
@@ -234,17 +231,12 @@ public class PurchaseSignDetail implements Serializable {
 	public void setOrderUnit(String orderUnit) {
 		this.orderUnit = orderUnit;
 	}
-	public BigDecimal getQualityFineCount() {
-		return qualityFineCount;
+
+	public BigDecimal getSignFineCount() {
+		return signFineCount;
 	}
-	public void setQualityFineCount(BigDecimal qualityFineCount) {
-		this.qualityFineCount = qualityFineCount;
-	}
-	public BigDecimal getQualityBadCount() {
-		return qualityBadCount;
-	}
-	public void setQualityBadCount(BigDecimal qualityBadCount) {
-		this.qualityBadCount = qualityBadCount;
+	public void setSignFineCount(BigDecimal signFineCount) {
+		this.signFineCount = signFineCount;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
