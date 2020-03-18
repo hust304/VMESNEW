@@ -194,6 +194,9 @@
                     <if test="userType != null and userType != ''" >
                         and user_type = #{userType}
                     </if>
+                    <if test="userKey != null and userKey != ''" >
+                        and user_key = #{userKey}
+                    </if>
 
                     <!--queryStr 自定义sql查询语句-->
                     <if test="queryStr != null and queryStr!=''" >

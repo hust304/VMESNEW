@@ -181,6 +181,52 @@ public class SystemController {
     }
 
     /**
+     * 验证UserKey在用户表中是否存在
+     *
+     * @return
+     * @throws Exception
+     */
+    //@GetMapping("/system/checkExistUserByUserKey")  //测试代码 真实环境无此代码
+    @PostMapping("/system/checkExistUserByUserKey")
+    public ResultModel checkExistUserByUserKey() throws Exception {
+        logger.info("################/system/checkExistUserByUserKey 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //userKey 用户Key
+        String userKey = pageData.getString("userKey");
+        if (userKey == null || userKey.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("userKey为空或空字符串！");
+            return model;
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", Common.SYS_TRY_COMPANY_ID);
+        findMap.put("userKey", userKey);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        User userDB = userService.findUser(findMap);
+
+        model.put("isExistUser", "false");
+        if (userDB != null && userDB.getUserKeyDate() != null) {
+            String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+            Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+            //userKeyDate 用户注册Key有效期(yyyy-MM-dd)
+            Date userKeyDate =  userDB.getUserKeyDate();
+            if (sysDate.getTime() <= userKeyDate.getTime()) {
+                model.put("isExistUser", "true");
+            }
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/checkExistUserByUserKey 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 主页企业试用申请
      * 验证企业简称(企业编码)是否同名
      * 成功: code:0 msg:执行成功!
