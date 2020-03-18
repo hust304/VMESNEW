@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 import java.util.*;
-import java.math.BigDecimal;
 
 /** 
  * 说明：vmes_user:系统用户表 实体类
@@ -80,7 +79,12 @@ public class User implements Serializable {
 	@TableField("remark")
 	private String remark;
 
-
+	//用户注册Key(用户免登录)
+	@TableField("user_key")
+	private String userKey;
+	//用户注册Key有效期(yyyy-MM-dd)
+	@TableField("user_key_date")
+	private Date userKeyDate;
 
 	public void setId(String id) {
 		this.id = id;
@@ -208,7 +212,18 @@ public class User implements Serializable {
 	public String getRemark() {
 		return remark;
 	}
-
+	public String getUserKey() {
+		return userKey;
+	}
+	public void setUserKey(String userKey) {
+		this.userKey = userKey;
+	}
+	public Date getUserKeyDate() {
+		return userKeyDate;
+	}
+	public void setUserKeyDate(Date userKeyDate) {
+		this.userKeyDate = userKeyDate;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

@@ -33,7 +33,10 @@
 		column_2 column2,<!-- 预留字段 -->
 		column_3 column3,<!-- 预留字段 -->
         user_type userType,<!-- 用户类型 -->
-		id id <!-- id -->
+		id id, <!-- id -->
+        remark, remark,
+        user_key userKey,
+        user_key_date userKeyDate
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->
