@@ -181,25 +181,25 @@ public class SystemController {
     }
 
     /**
-     * 验证UserKey在用户表中是否存在
+     * 通过Token获取用户账号
      *
      * @return
      * @throws Exception
      */
-    //@GetMapping("/system/checkExistUserByUserKey")  //测试代码 真实环境无此代码
-    @PostMapping("/system/checkExistUserByUserKey")
-    public ResultModel checkExistUserByUserKey() throws Exception {
-        logger.info("################/system/checkExistUserByUserKey 执行开始 ################# ");
+    //@GetMapping("/system/findUserCodeByToken")  //测试代码 真实环境无此代码
+    @PostMapping("/system/findUserCodeByToken")
+    public ResultModel findUserCodeByToken() throws Exception {
+        logger.info("################/system/findUserCodeByToken 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //userKey 用户Key
-        String userKey = pageData.getString("userKey");
+        //token 用户token
+        String userKey = pageData.getString("token");
         if (userKey == null || userKey.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("userKey为空或空字符串！");
+            model.putMsg("token为空或空字符串！");
             return model;
         }
 
@@ -209,20 +209,13 @@ public class SystemController {
         findMap.put("mapSize", Integer.valueOf(findMap.size()));
         User userDB = userService.findUser(findMap);
 
-        model.put("isExistUser", "false");
-        if (userDB != null && userDB.getUserKeyDate() != null) {
-            String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
-            Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
-
-            //userKeyDate 用户注册Key有效期(yyyy-MM-dd)
-            Date userKeyDate =  userDB.getUserKeyDate();
-            if (sysDate.getTime() <= userKeyDate.getTime()) {
-                model.put("isExistUser", "true");
-            }
+        String userCode = new String();
+        if (userDB != null && userDB.getUserCode() != null && userDB.getUserCode().trim().length() > 0) {
+            model.put("userCode", userCode);
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/system/checkExistUserByUserKey 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/system/findUserCodeByToken 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
