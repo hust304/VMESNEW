@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.system.service;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
@@ -91,84 +92,117 @@ public class UserLoginServiceImp implements UserLoginService {
     @Override
     public ResultModel loginIn(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
-        //非空判断
-        StringBuffer msgBuf = new StringBuffer();
 
         //登录类型(loginType):(app,web)
-        String loginType = new String();
+        String loginType = pageData.getString("loginType");
 
-        if (pageData == null || pageData.size() == 0) {
-            msgBuf.append("参数错误：用户登录参数(pageData)为空！");
-        } else {
-            if (pageData.get("userCode") == null || pageData.get("userCode").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：账号输入为空或空字符串，账号为必填项不可为空！");
-                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
-            }
-            if (pageData.get("userPassword") == null || pageData.get("userPassword").toString().trim().length() == 0 ) {
-                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！");
-                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
-            }
-            if (pageData.get("loginType") == null || pageData.get("loginType").toString().trim().length() == 0 ) {
+        String userCode = pageData.getString("userCode");
+        String userPassword = pageData.getString("userPassword");
+
+        String securityCode = pageData.getString("securityCode");
+        String securityCodeKey = pageData.getString("securityCodeKey");
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //findMap 查询登录用户信息
+        PageData findMap = new PageData();
+
+        Map<String, Object> userEmployMap = new HashMap<>();
+        //token 用户token
+        String token = pageData.getString("token");
+        if (token == null || token.trim().length() == 0) {
+            //非空判断
+            StringBuffer msgBuf = new StringBuffer();
+
+            if (loginType == null || loginType.trim().length() == 0 ) {
                 msgBuf.append("参数错误：登录类型(loginType)为空或空字符串，密码为必填项不可为空！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
             } else if ("app,web".indexOf(pageData.get("loginType").toString().trim()) == -1) {
                 msgBuf.append("参数错误：登录类型(loginType)必须为(app,web)！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
-            } else {
-                loginType = pageData.get("loginType").toString().trim();
             }
 
-            if ("web".equals(loginType) && (pageData.get("securityCode") == null || pageData.get("securityCode").toString().trim().length() == 0)) {
+            if (userCode == null || userCode.trim().length() == 0 ) {
+                msgBuf.append("参数错误：账号输入为空或空字符串，账号为必填项不可为空！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            }
+            if (userPassword == null || userPassword.trim().length() == 0 ) {
+                msgBuf.append("参数错误：密码输入为空或空字符串，密码为必填项不可为空！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            }
+
+            if ("web".equals(loginType) && (securityCode == null || securityCode.trim().length() == 0)) {
                 msgBuf.append("参数错误：验证码入为空或空字符串，验证码为必填项不可为空！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
             }
-            if ("web".equals(loginType) && (pageData.get("securityCodeKey") == null || pageData.get("securityCodeKey").toString().trim().length() == 0)) {
+            if ("web".equals(loginType) && (securityCodeKey == null || securityCodeKey.trim().length() == 0)) {
                 msgBuf.append("参数错误：验证码(Redis缓存Key)为空或空字符串！");
                 msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
             }
-        }
 
-        if (msgBuf.toString().trim().length() > 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(msgBuf.toString());
-            return model;
-        }
-
-        //验证码-是否过期
-        if ("web".equals(loginType)) {
-            String securityCode = pageData.get("securityCode").toString().trim();
-            String old_securityCode = redisClient.get(pageData.get("securityCodeKey").toString().trim());
-            if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+            if (msgBuf.toString().trim().length() > 0) {
                 model.putCode(Integer.valueOf(1));
-                model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+                model.putMsg(msgBuf.toString());
+                return model;
+            }
+
+            //验证码-是否过期
+            if ("web".equals(loginType)) {
+                String old_securityCode = redisClient.get(securityCodeKey.trim());
+                if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+                    model.putCode(Integer.valueOf(1));
+                    model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+                    return model;
+                }
+            }
+
+            //lcase(user_code) Msq 全部转小写
+            String queryStr = " (lcase(a.user_code) = ''{0}'' or a.mobile = ''{0}'') and a.password = ''{1}'' ";
+            queryStr = MessageFormat.format(queryStr,
+                    userCode.toLowerCase(),
+                    MD5Utils.MD5(userPassword));
+
+            //isdisable:是否禁用(0:已禁用 1:启用)
+            findMap.put("userIsdisable", "1");
+            findMap.put("queryStr", queryStr);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+            List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
+            if (objectList == null || objectList.size() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前(用户,密码)输入错误，请重新输入！");
+                return model;
+            }
+
+            userEmployMap = objectList.get(0);
+        } else if (token != null && token.trim().length() > 0) {
+            findMap.put("userCompanyID", Common.SYS_TRY_COMPANY_ID);
+            findMap.put("userKey", token);
+            findMap.put("userIsdisable", "1");
+            List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
+            if (objectList == null || objectList.size() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前token在系统用户表中不存在！");
+                return model;
+            }
+
+            //token 是否过期
+            String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+            Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+            userEmployMap = objectList.get(0);
+            String userKeyDateStr = (String)userEmployMap.get("userKeyDate");
+            Date userKeyDate = DateFormat.dateString2Date(userKeyDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+
+            if (sysDate.getTime() > userKeyDate.getTime()) {
+                String msgTemp = "当前token已过期(有效期{0})";
+                String msgStr = MessageFormat.format(msgTemp, userKeyDateStr);
+
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgStr);
                 return model;
             }
         }
 
-        //1. (用户账号(小写))-
-        String userCode = pageData.get("userCode").toString().trim();
-        userCode = userCode.toLowerCase();
-
-        String userPassword = pageData.get("userPassword").toString().trim();
-        userPassword = MD5Utils.MD5(userPassword);
-        //lcase(user_code) Msq 全部转小写
-        String queryStr = " (lcase(a.user_code) = ''{0}'' or a.mobile = ''{0}'') and a.password = ''{1}'' ";
-        queryStr = MessageFormat.format(queryStr,
-                userCode,
-                userPassword);
-
-        PageData findMap = new PageData();
-        //isdisable:是否禁用(0:已禁用 1:启用)
-        findMap.put("userIsdisable", "1");
-        findMap.put("queryStr", queryStr);
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
-        if (objectList == null || objectList.size() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前(用户,密码)输入错误，请重新输入！");
-            return model;
-        }
-        Map<String, Object> userEmployMap = objectList.get(0);
         String userID = userEmployMap.get("userID").toString().toLowerCase();
         String userType = userEmployMap.get("userType").toString();
 

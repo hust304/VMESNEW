@@ -32,6 +32,8 @@
             a.column_1 as userColumn1,
             a.column_2 as userColumn2,
             a.column_3 as userColumn3,
+            a.user_key userKey,
+            DATE_FORMAT(a.user_key_date,'%Y-%m-%d') userKeyDate,
 
             b.id as employID,
             b.code as employCode,
@@ -95,6 +97,9 @@
                     </if>
                     <if test="userIsdisable != null and userIsdisable != ''" >
                         and a.isdisable = #{userIsdisable}
+                    </if>
+                    <if test="userKey != null and userKey != ''" >
+                        and a.user_key = #{userKey}
                     </if>
 
                     <if test="employID != null and employID != ''" >
