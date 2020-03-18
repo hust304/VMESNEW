@@ -722,9 +722,15 @@ public class SystemController {
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String userKey = new String();
+        if (addUser != null && addUser.getUserKey() != null && addUser.getUserKey().trim().length() > 0) {
+            userKey = addUser.getUserKey().trim();
+        }
 
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("userKey", userKey);
 
-        //model.putResult(dataMap);
+        model.putResult(dataMap);
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/companyTryApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
