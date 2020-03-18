@@ -728,6 +728,7 @@ public class SystemController {
         }
 
         Map<String, Object> dataMap = new HashMap();
+        dataMap.put("userCode", userCode);
         dataMap.put("userKey", userKey);
 
         model.putResult(dataMap);
