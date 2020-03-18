@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -279,276 +280,276 @@ public class SystemController {
 //        return model;
 //    }
 
-    /**
-     * 主页企业试用申请
-     *
-     * @return
-     * @throws Exception
-     */
-    //@GetMapping("/system/companyApplication")  //测试代码 真实环境无此代码
-    @PostMapping("/system/companyApplication")
-    public ResultModel companyApplication() throws Exception {
-        logger.info("################/system/companyApplication 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-
-        ResultModel model = new ResultModel();
-        PageData pageData = HttpUtils.parsePageData();
-
-        String strInfo = this.findParameterByCompanyApplication(pageData);
-        logger.info("companyApplication:parameter:" + strInfo);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //接口参数非空判断
-        String msgIsNullTemp = "{0}为必填项不可为空";
-        //企业名称: name
-        String name = pageData.getString("name");
-        if (name == null || name.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "企业名称");
-            model.putMsg(msgStr);
-            return model;
-        }
-        //企业简称: code
-        String code = pageData.getString("code");
-        if (code == null || code.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "企业简称");
-            model.putMsg(msgStr);
-            return model;
-        }
-        code = code.trim();
-
-        //手机号: mobile
-        String mobile = pageData.getString("mobile");
-        if (mobile == null || mobile.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "手机号");
-            model.putMsg(msgStr);
-            return model;
-        }
-        mobile = mobile.trim();
-
-        //验证码: securityCode (当前验证码)
-        String securityCode = pageData.getString("securityCode");
-        if (securityCode == null || securityCode.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "验证码");
-            model.putMsg(msgStr);
-            return model;
-        }
-        securityCode = securityCode.trim();
-
-        //验证码(Redis缓存Key): securityCodeKey
-        String securityCodeKey = pageData.getString("securityCodeKey");
-        if (securityCodeKey == null || securityCodeKey.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("securityCodeKey(验证码Redis缓存Key)为空或空字符串");
-            return model;
-        }
-        securityCodeKey = securityCodeKey.trim();
-
-        //邮箱: email
-        String email = new String();
-        if (pageData.getString("email") != null) {
-            email = pageData.getString("email").trim();
-        }
-
-//        //套餐: roleKey
-//        String roleKey = pageData.getString("roleKey");
-//        if (roleKey == null || roleKey.trim().length() == 0) {
+//    /**
+//     * 主页企业试用申请
+//     *
+//     * @return
+//     * @throws Exception
+//     */
+//    //@GetMapping("/system/companyApplication")  //测试代码 真实环境无此代码
+//    @PostMapping("/system/companyApplication")
+//    public ResultModel companyApplication() throws Exception {
+//        logger.info("################/system/companyApplication 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//
+//        ResultModel model = new ResultModel();
+//        PageData pageData = HttpUtils.parsePageData();
+//
+//        String strInfo = this.findParameterByCompanyApplication(pageData);
+//        logger.info("companyApplication:parameter:" + strInfo);
+//        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //接口参数非空判断
+//        String msgIsNullTemp = "{0}为必填项不可为空";
+//        //企业名称: name
+//        String name = pageData.getString("name");
+//        if (name == null || name.trim().length() == 0) {
 //            model.putCode(Integer.valueOf(1));
-//            String msgStr = MessageFormat.format(msgIsNullTemp, "套餐");
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "企业名称");
 //            model.putMsg(msgStr);
 //            return model;
 //        }
-//        roleKey = roleKey.trim();
-
-        //用户数: companyUserCount
-        String companyUserCountStr = pageData.getString("companyUserCount");
-        if (companyUserCountStr == null || companyUserCountStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "用户数");
-            model.putMsg(msgStr);
-            return model;
-        }
-        companyUserCountStr = companyUserCountStr.trim();
-
-        //时间: year
-        String yearStr = pageData.getString("year");
-        if (yearStr == null || yearStr.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgIsNullTemp, "时间");
-            model.putMsg(msgStr);
-            return model;
-        }
-        yearStr = yearStr.trim();
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //参数(数字)字符串验证
-        String msgNumberTemp = "{0}存在非法字符，必须全数字";
-        String msgNumberZeroTemp = "{0}必须大于零";
-
-        //手机号 mobile
-        try {
-            new BigDecimal(mobile);
-            if (mobile.length() != 11) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg("手机号请输入11位数字");
-                return model;
-            }
-        } catch (NumberFormatException e) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("手机号请输入11位数字");
-            return model;
-        }
-
-        //用户数 companyUserCount
-        try {
-            Integer companyUserCount = new Integer(companyUserCountStr);
-            if (companyUserCount <= 0) {
-                model.putCode(Integer.valueOf(1));
-                String msgStr = MessageFormat.format(msgNumberZeroTemp, "用户数");
-                model.putMsg(msgStr);
-                return model;
-            }
-        } catch (NumberFormatException e) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgNumberTemp, "用户数");
-            model.putMsg(msgStr);
-            return model;
-        }
-        //时间 year 界面无限:9999 year:=100
-        try {
-            Integer year = new Integer(yearStr);
-            if (year <= 0) {
-                model.putCode(Integer.valueOf(1));
-                String msgStr = MessageFormat.format(msgNumberZeroTemp, "时间");
-                model.putMsg(msgStr);
-                return model;
-            } else if (9999 == year.intValue()) {
-                yearStr = "100";
-                pageData.put("year", yearStr);
-            }
-        } catch (NumberFormatException e) {
-            model.putCode(Integer.valueOf(1));
-            String msgStr = MessageFormat.format(msgNumberTemp, "时间");
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        //金额: amount(单位元)
-        BigDecimal amount = BigDecimal.valueOf(0D);
-        String amountStr = pageData.getString("amount");
-        if (amountStr != null && amountStr.trim().length() > 0) {
-            try {
-                amount = new BigDecimal(amountStr);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-        //四舍五入到2位小数
-        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //验证码-是否过期
-        String old_securityCode = redisClient.get(securityCodeKey.trim());
-        if (!securityCode.equalsIgnoreCase(old_securityCode)) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
-            return model;
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //验证 企业简称(企业编码): code
-        //非法字符
-        if (!StringUtil.isWord(code)) {
-            model.putCode(Integer.valueOf(1));
-            String errorTemp = "企业简称({0})存在非法字符，必须[大小写字母下划线数字]";
-            String msgStr = MessageFormat.format(errorTemp, code);
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        //验证企业简称(企业编码)是否同名
-        if (companyService.isExistByCode(null, null, code)) {
-            model.putCode(Integer.valueOf(1));
-            String msgTemp = "企业简称({0})在系统中已经存在";
-            String msgStr = MessageFormat.format(msgTemp, code);
-            model.putMsg(msgStr);
-            return model;
-        }
-
-        //企业简称: code
-        //创建(企业管理员)账户 表(vmes_user)中是否存在
-        String userCode = code.toLowerCase() + "admin";
-        Boolean isExistUser = userService.isExistUserByUserCode(null, userCode);
-        if (isExistUser != null && isExistUser.booleanValue()) {
-            model.putCode(Integer.valueOf(1));
-            String msgTemp = "当前企业简称({0})，对应的用户企业管理员账号{1}在系统中已经存在，请更换企业简称";
-            String msgStr = MessageFormat.format(msgTemp, code, userCode);
-            model.putMsg(msgStr);
-            return model;
-        }
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        companyApplicationService.addCompanyApplication(pageData);
-
-        //发送邮件
-        if (email != null && email.trim().length() > 0) {
-
-            //获取系统时间(yyyy-MM-dd)
-            String sysDateStr = DateFormat.date2String(new Date(), "yyyy年MM月dd日");
-
-            //String mailTemp = "企业名称：{0} 手机号：{1} 账号：{2} 初始密码：手机号后6位 请登录网址：https://web.ouhaicloud.com 使用";
-            String mailTemp = "亲爱的用户：<br>" +
-                                "您好！<br>" +
-                                "&nbsp;&nbsp;&nbsp;&nbsp;您于{0}注册了智造云管家，相关注册资料如下：<br>" +
-                                "&nbsp;&nbsp;&nbsp;&nbsp;企业名称：{1}<br>" +
-                                "&nbsp;&nbsp;&nbsp;&nbsp;注册手机号：{2}<br>" +
-                                "&nbsp;&nbsp;&nbsp;&nbsp;企业管理员登录账号：{3}<br>" +
-                                "&nbsp;&nbsp;&nbsp;&nbsp;初始密码：注册手机号后6位<br>" +
-                                "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：web.deecoop.cn<br><br>" +
-
-                                "如有任何问题，欢迎随时咨询<br>" +
-                                "189-8979-2655<br>" +
-                                "或扫描下方二维码添加微信：<br>" +
-                                "<img src='https://web.deecoop.cn/fileUpload/QRCode/wxAppQRCode.png' width='150' height='150'/><br><br>" +
-
-                                "顶智智能 技术团队<br>" +
-                                "{0}<br>";
-
-            String mailContent = MessageFormat.format(mailTemp,
-                    sysDateStr,
-                    name,
-                    mobile,
-                    userCode);
-
-            try {
-                mailService.sendHtmlMail("企业申请注册成功",
-                        mailContent,
-                        email,
-                        null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Map<String, Object> dataMap = new HashMap();
-        dataMap.put("userCode", userCode);
-        //默认免费试用
-        String notCost = "true";
-        if (amount.doubleValue() > 0D) {
-            notCost = "false";
-
-            dataMap.put("year", yearStr);
-            dataMap.put("companyUserCount", companyUserCountStr);
-            dataMap.put("amount", amount);
-        }
-        dataMap.put("notCost", notCost);
-
-        model.putResult(dataMap);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
+//        //企业简称: code
+//        String code = pageData.getString("code");
+//        if (code == null || code.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "企业简称");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        code = code.trim();
+//
+//        //手机号: mobile
+//        String mobile = pageData.getString("mobile");
+//        if (mobile == null || mobile.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "手机号");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        mobile = mobile.trim();
+//
+//        //验证码: securityCode (当前验证码)
+//        String securityCode = pageData.getString("securityCode");
+//        if (securityCode == null || securityCode.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "验证码");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        securityCode = securityCode.trim();
+//
+//        //验证码(Redis缓存Key): securityCodeKey
+//        String securityCodeKey = pageData.getString("securityCodeKey");
+//        if (securityCodeKey == null || securityCodeKey.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("securityCodeKey(验证码Redis缓存Key)为空或空字符串");
+//            return model;
+//        }
+//        securityCodeKey = securityCodeKey.trim();
+//
+//        //邮箱: email
+//        String email = new String();
+//        if (pageData.getString("email") != null) {
+//            email = pageData.getString("email").trim();
+//        }
+//
+////        //套餐: roleKey
+////        String roleKey = pageData.getString("roleKey");
+////        if (roleKey == null || roleKey.trim().length() == 0) {
+////            model.putCode(Integer.valueOf(1));
+////            String msgStr = MessageFormat.format(msgIsNullTemp, "套餐");
+////            model.putMsg(msgStr);
+////            return model;
+////        }
+////        roleKey = roleKey.trim();
+//
+//        //用户数: companyUserCount
+//        String companyUserCountStr = pageData.getString("companyUserCount");
+//        if (companyUserCountStr == null || companyUserCountStr.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "用户数");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        companyUserCountStr = companyUserCountStr.trim();
+//
+//        //时间: year
+//        String yearStr = pageData.getString("year");
+//        if (yearStr == null || yearStr.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgIsNullTemp, "时间");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        yearStr = yearStr.trim();
+//
+//        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //参数(数字)字符串验证
+//        String msgNumberTemp = "{0}存在非法字符，必须全数字";
+//        String msgNumberZeroTemp = "{0}必须大于零";
+//
+//        //手机号 mobile
+//        try {
+//            new BigDecimal(mobile);
+//            if (mobile.length() != 11) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg("手机号请输入11位数字");
+//                return model;
+//            }
+//        } catch (NumberFormatException e) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("手机号请输入11位数字");
+//            return model;
+//        }
+//
+//        //用户数 companyUserCount
+//        try {
+//            Integer companyUserCount = new Integer(companyUserCountStr);
+//            if (companyUserCount <= 0) {
+//                model.putCode(Integer.valueOf(1));
+//                String msgStr = MessageFormat.format(msgNumberZeroTemp, "用户数");
+//                model.putMsg(msgStr);
+//                return model;
+//            }
+//        } catch (NumberFormatException e) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgNumberTemp, "用户数");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        //时间 year 界面无限:9999 year:=100
+//        try {
+//            Integer year = new Integer(yearStr);
+//            if (year <= 0) {
+//                model.putCode(Integer.valueOf(1));
+//                String msgStr = MessageFormat.format(msgNumberZeroTemp, "时间");
+//                model.putMsg(msgStr);
+//                return model;
+//            } else if (9999 == year.intValue()) {
+//                yearStr = "100";
+//                pageData.put("year", yearStr);
+//            }
+//        } catch (NumberFormatException e) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgStr = MessageFormat.format(msgNumberTemp, "时间");
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//
+//        //金额: amount(单位元)
+//        BigDecimal amount = BigDecimal.valueOf(0D);
+//        String amountStr = pageData.getString("amount");
+//        if (amountStr != null && amountStr.trim().length() > 0) {
+//            try {
+//                amount = new BigDecimal(amountStr);
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        //四舍五入到2位小数
+//        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //验证码-是否过期
+//        String old_securityCode = redisClient.get(securityCodeKey.trim());
+//        if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+//            return model;
+//        }
+//
+//        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //验证 企业简称(企业编码): code
+//        //非法字符
+//        if (!StringUtil.isWord(code)) {
+//            model.putCode(Integer.valueOf(1));
+//            String errorTemp = "企业简称({0})存在非法字符，必须[大小写字母下划线数字]";
+//            String msgStr = MessageFormat.format(errorTemp, code);
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//
+//        //验证企业简称(企业编码)是否同名
+//        if (companyService.isExistByCode(null, null, code)) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgTemp = "企业简称({0})在系统中已经存在";
+//            String msgStr = MessageFormat.format(msgTemp, code);
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//
+//        //企业简称: code
+//        //创建(企业管理员)账户 表(vmes_user)中是否存在
+//        String userCode = code.toLowerCase() + "admin";
+//        Boolean isExistUser = userService.isExistUserByUserCode(null, userCode);
+//        if (isExistUser != null && isExistUser.booleanValue()) {
+//            model.putCode(Integer.valueOf(1));
+//            String msgTemp = "当前企业简称({0})，对应的用户企业管理员账号{1}在系统中已经存在，请更换企业简称";
+//            String msgStr = MessageFormat.format(msgTemp, code, userCode);
+//            model.putMsg(msgStr);
+//            return model;
+//        }
+//        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        companyApplicationService.addCompanyApplication(pageData);
+//
+//        //发送邮件
+//        if (email != null && email.trim().length() > 0) {
+//
+//            //获取系统时间(yyyy-MM-dd)
+//            String sysDateStr = DateFormat.date2String(new Date(), "yyyy年MM月dd日");
+//
+//            //String mailTemp = "企业名称：{0} 手机号：{1} 账号：{2} 初始密码：手机号后6位 请登录网址：https://web.ouhaicloud.com 使用";
+//            String mailTemp = "亲爱的用户：<br>" +
+//                                "您好！<br>" +
+//                                "&nbsp;&nbsp;&nbsp;&nbsp;您于{0}注册了智造云管家，相关注册资料如下：<br>" +
+//                                "&nbsp;&nbsp;&nbsp;&nbsp;企业名称：{1}<br>" +
+//                                "&nbsp;&nbsp;&nbsp;&nbsp;注册手机号：{2}<br>" +
+//                                "&nbsp;&nbsp;&nbsp;&nbsp;企业管理员登录账号：{3}<br>" +
+//                                "&nbsp;&nbsp;&nbsp;&nbsp;初始密码：注册手机号后6位<br>" +
+//                                "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：web.deecoop.cn<br><br>" +
+//
+//                                "如有任何问题，欢迎随时咨询<br>" +
+//                                "189-8979-2655<br>" +
+//                                "或扫描下方二维码添加微信：<br>" +
+//                                "<img src='https://web.deecoop.cn/fileUpload/QRCode/wxAppQRCode.png' width='150' height='150'/><br><br>" +
+//
+//                                "顶智智能 技术团队<br>" +
+//                                "{0}<br>";
+//
+//            String mailContent = MessageFormat.format(mailTemp,
+//                    sysDateStr,
+//                    name,
+//                    mobile,
+//                    userCode);
+//
+//            try {
+//                mailService.sendHtmlMail("企业申请注册成功",
+//                        mailContent,
+//                        email,
+//                        null);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        Map<String, Object> dataMap = new HashMap();
+//        dataMap.put("userCode", userCode);
+//        //默认免费试用
+//        String notCost = "true";
+//        if (amount.doubleValue() > 0D) {
+//            notCost = "false";
+//
+//            dataMap.put("year", yearStr);
+//            dataMap.put("companyUserCount", companyUserCountStr);
+//            dataMap.put("amount", amount);
+//        }
+//        dataMap.put("notCost", notCost);
+//
+//        model.putResult(dataMap);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
     /**
      * 主页企业(试用版)申请
@@ -565,7 +566,7 @@ public class SystemController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
-        //TODO //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //接口参数非空判断
         String msgIsNullTemp = "{0}为必填项不可为空";
 
@@ -672,6 +673,8 @@ public class SystemController {
             e.printStackTrace();
         }
         addUser.setUserKeyDate(userKeyDate);
+        addUser.setRemark(name + " (试用版)申请注册");
+
         userService.save(addUser);
 
         //5.创建(用户角色)
