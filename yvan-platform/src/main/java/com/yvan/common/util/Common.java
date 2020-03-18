@@ -5,6 +5,10 @@ import java.util.*;
 public class Common {
     //系统邮件服务配置
     public final static String SYS_MAIL_SEND = "chen_gang7906@163.com";
+    //主页企业(试用版)注册申请-默认企业id
+    public final static String SYS_TRY_COMPANY_ID = "e4cb2d0b83d7417fb0bc8a9545c6774b";
+    //主页企业(试用版)注册申请-userKey有效天数(7天)
+    public final static Integer SYS_COMPANYAPPLICATION_USERKEY_DAYS = Integer.valueOf(7);
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     //linux系统:文件系统根路径
     public final static String SYS_LINUX_FILE_ROOT = "/home/vmes/htdocs/web.deecoop.cn/";
@@ -36,6 +40,9 @@ public class Common {
     public final static String SYS_COMPANYAPPLICATION_ADMIN_USER_ID = "0";
     //角色表(vmes_role) 角色名称:套餐A 角色ID:c4d92bfac8754500a44e815511b91f06
     public final static String SYS_COMPANYAPPLICATION_ROLE_ID = "c4d92bfac8754500a44e815511b91f06";
+    //角色表(vmes_role) 角色名称:套餐B 角色ID:00439bedece9443b93fc68be84c88ef4
+    public final static String SYS_COMPANYAPPLICATION_ROLE_ID_B = "00439bedece9443b93fc68be84c88ef4";
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";

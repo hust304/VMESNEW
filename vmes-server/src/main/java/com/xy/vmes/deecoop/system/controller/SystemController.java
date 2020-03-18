@@ -4,8 +4,12 @@ import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Department;
 import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.entity.User;
+import com.xy.vmes.entity.UserRole;
 import com.xy.vmes.service.*;
+import com.yvan.Conv;
 import com.yvan.HttpUtils;
+import com.yvan.MD5Utils;
 import com.yvan.PageData;
 import com.yvan.cache.RedisClient;
 import com.yvan.common.util.Common;
@@ -29,6 +33,9 @@ public class SystemController {
     @Autowired
     private UserService userService;
     @Autowired
+    private UserRoleService userRoleService;
+
+    @Autowired
     private CompanyService companyService;
     @Autowired
     private DepartmentService departmentService;
@@ -37,6 +44,8 @@ public class SystemController {
     @Autowired
     private CompanyApplicationService companyApplicationService;
 
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     RedisClient redisClient;
     @Autowired
@@ -538,6 +547,183 @@ public class SystemController {
         model.putResult(dataMap);
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/companyApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 主页企业(试用版)申请
+     *
+     * @return
+     * @throws Exception
+     */
+    //@GetMapping("/system/companyTryApplication")  //测试代码 真实环境无此代码
+    @PostMapping("/system/companyTryApplication")
+    public ResultModel companyTryApplication() throws Exception {
+        logger.info("################/system/companyTryApplication 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //TODO //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //接口参数非空判断
+        String msgIsNullTemp = "{0}为必填项不可为空";
+
+        //企业名称: name
+        String name = pageData.getString("name");
+        if (name == null || name.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "企业名称");
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //手机号: mobile
+        String mobile = pageData.getString("mobile");
+        if (mobile == null || mobile.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "手机号");
+            model.putMsg(msgStr);
+            return model;
+        }
+        mobile = mobile.trim();
+
+        //手机号 mobile
+        try {
+            new BigDecimal(mobile);
+            if (mobile.length() != 11) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("手机号请输入11位数字");
+                return model;
+            }
+        } catch (NumberFormatException e) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("手机号请输入11位数字");
+            return model;
+        }
+
+        //验证码: securityCode (当前验证码)
+        String securityCode = pageData.getString("securityCode");
+        if (securityCode == null || securityCode.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            String msgStr = MessageFormat.format(msgIsNullTemp, "验证码");
+            model.putMsg(msgStr);
+            return model;
+        }
+        securityCode = securityCode.trim();
+
+        //验证码(Redis缓存Key): securityCodeKey
+        String securityCodeKey = pageData.getString("securityCodeKey");
+        if (securityCodeKey == null || securityCodeKey.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("securityCodeKey(验证码Redis缓存Key)为空或空字符串");
+            return model;
+        }
+        securityCodeKey = securityCodeKey.trim();
+
+        //邮箱: email
+        String email = new String();
+        if (pageData.getString("email") != null) {
+            email = pageData.getString("email").trim();
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //验证码-是否过期
+        String old_securityCode = redisClient.get(securityCodeKey.trim());
+        if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+            return model;
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //4. 创建(企业管理员)账户
+        //获取用户登录账号(test+5位流水号)
+        String userCode = coderuleService.createCoder(Common.SYS_TRY_COMPANY_ID,
+                "vmes_user",
+                "test");
+
+        User addUser = new User();
+        addUser.setCompanyId(Common.SYS_TRY_COMPANY_ID);
+        addUser.setDeptId(Common.SYS_TRY_COMPANY_ID);
+        addUser.setUserCode(userCode);
+        addUser.setUserName(userCode);
+        addUser.setMobile(mobile);
+        addUser.setEmail(email);
+
+        //账号登陆默认密码:手机后6位
+        String password = mobile.substring(mobile.length() - 6, mobile.length());
+        addUser.setPassword(MD5Utils.MD5(password));
+
+        //用户类型(userType_admin:超级管理员 userType_company:企业管理员 userType_employee:普通用户 userType_outer:外部用户)
+        addUser.setUserType(Common.DICTIONARY_MAP.get("userType_employee"));
+
+        //userKey 用户注册Key(用户免登录)
+        addUser.setUserKey(Conv.createUuid());
+        //userKeyDate 用户注册Key有效期(yyyy-MM-dd)
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date userKeyDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        try {
+            String userKeyDateStr = DateFormat.getAddDay(sysDateStr,
+                    DateFormat.DEFAULT_DATE,
+                    Common.SYS_COMPANYAPPLICATION_USERKEY_DAYS,
+                    DateFormat.DEFAULT_DATE_FORMAT);
+
+            userKeyDate = DateFormat.dateString2Date(userKeyDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        addUser.setUserKeyDate(userKeyDate);
+        userService.save(addUser);
+
+        //5.创建(用户角色)
+        UserRole userRole = new UserRole();
+        userRole.setUserId(addUser.getId());
+        //角色表(vmes_role) 角色名称:套餐B 角色ID:00439bedece9443b93fc68be84c88ef4
+        userRole.setRoleId(Common.SYS_COMPANYAPPLICATION_ROLE_ID_B);
+        userRoleService.save(userRole);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //发送邮件
+        if (email != null && email.trim().length() > 0) {
+
+            //String mailTemp = "企业名称：{0} 手机号：{1} 账号：{2} 初始密码：手机号后6位 请登录网址：https://web.ouhaicloud.com 使用";
+            String mailTemp = "亲爱的用户：<br>" +
+                    "您好！<br>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;您于{0}注册了智造云管家，相关注册资料如下：<br>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;企业名称：{1}<br>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;注册手机号：{2}<br>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;企业管理员登录账号：{3}<br>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;初始密码：注册手机号后6位<br>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：web.deecoop.cn<br><br>" +
+
+                    "如有任何问题，欢迎随时咨询<br>" +
+                    "189-8979-2655<br>" +
+                    "或扫描下方二维码添加微信：<br>" +
+                    "<img src='https://web.deecoop.cn/fileUpload/QRCode/wxAppQRCode.png' width='150' height='150'/><br><br>" +
+
+                    "顶智智能 技术团队<br>" +
+                    "{0}<br>";
+
+            String mailContent = MessageFormat.format(mailTemp,
+                    sysDateStr,
+                    name,
+                    mobile,
+                    userCode);
+
+            try {
+                mailService.sendHtmlMail("企业申请注册成功",
+                        mailContent,
+                        email,
+                        null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        //model.putResult(dataMap);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/system/companyTryApplication 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
