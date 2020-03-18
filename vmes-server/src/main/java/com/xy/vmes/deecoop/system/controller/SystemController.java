@@ -211,8 +211,9 @@ public class SystemController {
 
         String userCode = new String();
         if (userDB != null && userDB.getUserCode() != null && userDB.getUserCode().trim().length() > 0) {
-            model.put("userCode", userCode);
+            userCode = userDB.getUserCode().trim();
         }
+        model.put("userCode", userCode);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/system/findUserCodeByToken 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
