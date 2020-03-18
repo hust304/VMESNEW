@@ -43,11 +43,13 @@
 
             <!--采购签收明细-->
             round(ifnull(signDtl.signCount, 0), 2) signCount,
+            <!--收货合格数 -->
+            round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
+            <!--最大允许签收数量: 采购数量 - 收货合格数 -->
+            round((ifnull(orderDtl.count, 0) - ifnull(signDtl.sign_fine_count, 0)), 2) maxAarriveCount,
 
-            <!--未签收数量: 采购数量 - (已生成签收单)签收数量 -->
-            round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) maxAarriveCount,
-            <!--默认签收数量: 采购数量 - (已生成签收单)签收数量 -->
-            round((ifnull(orderDtl.count, 0) - ifnull(signDtl.signCount, 0)), 2) arriveCount,
+            <!--java 类实现(arriveCount) -->
+            '' arriveCount,
 
             <!--quality:质检属性 (1:免检 2:检验)-->
             <!--product.purchase_quality_type 1:全检-->
@@ -65,11 +67,21 @@
 
             <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
             left join (
-                select order_detail_id, sum(arrive_count) signCount
+                select
+                    order_detail_id,
+                    sum(arrive_count) signCount,
+                    sum(sign_fine_count) sign_fine_count
+
                 from vmes_purchase_sign_detail
-                where <![CDATA[ state <> '-1' ]]>
+                <where>
+                    <if test="orderId != null and orderId != ''">
+                        and order_id = #{orderId}
+                    </if>
+                    <![CDATA[ and state <> '-1' ]]>
+                </where>
                 group by order_detail_id
             ) signDtl on orderDtl.id = signDtl.order_detail_id
+
         <where>
             <if test="orderId != null and orderId != ''">
                 and orderDtl.parent_id = #{orderId}
@@ -93,7 +105,7 @@
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign','orderUnitName','单位',6, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'productProperty', '自定义属性', 7, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''),'purchaseOrderDetailQueryBySign','orderCount','采购数量',8, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signCount', '签收单数量', 9, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signCount', '已签收数', 9, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'maxAarriveCount', '未签收数量', 10, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'arriveCount', '签收数量', 11, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'quality', '质检属性', 12, '1', '1', '1', '0', now(), 'admin'),
@@ -106,7 +118,9 @@
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nFormula', 'p2nFormula', 16, '1', '0', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nIsScale', 'p2n:是否需要四舍五入', 17, '1', '0', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'p2nDecimalCount', 'p2n:保留小数位数', 18, '1', '0', '1', '0', now(), 'admin'),
+
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'purchaseQualityType', '检验方式id(1:全检 2:抽检)', 19, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signFineCount', '收货合格数', 20, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 </mapper>
