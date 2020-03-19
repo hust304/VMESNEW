@@ -174,6 +174,12 @@ public class PurchaseSignController {
                 if ("1".equals(addSignDtl.getQuality().trim())) {
                     addSignDtl.setState("2");
                     addSignDtl.setQualityType(null);
+
+                    //signFineCount 收货合格数(签收数)
+                    addSignDtl.setSignFineCount(addSignDtl.getArriveCount());
+                    //qualityFineCount (实际)检验合格数
+                    addSignDtl.setQualityFineCount(addSignDtl.getArriveCount());
+
                 } else if ("2".equals(addSignDtl.getQuality().trim())) {
                     addSignDtl.setState("1");
                 }
