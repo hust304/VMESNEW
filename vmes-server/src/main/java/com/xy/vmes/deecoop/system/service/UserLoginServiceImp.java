@@ -175,6 +175,33 @@ public class UserLoginServiceImp implements UserLoginService {
 
             userEmployMap = objectList.get(0);
         } else if (token != null && token.trim().length() > 0) {
+            //token 方式登录
+            //非空判断
+            StringBuffer msgBuf = new StringBuffer();
+
+            if (securityCode == null || securityCode.trim().length() == 0) {
+                msgBuf.append("参数错误：验证码入为空或空字符串，验证码为必填项不可为空！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            }
+            if (securityCodeKey == null || securityCodeKey.trim().length() == 0) {
+                msgBuf.append("参数错误：验证码(Redis缓存Key)为空或空字符串！");
+                msgBuf.append(Common.SYS_ENDLINE_DEFAULT);
+            }
+
+            if (msgBuf.toString().trim().length() > 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg(msgBuf.toString());
+                return model;
+            }
+
+            //验证码-是否过期
+            String old_securityCode = redisClient.get(securityCodeKey.trim());
+            if (!securityCode.equalsIgnoreCase(old_securityCode)) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("验证码输入错误或已经过期，请重新输入验证码！");
+                return model;
+            }
+
             findMap.put("userCompanyID", Common.SYS_TRY_COMPANY_ID);
             findMap.put("userKey", token);
             findMap.put("userIsdisable", "1");
