@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Common {
     //系统邮件服务配置
-    public final static String SYS_MAIL_SEND = "chen_gang7906@163.com";
+    public final static String SYS_MAIL_SEND = "mail@deecoop.cn";
     //主页企业(试用版)注册申请-默认企业id
     public final static String SYS_TRY_COMPANY_ID = "e4cb2d0b83d7417fb0bc8a9545c6774b";
     //主页企业(试用版)注册申请-userKey有效天数(7天)

@@ -73,14 +73,19 @@ spring:
       username: guest
       password: guest
 
+#系统使用阿里邮箱
+#阿里邮箱网址(https://qiye.aliyun.com)
+#账号: mail@deecoop.cn
+#密码: Wlzg7d510
   mail:
-      host: smtp.163.com #smtp服务器主机 smtp.163.com
-      username: chen_gang7906@163.com  #邮箱账号 #邮箱账号@163.com
-      password: wdmzjcg790412 #第三方登录授权码-必须使用授权码 (第三方授权码:wdmzjcg790412)
+      host: smtp.mxhichina.com #smtp服务器主机 smtp.mxhichina.com
+      username: mail@deecoop.cn  #阿里邮箱账号 mail@deecoop.cn
+      password: Wlzg7d510 #阿里邮箱密码(Wlzg7d510) (163.com)第三方登录授权码-必须使用授权码
       port: 465 #真实使用端口:465
       protocol: smtp #邮件协议 smtp
       default-encoding: UTF-8
 
+      properties.mail.smtp.auth: true
       properties.mail.smtp.starttls.enable: true
       properties.mail.smtp.starttls.required: true
       properties.mail.smtp.ssl.enable: true
