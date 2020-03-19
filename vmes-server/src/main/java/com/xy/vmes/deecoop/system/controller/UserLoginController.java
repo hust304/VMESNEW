@@ -82,6 +82,7 @@ public class UserLoginController {
      * 创建人：陈刚
      * 创建时间：2018-07-20
      */
+    //@GetMapping("/system/userLogin/loginIn")  //测试代码 真实环境无此代码
     @PostMapping("/system/userLogin/loginIn")
     public ResultModel loginIn() throws Exception {
         logger.info("################userLogin/loginIn 执行开始 ################# ");
