@@ -178,6 +178,7 @@ public class UserLoginServiceImp implements UserLoginService {
             findMap.put("userCompanyID", Common.SYS_TRY_COMPANY_ID);
             findMap.put("userKey", token);
             findMap.put("userIsdisable", "1");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
             List<Map<String, Object>> objectList = userEmployService.findViewUserEmployList(findMap);
             if (objectList == null || objectList.size() == 0) {
                 model.putCode(Integer.valueOf(1));
