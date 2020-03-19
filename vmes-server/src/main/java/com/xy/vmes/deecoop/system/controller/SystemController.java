@@ -736,7 +736,7 @@ public class SystemController {
                 "&nbsp;&nbsp;&nbsp;&nbsp;注册手机号：{2}<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;企业管理员登录账号：{3}<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;初始密码：注册手机号后6位<br>" +
-                "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：<a href='{4}'>web.deecoop.cn</a><br><br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：<a href=''{4}''>web.deecoop.cn</a><br><br>" +
 
                 "如有任何问题，欢迎随时咨询<br>" +
                 "189-8979-2655<br>" +
