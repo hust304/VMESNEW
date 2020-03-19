@@ -725,39 +725,45 @@ public class SystemController {
         userRoleService.save(userRole);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //发送邮件
-        if (email != null && email.trim().length() > 0) {
+        String mailTemp = "亲爱的用户：<br>" +
+                "您好！<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;您于{0}注册了智造云管家，相关注册资料如下：<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;企业名称：{1}<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;注册手机号：{2}<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;企业管理员登录账号：{3}<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;初始密码：注册手机号后6位<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：web.deecoop.cn<br><br>" +
 
-            //String mailTemp = "企业名称：{0} 手机号：{1} 账号：{2} 初始密码：手机号后6位 请登录网址：https://web.ouhaicloud.com 使用";
-            String mailTemp = "亲爱的用户：<br>" +
-                    "您好！<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;您于{0}注册了智造云管家，相关注册资料如下：<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;企业名称：{1}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;注册手机号：{2}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;企业管理员登录账号：{3}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;初始密码：注册手机号后6位<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;系统登录网址：web.deecoop.cn<br><br>" +
+                "如有任何问题，欢迎随时咨询<br>" +
+                "189-8979-2655<br>" +
+                "或扫描下方二维码添加微信：<br>" +
+                "<img src='https://web.deecoop.cn/fileUpload/QRCode/wxAppQRCode.png' width='150' height='150'/><br><br>" +
 
-                    "如有任何问题，欢迎随时咨询<br>" +
-                    "189-8979-2655<br>" +
-                    "或扫描下方二维码添加微信：<br>" +
-                    "<img src='https://web.deecoop.cn/fileUpload/QRCode/wxAppQRCode.png' width='150' height='150'/><br><br>" +
+                "顶智智能 技术团队<br>" +
+                "{0}<br>";
 
-                    "顶智智能 技术团队<br>" +
-                    "{0}<br>";
+        String mailContent = MessageFormat.format(mailTemp,
+                sysDateStr,
+                name,
+                mobile,
+                userCode);
 
-            String mailContent = MessageFormat.format(mailTemp,
-                    sysDateStr,
-                    name,
-                    mobile,
-                    userCode);
+        List<String> mailList = new ArrayList<>();
+        //客户邮箱
+        mailList.add(email);
+        //蔡总私人邮箱
+        mailList.add(Common.SYS_MAIL_ADDRESS_A);
 
-            try {
-                mailService.sendHtmlMail("企业申请注册成功",
-                        mailContent,
-                        email,
-                        null);
-            } catch (Exception e) {
-                e.printStackTrace();
+        for (String mailStr : mailList) {
+            if (mailStr != null && mailStr.trim().length() > 0) {
+                try {
+                    mailService.sendHtmlMail("企业申请注册成功",
+                            mailContent,
+                            mailStr,
+                            null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
