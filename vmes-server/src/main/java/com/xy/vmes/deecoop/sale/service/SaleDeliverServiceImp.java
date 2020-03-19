@@ -580,6 +580,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         saleDeliver.setState("1");
         this.update(saleDeliver);
 
+//        saleDeliver = this.selectById(deliverId);
+
         //发货单id获取发货明细List
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
         for (SaleDeliverDetail deliverDetail : deliverDtlList) {
