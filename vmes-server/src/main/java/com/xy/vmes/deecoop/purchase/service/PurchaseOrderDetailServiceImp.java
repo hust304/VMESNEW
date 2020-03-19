@@ -285,9 +285,36 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
             for (Map<String, Object> mapObject : varList) {
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
+
+                //qualityFineCount 检验合格数
+                BigDecimal qualityFineCount = (BigDecimal)mapObject.get("qualityFineCount");
+                //arriveCount 签收数
+                BigDecimal arriveCount = (BigDecimal)mapObject.get("arriveCount");
+
+                //qualityFineRatio 合格率 := 检验合格数 / 签收数
+                BigDecimal qualityFineRatio = BigDecimal.valueOf(0D);
+                if (qualityFineCount != null && arriveCount != null && arriveCount.doubleValue() != 0) {
+                    qualityFineRatio = BigDecimal.valueOf(qualityFineCount.doubleValue() / arriveCount.doubleValue() * 100);
+                }
+                //四舍五入到0位小数
+                qualityFineRatio = qualityFineRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("qualityFineRatio", qualityFineRatio.toString() + " %");
+
+                //signFineCount 收货合格数
+                BigDecimal signFineCount = (BigDecimal)mapObject.get("signFineCount");
+                //count 采购数量
+                BigDecimal count = (BigDecimal)mapObject.get("count");
+
+                //signFineRatio 完成率 := 收货合格数 / 采购数量
+                BigDecimal signFineRatio = BigDecimal.valueOf(0D);
+                if (signFineCount != null && count != null && count.doubleValue() != 0) {
+                    signFineRatio = BigDecimal.valueOf(signFineCount.doubleValue() / count.doubleValue() * 100);
+                }
+                //四舍五入到0位小数
+                signFineRatio = signFineRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("signFineRatio", signFineRatio.toString() + " %");
             }
         }
-
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
