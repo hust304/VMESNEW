@@ -248,14 +248,20 @@ public class PurchaseSignController {
                     detailCount = (BigDecimal)valueMap.get("detailCount");
                 }
 
-                //arriveCount 签收数量:= (已完成)签收数量 - (已完成)退货数量
-                BigDecimal arriveCount = BigDecimal.valueOf(0D);
-                if (valueMap.get("arriveCount") != null) {
-                    arriveCount = (BigDecimal)valueMap.get("arriveCount");
+//                //arriveCount 签收数量:= (已完成)签收数量 - (已完成)退货数量
+//                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+//                if (valueMap.get("arriveCount") != null) {
+//                    arriveCount = (BigDecimal)valueMap.get("arriveCount");
+//                }
+
+                //signFineCount 收货合格数(签收数-(检验)退货数)
+                BigDecimal signFineCount = BigDecimal.valueOf(0D);
+                if (valueMap.get("signFineCount") != null) {
+                    signFineCount = (BigDecimal)valueMap.get("signFineCount");
                 }
 
-                //采购单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
-                if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
+                //采购单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收(无此状态) 4:已完成 -1:已取消)
+                if (signFineCount.doubleValue() >= detailCount.doubleValue()) {
                     editOrderDtl.setState("4");
                     orderDetailService.update(editOrderDtl);
 

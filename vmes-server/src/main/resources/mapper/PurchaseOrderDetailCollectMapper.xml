@@ -17,6 +17,9 @@
 
             <!--签收数量 -->
             round(ifnull(signDetail.arrive_count, 0), 2) signCount,
+            <!--收货合格数(签收数-(检验)退货数) -->
+            round(ifnull(signDetail.sign_fine_count, 0), 2) signFineCount,
+
             <!--(已完成)退货数量 -->
             round(ifnull(retreatDetail.count, 0), 2) retreatCount,
             <!--到货数量:= 签收数量 - (已完成)退货数量 -->
@@ -28,12 +31,20 @@
 
         from vmes_purchase_order_detail detail
             left join vmes_purchase_plan_detail planDtl on detail.plan_id = planDtl.id
+
             <!--签收数量 (采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
             left join (
-                select order_detail_id, sum(arrive_count) arrive_count
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count,
+                    sum(sign_fine_count) sign_fine_count
                 from vmes_purchase_sign_detail
-                <!--签收明细状态(1:检验中 2:已完成 -1:已取消)-->
-                where state = '2'
+                <where>
+                    <if test="parentId != null and parentId != ''">
+                        and order_id = #{parentId}
+                    </if>
+                    <![CDATA[ and state <> '-1' ]]>
+                </where>
                 group by order_detail_id
             ) signDetail on detail.id = signDetail.order_detail_id
             <!--(已完成)退货数量 (采购订单明细id)退货明细汇总 vmes_purchase_retreat_detail-->
