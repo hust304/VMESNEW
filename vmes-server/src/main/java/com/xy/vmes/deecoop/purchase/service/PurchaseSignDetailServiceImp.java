@@ -496,7 +496,12 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
         List<Map> varList = this.getDataListPage(pd, pg);
         if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
             for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+
                 //qualityType 检验方式id (1:全检 2:抽检)
                 String qualityType = "1";
                 if (mapObject.get("qualityType") != null && mapObject.get("qualityType").toString().trim().length() > 0) {
