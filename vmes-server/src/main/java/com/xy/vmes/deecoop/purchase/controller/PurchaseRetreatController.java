@@ -438,13 +438,13 @@ public class PurchaseRetreatController {
                     arriveCount = (BigDecimal)detailValue.get("arriveCount");
                 }
 
-                //状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                //状态(0:待提交 1:待审核 2:采购中 3:部分签收(无此状态) 4:已完成 -1:已取消)
                 PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
                 detailEdit.setId(orderDetailId);
                 if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
                     detailEdit.setState("4");
                 } else {
-                    detailEdit.setState("3");
+                    detailEdit.setState("2");
                 }
                 purchaseOrderDetailService.update(detailEdit);
 
