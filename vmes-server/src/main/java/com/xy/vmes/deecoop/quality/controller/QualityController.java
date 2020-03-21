@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.quality.controller;
 
 import com.xy.vmes.entity.PurchaseQualityDetail;
+import com.xy.vmes.entity.Quality;
 import com.xy.vmes.service.PurchaseQualityDetailService;
 import com.xy.vmes.service.QualityService;
 
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
 * 说明：vmes_quality:质量检验项目Controller
@@ -43,6 +46,37 @@ public class QualityController {
         ResultModel model = qualityService.listPageProductByQuality(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/quality/quality/listPageProductByQuality 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //判断货品是否存在质检项
+    @PostMapping("/quality/quality/checkExistQualityByProduct")
+    public ResultModel checkExistQualityByProduct() throws Exception {
+        logger.info("################/quality/quality/checkExistQualityByProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String productId = pageData.getString("productId");
+        if (productId == null || productId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("货品id为空或空字符串！");
+            return model;
+        }
+
+        String isExist = new String("false");
+
+        PageData findMap = new PageData();
+        findMap.put("productId", productId);
+        List<Quality> qualityList = qualityService.findQualityList(findMap);
+        if (qualityList != null && qualityList.size() > 0) {
+            isExist = new String("true");
+        }
+        model.put("isExist", isExist);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/quality/quality/checkExistQualityByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
