@@ -430,12 +430,12 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
                     purchasePlanDetail.setReason("350135d34d1b43aeb4e2977061632045");//齐套分析预采
                 }
 
-                //(采购订单)生成的采购计划
-                String saleOrderDtlId = new String();
-                if (detailMap.get("saleOrderDtlId") != null) {
-                    saleOrderDtlId = detailMap.get("saleOrderDtlId");
-                }
-                purchasePlanDetail.setSaleOrderDtlId(saleOrderDtlId.trim());
+//                //(采购订单)生成的采购计划
+//                String saleOrderDtlId = new String();
+//                if (detailMap.get("saleOrderDtlId") != null) {
+//                    saleOrderDtlId = detailMap.get("saleOrderDtlId");
+//                }
+//                purchasePlanDetail.setSaleOrderDtlId(saleOrderDtlId.trim());
 
                 //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
                 purchasePlanDetail.setState("0");
