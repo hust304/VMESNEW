@@ -1,20 +1,15 @@
 package com.xy.vmes.deecoop.purchase.service;
 
-
 import com.xy.vmes.deecoop.purchase.dao.PurchasePlanDetailMapper;
 import com.xy.vmes.entity.PurchasePlanDetail;
-import com.xy.vmes.service.PurchasePlanDetailService;
+import com.xy.vmes.entity.PurchasePlanDetailChild;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.PurchasePlanService;
-import com.xy.vmes.service.SystemToolService;
-import com.yvan.ExcelUtil;
-import com.yvan.HttpUtils;
-import com.yvan.PageData;
+import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
-import com.yvan.Conv;
+
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,16 +29,21 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @Transactional(readOnly = false)
 public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
-
-
     @Autowired
     private PurchasePlanDetailMapper purchasePlanDetailMapper;
     @Autowired
-    private ColumnService columnService;
-    @Autowired
     private PurchasePlanService purchasePlanService;
     @Autowired
+    private PurchasePlanDetailChildService planDetailChildService;
+
+    @Autowired
+    private SaleOrderDetailService orderDetailService;
+
+    @Autowired
+    private ColumnService columnService;
+    @Autowired
     private SystemToolService systemToolService;
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-02-28
@@ -286,23 +286,50 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
         }
 
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.getDataListPage(pd, pg);
 
-        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
-        String prodColumnKey = pd.getString("prodColumnKey");
-        if(varList!=null&&varList.size()>0){
+        //isNeedChild 是否需要生产明细子表 true:需要
+        String isNeedChild = pd.getString("isNeedChild");
+        if ("true".equals(isNeedChild) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //planDtlId 生产计划明细id
+                String planDtlId = (String)mapObject.get("id");
+
+                List<PurchasePlanDetailChild> planDtlChildList = planDetailChildService.findPlanDetailChildListByPlanDtlId(planDtlId);
+                String jsonStr = this.findJsonStringByList(planDtlChildList);
+                mapObject.put("jsonStr", jsonStr);
+
+                //Map<"orderCodes", 订单编号>
+                //Map<"expectDate", 订单约定交期>
+                Map<String, String> valueMap = this.findOrderCodeByList(planDtlChildList);
+                mapObject.put("orderCode", valueMap.get("orderCodes"));
+                mapObject.put("expectDate", valueMap.get("expectDate"));
+            }
+        }
+
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
             for (Map<String, Object> mapObject : varList) {
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
             }
         }
 
+        //pageType 页面类型 edit:修改页面
+        String pageType = pd.getString("pageType");
+        if ("edit".equals(pageType) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //operType 操作类型(add:添加, edit:修改)
+                mapObject.put("operType", "edit");
+            }
+        }
 
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-//        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
@@ -442,6 +469,125 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
             purchasePlanService.updateState(purchasePlanDetail.getParentId());
         }
         return model;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private String findJsonStringByList(List<PurchasePlanDetailChild> ObjectList) {
+        if (ObjectList == null || ObjectList.size() == 0) {return new String();}
+
+        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        Map<String, String> orderDetailMap = new LinkedHashMap<>();
+        for (PurchasePlanDetailChild object : ObjectList) {
+            //saleOrderDtlId:销售订单明细ID
+            String saleOrderDtlId = object.getSaleOrderDtlId();
+            if (saleOrderDtlId != null && saleOrderDtlId.trim().length() > 0) {
+                orderDetailMap.put(saleOrderDtlId, saleOrderDtlId);
+            }
+        }
+
+        List<Map<String, String>> childMapList = new ArrayList<>();
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        if (orderDetailMap != null) {
+            for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey_orderDtlId = iterator.next().toString().trim();
+                if (mapKey_orderDtlId != null && mapKey_orderDtlId.trim().length() > 0) {
+                    Map<String, String> childMap = new LinkedHashMap<>();
+                    childMap.put("orderDtlId", mapKey_orderDtlId);
+                    childMapList.add(childMap);
+                }
+            }
+        }
+
+        if (childMapList.size() > 0) {
+            return YvanUtil.toJson(childMapList);
+        }
+
+        return new String();
+    }
+
+    //Map<"orderCodes", 订单编号>
+    //Map<"expectDate", 订单约定交期>
+    private Map<String, String> findOrderCodeByList(List<PurchasePlanDetailChild> ObjectList) throws Exception {
+        Map<String, String> valueMap = new HashMap<>();
+        valueMap.put("orderCodes", new String());
+        valueMap.put("expectDate", new String());
+
+        if (ObjectList == null || ObjectList.size() == 0) {return valueMap;}
+
+        //orderDetailMap<销售订单明细id, 销售订单明细id>
+        Map<String, String> orderDetailMap = new LinkedHashMap<>();
+        for (PurchasePlanDetailChild object : ObjectList) {
+            //saleOrderDtlId:销售订单明细ID
+            String saleOrderDtlId = object.getSaleOrderDtlId();
+            if (saleOrderDtlId != null && saleOrderDtlId.trim().length() > 0) {
+                orderDetailMap.put(saleOrderDtlId, saleOrderDtlId);
+            }
+        }
+
+        StringBuffer orderDtlIdBuf = new StringBuffer();
+        //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 生成货品合并json字符串
+        if (orderDetailMap != null) {
+            for (Iterator iterator = orderDetailMap.keySet().iterator(); iterator.hasNext();) {
+                String mapKey_orderDtlId = iterator.next().toString().trim();
+                if (mapKey_orderDtlId != null && mapKey_orderDtlId.trim().length() > 0) {
+                    orderDtlIdBuf.append(mapKey_orderDtlId).append(",");
+                }
+            }
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (orderDtlIdBuf != null && orderDtlIdBuf.toString().trim().length() > 0) {
+            String orderDtlIds = StringUtil.stringTrimSpace(orderDtlIdBuf.toString().trim());
+            orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("ids", orderDtlIds);
+            List<Map> tableMapList = orderDetailService.getDataListPage(findMap, null);
+
+            //获取订单编号
+            StringBuffer orderCodeBuf = new StringBuffer();
+            if (tableMapList != null && tableMapList.size() > 0) {
+                for (Map<String, Object> mapData : tableMapList) {
+                    String sysCode = (String)mapData.get("sysCode");
+                    if (sysCode != null && sysCode.trim().length() > 0) {
+                        orderCodeBuf.append(sysCode).append(",");
+                    }
+                }
+            }
+
+            //orderCodes 订单编号
+            String orderCodes = new String();
+            if (orderCodeBuf != null && orderCodeBuf.toString().trim().length() > 0) {
+                orderCodes = StringUtil.stringTrimSpace(orderCodeBuf.toString().trim());
+            }
+            valueMap.put("orderCodes", orderCodes);
+
+//            //获取最小订单约定交期 expectDate(yyyy-MM-dd)
+//            //long minExpectDateLong = -1;
+//            if (tableMapList != null && tableMapList.size() > 0) {
+//                for (int i = 0; i < tableMapList.size(); i++) {
+//                    Map<String, Object> mapData = tableMapList.get(i);
+//
+//                    String expectDateStr = (String)mapData.get("expectDate");
+//                    Date expectDate = DateFormat.dateString2Date(expectDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+//                    long expectL = expectDate.getTime();
+//
+//                    if (i == 0) {
+//                        minExpectDateLong = expectL;
+//                    } else if (i > 0) {
+//                        if (expectL < minExpectDateLong) {minExpectDateLong = expectL;}
+//                    }
+//                }
+//            }
+
+//            String expectDateStr = new String();
+//            if (minExpectDateLong != -1) {
+//                Date expectDate = new Date(minExpectDateLong);
+//                expectDateStr = DateFormat.date2String(expectDate, DateFormat.DEFAULT_DATE_FORMAT);
+//            }
+//            valueMap.put("expectDate", expectDateStr);
+        }
+
+        return valueMap;
     }
 }
 

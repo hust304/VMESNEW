@@ -2,17 +2,12 @@ package com.xy.vmes.deecoop.purchase.service;
 
 
 import com.xy.vmes.deecoop.purchase.dao.PurchasePlanMapper;
-import com.xy.vmes.entity.PurchasePlan;
-import com.xy.vmes.entity.PurchasePlanDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.PurchasePlanDetailService;
-import com.xy.vmes.service.PurchasePlanService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.ColumnService;
 import com.yvan.*;
 import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
@@ -35,15 +30,18 @@ import javax.servlet.http.HttpServletResponse;
 @Transactional(readOnly = false)
 public class PurchasePlanServiceImp implements PurchasePlanService {
 
-
     @Autowired
     private PurchasePlanMapper purchasePlanMapper;
     @Autowired
-    private ColumnService columnService;
-    @Autowired
     private PurchasePlanDetailService purchasePlanDetailService;
     @Autowired
+    private PurchasePlanDetailChildService purchasePlanDetailChildService;
+
+    @Autowired
+    private ColumnService columnService;
+    @Autowired
     private CoderuleService coderuleService;
+
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-02-28
@@ -419,6 +417,9 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         }
         this.save(purchasePlan);
 
+        //添加生产计划明细
+        List<PurchasePlanDetailChild> dtlChildList = new ArrayList<>();
+
         if(mapList!=null&&mapList.size()>0){
             for(int i=0;i<mapList.size();i++){
                 Map<String, String> detailMap = mapList.get(i);
@@ -446,6 +447,56 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
                 purchasePlanDetail.setCuser(purchasePlan.getCuser());
                 purchasePlanDetail.setUuser(purchasePlan.getUuser());
                 purchasePlanDetailService.save(purchasePlanDetail);
+
+                //生产计划明细子表对象
+                String jsonStr = detailMap.get("jsonStr");
+                if (jsonStr == null || jsonStr.trim().length() == 0) {
+                    //界面没有点击(按货品合并)按钮
+                    String orderDtlId = detailMap.get("orderDtlId");
+
+                    PurchasePlanDetailChild addDtlChile = new PurchasePlanDetailChild();
+                    addDtlChile.setCuser(purchasePlan.getCuser());
+                    addDtlChile.setPlanId(purchasePlan.getId());
+                    addDtlChile.setPlanDtlId(purchasePlanDetail.getId());
+
+                    addDtlChile.setProductId(purchasePlanDetail.getProductId());
+                    addDtlChile.setUnitId(purchasePlanDetail.getUnitId());
+                    //addDtlChile.setCount(addPlanDtl.getCount());
+
+                    if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+                        addDtlChile.setSaleOrderDtlId(orderDtlId);
+                    }
+
+                    dtlChildList.add(addDtlChile);
+                } else if (jsonStr != null && jsonStr.trim().length() > 0) {
+                    //界面点击(按货品合并)按钮
+                    List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                    if (childMapList != null && childMapList.size() > 0) {
+                        for (Map<String, String> childMap : childMapList) {
+                            PurchasePlanDetailChild addDtlChile = new PurchasePlanDetailChild();
+                            addDtlChile.setCuser(purchasePlan.getCuser());
+                            addDtlChile.setPlanId(purchasePlan.getId());
+                            addDtlChile.setPlanDtlId(purchasePlanDetail.getId());
+
+                            addDtlChile.setProductId(purchasePlanDetail.getProductId());
+                            addDtlChile.setUnitId(purchasePlanDetail.getUnitId());
+
+                            //orderDtlId 销售订单明细id
+                            String orderDtlId = childMap.get("orderDtlId");
+                            addDtlChile.setSaleOrderDtlId(orderDtlId);
+
+                            dtlChildList.add(addDtlChile);
+                        }
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //添加生产计划明细子表 List<PurchasePlanDetailChild> dtlChildList
+        if (dtlChildList != null && dtlChildList.size() > 0) {
+            for (PurchasePlanDetailChild detailChild : dtlChildList) {
+                purchasePlanDetailChildService.save(detailChild);
             }
         }
         return model;
