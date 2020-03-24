@@ -182,7 +182,13 @@
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nFormula', 'p2nFormula', 26, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 27, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 28, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'saleOrderDtlId', '销售订单明细id', 28, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'saleOrderDtlId', '销售订单明细id', 29, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','operType','操作类型(add:添加, edit:修改)',30, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','orderCode','订单号',31, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'expectDate', '约定交期', 32, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','orderDtlId','销售订单明细id',33, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','jsonStr','按货品合并JsonString',34, '1','0','1','0',now(), 'admin'),
 
 
     </insert>
@@ -367,7 +373,7 @@
         detail.remark remark,
         detail.isdisable isdisable,
         detail.unit_id unitId,
-        detail.sale_order_dtl_id saleOrderDtlId,
+        <!--detail.sale_order_dtl_id saleOrderDtlId,-->
 
         reason.name reason,
         plan.code code,
@@ -395,7 +401,16 @@
         prodUnit.n2p_decimal_count n2pDecimalCount,
 
         prodUnit.p2n_is_scale p2nIsScale,
-        prodUnit.p2n_decimal_count p2nDecimalCount
+        prodUnit.p2n_decimal_count p2nDecimalCount,
+
+        detail.sale_order_dtl_id saleOrderDtlId,
+
+        <!--页面传递参数字段 -->
+        '' operType,
+        '' orderCode,
+        '' expectDate,
+        '' orderDtlId,
+        '' jsonStr
 
         from
         vmes_purchase_plan_detail detail
