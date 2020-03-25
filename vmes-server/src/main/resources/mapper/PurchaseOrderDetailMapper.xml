@@ -377,7 +377,7 @@
             detail.plan_id planId,<!-- 采购计划明细ID -->
             detail.product_id productId,<!-- 产品ID -->
             round(ifnull(detail.count, 0), 2) count,<!-- 采购数量 -->
-            round(ifnull(detail.price, 0), 2) price,<!-- 单价 -->
+            round(ifnull(detail.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,<!-- 单价 -->
             round(ifnull(detail.amount, 0), 2) amount,<!-- 采购金额 -->
             DATE_FORMAT(detail.edate,'%Y-%m-%d') edate,<!-- 期望到货时间 -->
             DATE_FORMAT(detail.adate,'%Y-%m-%d') adate,<!-- 实际到货时间 -->
