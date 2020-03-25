@@ -11,6 +11,7 @@ import com.xy.vmes.service.SaleOrderDetailByPurchasePlanService;
 import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -154,7 +155,6 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
                 orderCount = StringUtil.scaleDecimal(orderCount, p2nIsScale, p2nDecimalCount);
                 objectMap.put("orderCount", orderCount.toString());
 
-
                 //endDeliverCount 已发货数量
                 BigDecimal endDeliverCount = BigDecimal.valueOf(0D);
                 if (objectMap.get("endDeliverCount") != null) {
@@ -166,39 +166,46 @@ public class SaleOrderDetailByPurchasePlanServiceImp implements SaleOrderDetailB
                 endDeliverCount = StringUtil.scaleDecimal(endDeliverCount, p2nIsScale, p2nDecimalCount);
                 objectMap.put("endDeliverCount", endDeliverCount.toString());
 
-                //purchasePlanCount 计划数量///////////////////////////////////////////////////////////////////////////////////////////
-                BigDecimal purchasePlanCount = BigDecimal.valueOf(0D);
-
-//                //safetyCount 安全库存(0)
-//                if (safetyCount.doubleValue() == 0D) {
-//                    //purchasePlanCount 计划数量 := 可用库存数量 - 订购数量
-//                    BigDecimal bigTemp = BigDecimal.valueOf(allowStockCount.doubleValue() - orderCount.doubleValue());
-//                    if (bigTemp.doubleValue() < 0) {
-//                        purchasePlanCount = BigDecimal.valueOf(bigTemp.doubleValue() * -1);
-//                    } else if (bigTemp.doubleValue() >= 0) {
-//                        purchasePlanCount = orderCount;
-//                    }
-//                } else if (safetyCount.doubleValue() > 0D) {
-//                    //purchasePlanCount 计划数量 := (可用库存数量 - 订购数量) - 安全库存
-//                    BigDecimal bigTemp = BigDecimal.valueOf(allowStockCount.doubleValue() - orderCount.doubleValue() - safetyCount.doubleValue());
-//                    if (bigTemp.doubleValue() < 0) {
-//                        purchasePlanCount = BigDecimal.valueOf(bigTemp.doubleValue() * -1);
-//                    } else if (bigTemp.doubleValue() >= 0) {
-//                        purchasePlanCount = orderCount;
-//                    }
-//                }
-
-                purchasePlanCount = StringUtil.scaleDecimal(purchasePlanCount, p2nIsScale, p2nDecimalCount);
-                objectMap.put("purchasePlanCount", purchasePlanCount.toString());
-
-                //isNeedPurchase 是否需要采购(0:不需要 1:需要)
-                String isNeedPurchase = new String("0");
-                if (objectMap.get("isNeedPurchase") != null
-                    && "0,1".indexOf(objectMap.get("isNeedPurchase").toString().trim()) != 0
-                ) {
-                    isNeedPurchase = objectMap.get("isNeedPurchase").toString().trim();
+                //endRetreatCount 已退货数量
+                BigDecimal endRetreatCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("endRetreatCount") != null) {
+                    endRetreatCount = (BigDecimal)objectMap.get("endRetreatCount");
                 }
-                objectMap.put("isNeedPurchase", isNeedPurchase);
+
+                //endRetreatCount (单据单位-计价单位)已发货数量 -- (p2nFormula)计价单位转换计量单位
+                endRetreatCount = EvaluateUtil.countFormulaP2N(endRetreatCount, p2nFormula);
+                endRetreatCount = StringUtil.scaleDecimal(endRetreatCount, p2nIsScale, p2nDecimalCount);
+                objectMap.put("endRetreatCount", endRetreatCount.toString());
+
+                //orderCountTemp := 订购数量-已发货+已退货
+                BigDecimal orderCountTemp = BigDecimal.valueOf(orderCount.doubleValue() - endDeliverCount.doubleValue() + endRetreatCount.doubleValue());
+
+                //purchasePlanCount 计划数量///////////////////////////////////////////////////////////////////////////////////////////
+                String minPlanCountStr = new String("0.00");
+                String purchasePlanCountStr = new String("0.00");
+
+                //minPlanCount 最小计划数 := (订购数量-已发货+已退货) - 库存数量 + 安全库存
+                BigDecimal minPlanCount = BigDecimal.valueOf(orderCountTemp.doubleValue() - allowStockCount.doubleValue() + safetyCount.doubleValue());
+                if (minPlanCount.doubleValue() > 0) {
+                    //四舍五入到2位小数
+                    minPlanCount = minPlanCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    minPlanCountStr = minPlanCount.toString();
+                    purchasePlanCountStr = minPlanCount.toString();
+                }
+                objectMap.put("minPlanCount", minPlanCountStr);
+                objectMap.put("purchasePlanCount", purchasePlanCountStr);
+
+//                objectMap.put("minPlanCount", "10.00");
+//                objectMap.put("purchasePlanCount", "10.00");
+
+//                //isNeedPurchase 是否需要采购(0:不需要 1:需要)
+//                String isNeedPurchase = new String("0");
+//                if (objectMap.get("isNeedPurchase") != null
+//                    && "0,1".indexOf(objectMap.get("isNeedPurchase").toString().trim()) != 0
+//                ) {
+//                    isNeedPurchase = objectMap.get("isNeedPurchase").toString().trim();
+//                }
+//                objectMap.put("isNeedPurchase", isNeedPurchase);
             }
         }
 
