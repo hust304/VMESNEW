@@ -551,8 +551,8 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         this.update(editPlan);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
-        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        //String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        //Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
         Map<String, List<Map<String, String>>> valueMap = this.findAddEditMap(jsonMapList);
 
         //界面添加行数据
@@ -582,12 +582,12 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             }
             addPlanDtl.setRemark(remark_dtl);
 
-            Date edate_dtl = sysDate;
+            addPlanDtl.setEdate(null);
             String edate_dtl_Str = mapObject.get("edate");
             if (edate_dtl_Str != null && edate_dtl_Str.trim().length() > 0) {
-                edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+                Date edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+                addPlanDtl.setEdate(edate_dtl);
             }
-            addPlanDtl.setEdate(edate_dtl);
 
             String productId = mapObject.get("productId");
             addPlanDtl.setProductId(productId);
@@ -678,12 +678,12 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             editPlanDtl.setCount(count);
 
-            Date edate_dtl = sysDate;
+            editPlanDtl.setEdate(null);
             String edate_dtl_Str = mapObject.get("edate");
             if (edate_dtl_Str != null && edate_dtl_Str.trim().length() > 0) {
-                edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+                Date edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+                editPlanDtl.setEdate(edate_dtl);
             }
-            editPlanDtl.setEdate(edate_dtl);
 
             //reason:采购原因(字典表-vmes_dictionary.id)
             String reason = new String();
@@ -730,6 +730,24 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             }
         }
 
+        //deleteIds 采购计划明细id字符串
+        String deleteIds = new String();
+        if (pd.getString("deleteIds") != null) {
+            deleteIds = pd.getString("deleteIds").trim();
+        }
+
+        String[] planDtlArry = deleteIds.split(",");
+        for (String planDtlId : planDtlArry) {
+            if (planDtlId != null && planDtlId.trim().length() > 0) {
+                //删除采购计划明细子表
+                Map columnMap = new HashMap();
+                columnMap.put("plan_dtl_id", planDtlId);
+                purchasePlanDetailChildService.deleteByColumnMap(columnMap);
+
+                //删除采购计划明细表
+                purchasePlanDetailService.deleteById(planDtlId);
+            }
+        }
 
 //        Map columnMap = new HashMap();
 //        columnMap.put("parent_id",purchasePlan.getId());
