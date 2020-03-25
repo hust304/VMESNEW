@@ -1,6 +1,6 @@
 package com.xy.vmes.deecoop.purchase.service;
 
-
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.purchase.dao.PurchasePlanMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -16,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -505,7 +507,15 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
     @Override
     public ResultModel editPurchasePlan(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        PurchasePlan purchasePlan = (PurchasePlan)HttpUtils.pageData2Entity(pd, new PurchasePlan());
+
+        String cuser = pd.getString("cuser");
+        String planId = pd.getString("planId");
+        if (planId == null || planId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("生产计划id为空或空字符串！");
+            return model;
+        }
+
         String dtlJsonStr = pd.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -513,40 +523,213 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             return model;
         }
 
-        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
-        if (mapList == null || mapList.size() == 0) {
+        List<Map<String, String>> jsonMapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (jsonMapList == null || jsonMapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("采购计划明细Json字符串-转换成List错误！");
             return model;
         }
 
+        //1. 修改生产计划
+        PurchasePlan editPlan = new PurchasePlan();
+        editPlan.setId(planId);
+
+        //remark 备注
+        String remark = pd.getString("remark");
+        editPlan.setMakeId(remark);
+
+        //makeId 制单人id
+        String makeId = pd.getString("makeId");
+        editPlan.setMakeId(makeId);
+
         //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
         //isAutoCommit true:自动提交 false:手动提交
         String isAutoCommit = pd.getString("isAutoCommit");
         if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-            purchasePlan.setState("1");
+            editPlan.setState("1");
         }
-        this.update(purchasePlan);
+        this.update(editPlan);
 
-        Map columnMap = new HashMap();
-        columnMap.put("parent_id",purchasePlan.getId());
-        purchasePlanDetailService.deleteByColumnMap(columnMap);
-        if(mapList!=null&&mapList.size()>0){
-            for(int i=0;i<mapList.size();i++){
-                Map<String, String> detailMap = mapList.get(i);
-                PurchasePlanDetail purchasePlanDetail = (PurchasePlanDetail) HttpUtils.pageData2Entity(detailMap, new PurchasePlanDetail());
-                purchasePlanDetail.setParentId(purchasePlan.getId());
-                //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                //purchasePlanDetail.setState("0");
-                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-                    purchasePlanDetail.setState("1");
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        Map<String, List<Map<String, String>>> valueMap = this.findAddEditMap(jsonMapList);
+
+        //界面添加行数据
+        List<Map<String, String>> addMapList = valueMap.get("addList");
+        for (Map<String, String> mapObject : addMapList) {
+            PurchasePlanDetail addPlanDtl = new PurchasePlanDetail();
+            addPlanDtl.setParentId(editPlan.getId());
+            addPlanDtl.setCuser(cuser);
+
+            //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+            addPlanDtl.setState("0");
+            if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                addPlanDtl.setState("1");
+            }
+
+            //reason:采购原因(字典表-vmes_dictionary.id)
+            String reason = new String();
+            if (mapObject.get("reason") != null && mapObject.get("reason").trim().length() > 0) {
+                reason = mapObject.get("reason");
+            }
+            addPlanDtl.setReason(reason);
+
+            Date edate_dtl = sysDate;
+            String edate_dtl_Str = mapObject.get("edate");
+            if (edate_dtl_Str != null && edate_dtl_Str.trim().length() > 0) {
+                edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            addPlanDtl.setEdate(edate_dtl);
+
+            String productId = mapObject.get("productId");
+            addPlanDtl.setProductId(productId);
+            String unitId = mapObject.get("unitId");
+            addPlanDtl.setUnitId(unitId);
+
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String countStr = mapObject.get("count");
+            if (countStr != null && countStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(countStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            addPlanDtl.setCount(count);
+
+            //采购计划明细子表对象
+            String jsonStr = mapObject.get("jsonStr");
+            if (jsonStr == null || jsonStr.trim().length() == 0) {
+                //界面没有点击(按货品合并)按钮
+
+                PurchasePlanDetailChild addDtlChile = new PurchasePlanDetailChild();
+                addDtlChile.setCuser(cuser);
+                addDtlChile.setPlanId(editPlan.getId());
+                addDtlChile.setPlanDtlId(addPlanDtl.getId());
+
+                addDtlChile.setProductId(addPlanDtl.getProductId());
+                addDtlChile.setUnitId(addPlanDtl.getUnitId());
+
+                String orderDtlId = mapObject.get("orderDtlId");
+                if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+                    addDtlChile.setSaleOrderDtlId(orderDtlId);
                 }
 
-                purchasePlanDetail.setCuser(purchasePlan.getCuser());
-                purchasePlanDetail.setUuser(purchasePlan.getUuser());
-                purchasePlanDetailService.save(purchasePlanDetail);
+                purchasePlanDetailChildService.save(addDtlChile);
+            } else if (jsonStr != null && jsonStr.trim().length() > 0) {
+                //界面点击(按货品合并)按钮
+                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                if (childMapList != null && childMapList.size() > 0) {
+                    for (Map<String, String> childMap : childMapList) {
+                        PurchasePlanDetailChild addDtlChile = new PurchasePlanDetailChild();
+                        addDtlChile.setCuser(cuser);
+                        addDtlChile.setPlanId(editPlan.getId());
+                        addDtlChile.setPlanDtlId(addPlanDtl.getId());
+
+                        addDtlChile.setProductId(addPlanDtl.getProductId());
+                        addDtlChile.setUnitId(addPlanDtl.getUnitId());
+
+                        //orderDtlId 销售订单明细id
+                        String orderDtlId = childMap.get("orderDtlId");
+                        addDtlChile.setSaleOrderDtlId(orderDtlId);
+
+                        purchasePlanDetailChildService.save(addDtlChile);
+                    }
+                }
             }
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //界面修改行数据
+        List<Map<String, String>> editMapList = valueMap.get("editList");
+        for (Map<String, String> mapObject : editMapList) {
+            PurchasePlanDetail editPlanDtl = new PurchasePlanDetail();
+
+            //planDtlId 采购计划明细id
+            String planDtlId = mapObject.get("planDtlId");
+            editPlanDtl.setId(planDtlId);
+
+            //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+            editPlanDtl.setState("0");
+            if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+                editPlanDtl.setState("1");
+            }
+
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String countStr = mapObject.get("count");
+            if (countStr != null && countStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(countStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editPlanDtl.setCount(count);
+
+            Date edate_dtl = sysDate;
+            String edate_dtl_Str = mapObject.get("edate");
+            if (edate_dtl_Str != null && edate_dtl_Str.trim().length() > 0) {
+                edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+            }
+            editPlanDtl.setEdate(edate_dtl);
+
+            purchasePlanDetailService.update(editPlanDtl);
+
+            //生产计划明细子表对象
+            String jsonStr = mapObject.get("jsonStr");
+            if (jsonStr != null && jsonStr.trim().length() > 0) {
+                Map columnMap = new HashMap();
+                columnMap.put("plan_dtl_id", planDtlId);
+                purchasePlanDetailChildService.deleteByColumnMap(columnMap);
+
+                //界面点击(按货品合并)按钮
+                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+                if (childMapList != null && childMapList.size() > 0) {
+                    for (Map<String, String> childMap : childMapList) {
+                        PurchasePlanDetailChild addDtlChile = new PurchasePlanDetailChild();
+                        addDtlChile.setCuser(cuser);
+                        addDtlChile.setPlanId(editPlan.getId());
+                        addDtlChile.setPlanDtlId(editPlanDtl.getId());
+
+                        addDtlChile.setProductId(editPlanDtl.getProductId());
+                        addDtlChile.setUnitId(editPlanDtl.getUnitId());
+
+                        //orderDtlId 销售订单明细id
+                        String orderDtlId = childMap.get("orderDtlId");
+                        addDtlChile.setSaleOrderDtlId(orderDtlId);
+
+                        purchasePlanDetailChildService.save(addDtlChile);
+                    }
+                }
+            }
+        }
+
+
+//        Map columnMap = new HashMap();
+//        columnMap.put("parent_id",purchasePlan.getId());
+//        purchasePlanDetailService.deleteByColumnMap(columnMap);
+//
+//        if(mapList!=null&&mapList.size()>0){
+//            for(int i=0;i<mapList.size();i++){
+//                Map<String, String> detailMap = mapList.get(i);
+//                PurchasePlanDetail purchasePlanDetail = (PurchasePlanDetail) HttpUtils.pageData2Entity(detailMap, new PurchasePlanDetail());
+//                purchasePlanDetail.setParentId(purchasePlan.getId());
+//                //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+//                //purchasePlanDetail.setState("0");
+//                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+//                    purchasePlanDetail.setState("1");
+//                }
+//
+//                purchasePlanDetail.setCuser(purchasePlan.getCuser());
+//                purchasePlanDetail.setUuser(purchasePlan.getUuser());
+//                purchasePlanDetailService.save(purchasePlanDetail);
+//            }
+//        }
         return model;
     }
 
@@ -794,6 +977,31 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             this.update(purchasePlan);
         }
 
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private Map<String, List<Map<String, String>>> findAddEditMap(List<Map<String, String>> jsonMapList) {
+        Map<String, List<Map<String, String>>> valueMap = new HashMap<>();
+
+        List<Map<String, String>> addMapList = new ArrayList<>();
+        List<Map<String, String>> editMapList = new ArrayList<>();
+        //遍历 jsonMapList 添加生产计划明细
+        if (jsonMapList != null && jsonMapList.size() > 0) {
+            for (Map<String, String> mapObject : jsonMapList) {
+                //operType 操作类型(add:添加, edit:修改)
+                String operType = mapObject.get("operType");
+
+                if ("add".equals(operType)) {
+                    addMapList.add(mapObject);
+                } else if ("edit".equals(operType)) {
+                    editMapList.add(mapObject);
+                }
+            }
+        }
+
+        valueMap.put("addList", addMapList);
+        valueMap.put("editList", editMapList);
+        return valueMap;
     }
 }
 

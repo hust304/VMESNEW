@@ -189,6 +189,7 @@
             (replace(uuid(), '-', ''), 'PurchasePlanDetail', 'expectDate', '约定交期', 32, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','orderDtlId','销售订单明细id',33, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchasePlanDetail','jsonStr','按货品合并JsonString',34, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchasePlanDetail','planDtlId','采购计划明细id',35, '1','1','1','0',now(), 'admin'),
 
 
     </insert>
@@ -357,6 +358,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
+        detail.id planDtlId,
         detail.id id,
         detail.parent_id parentId,
         detail.product_id productId,
