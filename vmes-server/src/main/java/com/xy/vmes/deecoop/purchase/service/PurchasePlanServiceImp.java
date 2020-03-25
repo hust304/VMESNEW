@@ -575,6 +575,13 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             }
             addPlanDtl.setReason(reason);
 
+            //remark:备注
+            String remark_dtl = new String();
+            if (mapObject.get("remark") != null ) {
+                remark_dtl = mapObject.get("remark").trim();
+            }
+            addPlanDtl.setRemark(remark_dtl);
+
             Date edate_dtl = sysDate;
             String edate_dtl_Str = mapObject.get("edate");
             if (edate_dtl_Str != null && edate_dtl_Str.trim().length() > 0) {
@@ -678,6 +685,20 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             }
             editPlanDtl.setEdate(edate_dtl);
 
+            //reason:采购原因(字典表-vmes_dictionary.id)
+            String reason = new String();
+            if (mapObject.get("reason") != null && mapObject.get("reason").trim().length() > 0) {
+                reason = mapObject.get("reason");
+            }
+            editPlanDtl.setReason(reason);
+
+            //remark:备注
+            String remark_dtl = new String();
+            if (mapObject.get("remark") != null ) {
+                remark_dtl = mapObject.get("remark").trim();
+            }
+            editPlanDtl.setRemark(remark_dtl);
+
             purchasePlanDetailService.update(editPlanDtl);
 
             //生产计划明细子表对象
@@ -776,16 +797,26 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
     @Override
     public ResultModel deletePurchasePlan(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
-        String id = pageData.getString("id");
-        if (StringUtils.isEmpty(id)) {
+        String parentId = pageData.getString("id");
+        if (StringUtils.isEmpty(parentId)) {
             model.putCode("1");
-            model.putMsg("主键ID为空，请求数据异常，请重新操作！");
+            model.putMsg("采购计划id为空或空字符串！");
             return model;
         }
+
+        //删除采购计划明细子表
         Map columnMap = new HashMap();
-        columnMap.put("parent_id",id);
+        columnMap.put("plan_id", parentId);
+        purchasePlanDetailChildService.deleteByColumnMap(columnMap);
+
+        //删除采购计划明细表
+        columnMap = new HashMap();
+        columnMap.put("parent_id",parentId);
         purchasePlanDetailService.deleteByColumnMap(columnMap);
-        this.deleteById(id);
+
+        //删除购计计划表
+        this.deleteById(parentId);
+
         return model;
     }
 

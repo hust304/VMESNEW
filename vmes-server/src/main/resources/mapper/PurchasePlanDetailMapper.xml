@@ -318,12 +318,8 @@
         left join vmes_dictionary reason on detail.reason = reason.id
 
         <where>
-            <!--queryStr 自定义sql查询语句-->
-            <if test="queryStr != null and queryStr != ''" >
-                and ${queryStr}
-            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''">
-                and plan.company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
+                and plan.company_id = #{currentCompanyId}
             </if>
             <if test="parentId != null and parentId != ''">
                 and detail.parent_id =  #{parentId}
@@ -348,6 +344,10 @@
             </if>
             <if test="detailState != null and detailState != ''">
                 and detail.state =  #{detailState}
+            </if>
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
             </if>
         </where>
         <if test="orderStr != null and orderStr != ''" >

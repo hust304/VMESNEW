@@ -49,7 +49,7 @@
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
-    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.ProducePlanDetailChild">
+    <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.PurchasePlanDetailChild">
         select
         id id,
         plan_id planId,
