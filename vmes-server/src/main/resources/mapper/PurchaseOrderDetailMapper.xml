@@ -208,6 +208,7 @@
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'qualityFineCount', '检验合格数', 36, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'qualityFineRatio', '合格率', 36, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'signFineRatio', '完成率', 36, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'receiveCount', '让步接收', 37, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -425,6 +426,7 @@
             round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
             round(ifnull(signDetail.sign_fine_count, 0), 2) signFineCount,
             round(ifnull(signDetail.quality_fine_count, 0), 2) qualityFineCount,
+            round(ifnull(signDetail.receive_count, 0), 2) receiveCount,
             DATE_FORMAT(signDetail.cdate,'%Y-%m-%d') signDate,
 
             <!--java 类实现(qualityFineRatio,signFineRatio) -->
@@ -448,6 +450,7 @@
                     sum(arrive_count) arrive_count,
                     sum(sign_fine_count) sign_fine_count,
                     sum(quality_fine_count) quality_fine_count,
+                    sum(receive_count) receive_count,
                     max(cdate) cdate
                 from vmes_purchase_sign_detail
                 <where>
