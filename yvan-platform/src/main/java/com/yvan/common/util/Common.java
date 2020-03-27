@@ -446,13 +446,22 @@ public class Common {
         //e8d9461fbe704fdcbe2ee88efb310f2c(地区id)  地区(字典名称)
         put("area", "e8d9461fbe704fdcbe2ee88efb310f2c");
 
-        //566b1b81bb6343be9e68bdbe1a460916 售购采销退货类型
+        //566b1b81bb6343be9e68bdbe1a460916 销售退货类型
         put("retreatType", "566b1b81bb6343be9e68bdbe1a460916");
 
             //f69839bbf2394846a65894f0da120df9 退货退款
             put("retreatRefund", "f69839bbf2394846a65894f0da120df9");
             //c90c2081328c427e8d65014d98335601 退货换货
             put("retreatChange", "c90c2081328c427e8d65014d98335601");
+
+        //e0f7e0202cb0e89b6986438764b4e926 采购退货类型
+        put("retreatTypeByPurchase", "e0f7e0202cb0e89b6986438764b4e926");
+            //2555318ca01e5ae398eca08f5eff6eb8 退货退款
+            put("retreatRefundByPurchase", "2555318ca01e5ae398eca08f5eff6eb8");
+            //4b4ab49d586ed0aa1a8fbac1c202d509 退货换货
+            put("retreatChangeByPurchase", "4b4ab49d586ed0aa1a8fbac1c202d509");
+            //d1e4970cde9f5df4f40ea89e73a33320 检验退货
+            put("retreatQualityByPurchase", "d1e4970cde9f5df4f40ea89e73a33320");
 
         //设备保养方式: 7ef6384e92a343ccb839112a5d59b2fe (vmes_dictionary.id) 设备保养计划(模块)
         put("equipmentMaintainMode", "7ef6384e92a343ccb839112a5d59b2fe");
