@@ -25,9 +25,9 @@ public class CreateCodeUtil {
 
 
         pd.put("dbtype","mysql");//数据库类型
-        pd.put("username","root");//用户名
+        pd.put("username","vmes");//用户名
         pd.put("password","agrvqL$D");//密码
-        pd.put("dbAddress","47.92.1.209");//数据库连接地址
+        pd.put("dbAddress","rm-8vbjns8g515bo16crvo.mysql.zhangbei.rds.aliyuncs.com");//数据库连接地址
         pd.put("dbport","3306");//端口
         pd.put("databaseName","deecoop");//数据库名
         pd.put("table",tableName);//表名
