@@ -91,6 +91,210 @@ public class PurchaseRetreatController {
     }
 
     /**
+     * 提交(审核)采购退货单
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/submitPurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel submitPurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/submitPurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购退货单id为空或空字符串！");
+            return model;
+        }
+
+        //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        purchaseRetreatDetailService.updateStateByDetail("1", parentId);
+
+        //修改抬头表状态
+        PurchaseRetreat editRetreat = new PurchaseRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        editRetreat.setState("1");
+        purchaseRetreatService.update(editRetreat);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/submitPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 撤回(审核)采购退货单
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/rebackSubmitPurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackSubmitPurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/rebackSubmitPurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购退货单id为空或空字符串！");
+            return model;
+        }
+
+        //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        purchaseRetreatDetailService.updateStateByDetail("0", parentId);
+
+        //修改抬头表状态
+        PurchaseRetreat editRetreat = new PurchaseRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        editRetreat.setState("0");
+        purchaseRetreatService.update(editRetreat);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/rebackSubmitPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 取消采购退货单
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/cancelPurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel cancelPurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/cancelPurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购退货单id为空或空字符串！");
+            return model;
+        }
+
+        //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        purchaseRetreatDetailService.updateStateByDetail("-1", parentId);
+
+        //修改抬头表状态
+        PurchaseRetreat editRetreat = new PurchaseRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        editRetreat.setState("-1");
+        purchaseRetreatService.update(editRetreat);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/cancelPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 恢复(取消)采购退货单
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/rebackCancelPurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackCancelPurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/rebackCancelPurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购退货单id为空或空字符串！");
+            return model;
+        }
+
+        //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        purchaseRetreatDetailService.updateStateByDetail("0", parentId);
+
+        //修改抬头表状态
+        PurchaseRetreat editRetreat = new PurchaseRetreat();
+        editRetreat.setId(parentId);
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        editRetreat.setState("0");
+        purchaseRetreatService.update(editRetreat);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/rebackCancelPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 删除采购退货单
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/deletePurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel deletePurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/deletePurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String parentId = pageData.getString("id");
+        if (parentId == null || parentId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购退货单id为空或空字符串！");
+            return model;
+        }
+
+        //删除采购退货明细表
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", parentId);
+        purchaseRetreatDetailService.deleteByColumnMap(columnMap);
+
+        //删除采购退货表
+        purchaseRetreatService.deleteById(parentId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/deletePurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改采购退货单
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchaseRetreat/updatePurchaseRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updatePurchaseRetreat() throws Exception {
+        logger.info("################/purchase/purchaseRetreat/updatePurchaseRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchaseRetreat/updatePurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
      * 审核通过(退货单)
      *
      * @author 陈刚

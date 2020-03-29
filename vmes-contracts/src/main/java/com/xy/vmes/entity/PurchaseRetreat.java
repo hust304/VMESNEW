@@ -34,7 +34,7 @@ public class PurchaseRetreat implements Serializable {
 	//退货编号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
-	//状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+	//状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
 	//退货金额

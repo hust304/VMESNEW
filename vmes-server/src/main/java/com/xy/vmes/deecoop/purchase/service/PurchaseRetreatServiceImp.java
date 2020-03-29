@@ -429,13 +429,13 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
     public ResultModel addPurchaseRetreat(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
-        //采购订单id
-        String orderId = pageData.getString("orderId");
-        if (orderId == null || orderId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("采购订单id为空或空字符串！");
-            return model;
-        }
+//        //采购订单id
+//        String orderId = pageData.getString("orderId");
+//        if (orderId == null || orderId.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("采购订单id为空或空字符串！");
+//            return model;
+//        }
 
         //供应商ID
         String supplierId = pageData.getString("supplierId");
@@ -476,7 +476,7 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         PurchaseRetreat retreat = new PurchaseRetreat();
         retreat.setType(type);
         retreat.setSupplierId(supplierId);
-        retreat.setOrderId(orderId);
+        //retreat.setOrderId(orderId);
         retreat.setRemark(remark);
         //获取退货总金额
         BigDecimal totalSum = purchaseRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
@@ -497,7 +497,7 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         String code = coderuleService.createCoderCdateByDate(companyID,
                 "vmes_purchase_retreat",
                 "yyyyMMdd",
-                "PT");
+                "PR");
         retreat.setSysCode(code);
         this.save(retreat);
 

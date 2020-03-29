@@ -369,7 +369,7 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
 
         parentIds = StringUtil.stringTrimSpace(parentIds);
         parentIds = "'" + parentIds.replace(",", "','") + "'";
-        pageData.put("parentIds", "parent_id in (" + parentIds + ")");
+        pageData.put("parentIds", parentIds);
 
         purchaseRetreatDetailMapper.updateStateByDetail(pageData);
     }

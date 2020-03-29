@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 public class PurchaseRetreatDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//
 	@TableField("id")
 	private String id;
 	//退货单ID
@@ -31,6 +30,7 @@ public class PurchaseRetreatDetail implements Serializable {
 	//货品ID
 	@TableField("product_id")
 	private String productId;
+
 	//退货金额
 	@TableField("amount")
 	private BigDecimal amount;
@@ -40,12 +40,13 @@ public class PurchaseRetreatDetail implements Serializable {
 	//退货数量
 	@TableField("count")
 	private BigDecimal count;
-	//明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
+	//明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
+
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -61,7 +62,6 @@ public class PurchaseRetreatDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
-
 
 
 	public void setId(String id) {
