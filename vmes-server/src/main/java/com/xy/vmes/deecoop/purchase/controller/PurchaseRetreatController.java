@@ -288,6 +288,81 @@ public class PurchaseRetreatController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String retreatId = pageData.getString("retreatId");
+        if (retreatId == null || retreatId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购退货单id为空或空字符串！");
+            return model;
+        }
+
+        //供应商ID
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        //退货类型
+        String type = pageData.getString("type");
+        if (type == null || type.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货类型id为空或空字符串！");
+            return model;
+        }
+
+        String remark = new String();
+        if (pageData.getString("remark") != null) {
+            remark = pageData.getString("remark").trim();
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("无退货列表数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        List<PurchaseRetreatDetail> retreatDtlList = purchaseRetreatDetailService.mapList2DetailList(mapList, null);
+
+        //1. 修改采购退货单
+        PurchaseRetreat editRetreat = new PurchaseRetreat();
+        editRetreat.setId(retreatId);
+        editRetreat.setSupplierId(supplierId);
+        editRetreat.setType(type);
+        editRetreat.setRemark(remark);
+
+        //获取退货总金额
+        BigDecimal totalSum = purchaseRetreatDetailService.findTotalSumByDetailList(retreatDtlList);
+        editRetreat.setTotalSum(totalSum);
+        //realityTotal 实际退货金额
+        editRetreat.setRealityTotal(totalSum);
+
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        editRetreat.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            editRetreat.setState("1");
+        }
+        purchaseRetreatService.update(editRetreat);
+
+        //2. 根据(采购退货单id) 删除采购退货明细
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", retreatId);
+        purchaseRetreatDetailService.deleteByColumnMap(columnMap);
+
+        //3. 生成修改后的退货单明细
+        PurchaseRetreat retreatDB = purchaseRetreatService.findPurchaseRetreatById(retreatId);
+        purchaseRetreatDetailService.addPurchaseRetreatDetail(retreatDB, retreatDtlList);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseRetreat/updatePurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

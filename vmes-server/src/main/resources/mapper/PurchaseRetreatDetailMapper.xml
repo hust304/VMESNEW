@@ -58,11 +58,13 @@
             (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'productGenreName', '货品属性', 19, '1', '1', '1', '0', '2018-12-5 17:38:48', 'admin'),
             (replace(uuid(), '-', ''),'purchaseRetreatDetail','price','单价',20, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'purchaseRetreatDetail','n2pFormula','n2pFormula',21, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreatDetail','p2nFormula','p2nFormula',22, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'n2pFormula', 'n2pFormula', 21, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'n2pIsScale', 'n2p:是否需要四舍五入', 22, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'n2pDecimalCount', 'n2p:保留小数位数', 23, '1', '0', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'purchaseRetreatDetail','planDtlId','采购计划明细id',23, '1','0','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'purchaseRetreatDetail','planParentId','采购计划id',24, '1','0','1','0',now(), 'admin')
+            (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'p2nFormula', 'p2nFormula', 24, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'p2nIsScale', 'p2n:是否需要四舍五入', 25, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'purchaseRetreatDetail', 'p2nDecimalCount', 'p2n:保留小数位数', 26, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -141,7 +143,6 @@
         detail.out_detail_id outDetailId,
         detail.product_id productId,
 
-        round(ifnull(orderDetail.price, 0), 2) price,
         round(ifnull(detail.amount, 0), 2) amount,
         detail.unit unit,
         orderUnit.name unitName,
@@ -169,17 +170,19 @@
         product.genre productGenre,
         genre.name productGenreName,
 
-        <!--采购计划-->
-        orderDetail.plan_id planDtlId,
-        planDtl.parent_id planParentId,
-
-        <!--货品计量单位-->
+        <!--货品单位(单据单位)-->
         prodUnit.np_formula n2pFormula,
-        prodUnit.pn_formula p2nFormula
+        prodUnit.n2p_is_scale n2pIsScale,
+        prodUnit.n2p_decimal_count n2pDecimalCount,
+
+        prodUnit.pn_formula p2nFormula,
+        prodUnit.p2n_is_scale p2nIsScale,
+        prodUnit.p2n_decimal_count p2nDecimalCount,
+
+        <!--java 类实现(price) -->
+        '' price
 
         from vmes_purchase_retreat_detail detail
-        left join vmes_purchase_order_detail orderDetail on detail.order_detail_id = orderDetail.id
-        left join vmes_purchase_plan_detail planDtl on orderDetail.plan_id = planDtl.id
 
         left join vmes_product product on detail.product_id = product.id
         left join vmes_dictionary orderUnit on detail.unit = orderUnit.id

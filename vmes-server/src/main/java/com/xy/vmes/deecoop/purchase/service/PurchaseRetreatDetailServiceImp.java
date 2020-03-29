@@ -55,6 +55,11 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         purchaseRetreatDetailMapper.insert(purchaseRetreatDetail);
     }
 
+    public void saveDetail(PurchaseRetreatDetail object) throws Exception {
+        object.setId(Conv.createUuid());
+        purchaseRetreatDetailMapper.insert(object);
+    }
+
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -379,11 +384,13 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         if (objectList == null || objectList.size() == 0) {return;}
 
         for (PurchaseRetreatDetail detail : objectList) {
-            //退货明细状态 明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
-            detail.setState("1");
+            //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+            detail.setState(parentObj.getState());
             detail.setParentId(parentObj.getId());
             detail.setCuser(parentObj.getCuser());
-            this.save(detail);
+            detail.setCdate(parentObj.getCdate());
+            detail.setUdate(parentObj.getCdate());
+            this.saveDetail(detail);
         }
     }
 
@@ -479,18 +486,41 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
         }
 
         List<Map> varList = this.getDataListPage(pd,pg);
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
 
-        //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
-        String prodColumnKey = pd.getString("prodColumnKey");
-        if(varList!=null&&varList.size()>0){
             for (Map<String, Object> mapObject : varList) {
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
+
+                //获取货品单价
+                //amount 退货金额
+                BigDecimal amount = BigDecimal.valueOf(0D);
+                if (mapObject.get("amount") != null) {
+                    amount = (BigDecimal)mapObject.get("amount");
+                }
+
+                //count 退货数量
+                BigDecimal count = BigDecimal.valueOf(0D);
+                if (mapObject.get("count") != null) {
+                    count = (BigDecimal)mapObject.get("count");
+                }
+
+                //price 单价:= 退货金额 / count
+                BigDecimal price = BigDecimal.valueOf(0D);
+                String priceStr = new String("0.0000");
+                if (0D != count.doubleValue() ) {
+                    price = BigDecimal.valueOf(amount.doubleValue() / count.doubleValue());
+                }
+                //四舍五入到4位小数
+                price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                priceStr = price.toString();
+
+                mapObject.put("price", priceStr);
             }
         }
-
-
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));

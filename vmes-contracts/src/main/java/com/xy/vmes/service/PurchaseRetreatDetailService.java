@@ -23,6 +23,7 @@ public interface PurchaseRetreatDetailService {
      * 创建时间：2019-05-09
      */
     void save(PurchaseRetreatDetail object) throws Exception;
+    void saveDetail(PurchaseRetreatDetail object) throws Exception;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改

@@ -484,8 +484,14 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         //realityTotal 实际退货金额
         retreat.setRealityTotal(totalSum);
 
-        //状态(1:待审核 2:待退货 3:已完成 -1:已取消)
-        retreat.setState("1");
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        retreat.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            retreat.setState("1");
+        }
+
         String companyID = pageData.getString("currentCompanyId");
         retreat.setCompanyId(companyID);
 
