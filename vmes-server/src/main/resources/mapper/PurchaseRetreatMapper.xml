@@ -135,7 +135,7 @@
 
         retreat.sys_code sysCode,
         retreat.state state,
-        retreat.total_sum totalSum,
+        round(ifnull(retreat.total_sum, 0),2) totalSum,
         retreat.reality_total realityTotal,
         DATE_FORMAT(retreat.retreat_date,'%Y-%m-%d') retreatDate,
 

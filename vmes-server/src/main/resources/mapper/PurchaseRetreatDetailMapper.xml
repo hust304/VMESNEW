@@ -75,7 +75,7 @@
                 and parent_id = #{parentId}
             </if>
             <if test="parentIds != null and parentIds != ''" >
-                and ${parentIds}
+                and parent_id in (${parentIds})
             </if>
         </where>
     </update>
