@@ -95,6 +95,10 @@ public class PurchaseSignDetail implements Serializable {
 	@TableField("quality_fine_count")
 	private BigDecimal qualityFineCount;
 
+	//采购退货明细id
+	@TableField("retreat_dtl_id")
+	private String retreatDtlId;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -245,6 +249,12 @@ public class PurchaseSignDetail implements Serializable {
 	}
 	public void setQualityFineCount(BigDecimal qualityFineCount) {
 		this.qualityFineCount = qualityFineCount;
+	}
+	public String getRetreatDtlId() {
+		return retreatDtlId;
+	}
+	public void setRetreatDtlId(String retreatDtlId) {
+		this.retreatDtlId = retreatDtlId;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
