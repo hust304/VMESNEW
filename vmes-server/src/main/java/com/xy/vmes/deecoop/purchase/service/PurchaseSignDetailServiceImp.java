@@ -50,6 +50,8 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
     private PurchasePlanService planService;
     @Autowired
     private PurchasePlanDetailService planDetailService;
+    @Autowired
+    private PurchaseRetreatService retreatService;
 
     @Autowired
     private WarehouseInCreateService warehouseInCreateService;
@@ -729,6 +731,12 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             //四舍五入到2位小数
             qualityFineCount = qualityFineCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             editSignDetail.setQualityFineCount(qualityFineCount);
+
+            //添加采购退货单
+            if (retreatCount != null && retreatCount.doubleValue() != 0) {
+                String retreatDtlId = retreatService.createRetreatByQuality(cuser, companyId, objectMap);
+                editSignDetail.setRetreatDtlId(retreatDtlId);
+            }
 
             this.update(editSignDetail);
 

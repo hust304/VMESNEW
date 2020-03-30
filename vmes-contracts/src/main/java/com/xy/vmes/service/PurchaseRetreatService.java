@@ -144,6 +144,14 @@ public interface PurchaseRetreatService {
                                      String companyId,
                                      String orderId,
                                      String cuser) throws Exception;
+
+    /**
+     * 生成采购退货单-采购质量检验(退货)
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param objectMap  质量检验jsonMap
+     */
+    String createRetreatByQuality(String cuser, String companyId, Map<String, String> objectMap) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

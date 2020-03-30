@@ -375,6 +375,75 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         purchasePaymentDetailService.addPaymentDetail(payment, paymentDtlList);
     }
 
+    /**
+     * 生成采购退货单-采购质量检验(退货)
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param objectMap  质量检验jsonMap
+     */
+    public String createRetreatByQuality(String cuser, String companyId, Map<String, String> objectMap) throws Exception {
+        PurchaseRetreat addRetreat = new PurchaseRetreat();
+        addRetreat.setCuser(cuser);
+        addRetreat.setCompanyId(companyId);
+
+        String supplierId = new String();
+        if (objectMap.get("supplierId") != null) {
+            supplierId = objectMap.get("supplierId").trim();
+        }
+        addRetreat.setSupplierId(supplierId);
+        addRetreat.setType(Common.DICTIONARY_MAP.get("retreatQualityByPurchase"));
+        //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        addRetreat.setState("3");
+        addRetreat.setTotalSum(BigDecimal.valueOf(0D));
+        addRetreat.setRealityTotal(BigDecimal.valueOf(0D));
+        addRetreat.setAuditId(Common.SYS_COMPANYAPPLICATION_ADMIN_USER_ID);
+
+        //退货单编号
+        //D+yyyyMMdd+00001 = 14位
+        String code = coderuleService.createCoderCdateByDate(companyId,
+                "vmes_purchase_retreat",
+                "yyyyMMdd",
+                "PR");
+        addRetreat.setSysCode(code);
+        this.save(addRetreat);
+
+        PurchaseRetreatDetail addRetreatDtl = new PurchaseRetreatDetail();
+        addRetreatDtl.setParentId(addRetreat.getId());
+        addRetreatDtl.setState(addRetreat.getState());
+        addRetreatDtl.setCuser(addRetreat.getCuser());
+
+        String orderUnit = new String();
+        if (objectMap.get("orderUnit") != null) {
+            orderUnit = objectMap.get("orderUnit").trim();
+        }
+        addRetreatDtl.setUnit(orderUnit);
+
+        String productId = new String();
+        if (objectMap.get("productId") != null) {
+            productId = objectMap.get("productId").trim();
+        }
+        addRetreatDtl.setProductId(productId);
+
+        //count:退货数量: retreatCount (检验)退货数量
+        BigDecimal retreatCount = BigDecimal.valueOf(0D);
+        String retreatCountStr = objectMap.get("retreatCount");
+        if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+            try {
+                retreatCount = new BigDecimal(retreatCountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //四舍五入到2位小数
+        retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        addRetreatDtl.setCount(retreatCount);
+        addRetreatDtl.setAmount(BigDecimal.valueOf(0D));
+
+        purchaseRetreatDetailService.save(addRetreatDtl);
+
+        return addRetreatDtl.getId();
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
