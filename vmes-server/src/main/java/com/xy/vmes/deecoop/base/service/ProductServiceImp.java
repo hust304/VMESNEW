@@ -541,7 +541,7 @@ public class ProductServiceImp implements ProductService {
         if (orderStr != null && orderStr.trim().length() > 0) {
             pd.put("orderStr", orderStr);
         }else{
-            pd.put("orderStr", "prod.cdate desc");
+            pd.put("orderStr", "prod.name,prod.spec asc");
         }
 
         //genreSelect 界面(货品属性)下拉查询框
