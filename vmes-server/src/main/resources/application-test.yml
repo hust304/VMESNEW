@@ -14,8 +14,13 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://47.92.1.209:3306/deecoop?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true
-    username: root
+    #阿里云MySql
+    #外网主机: rm-8vbjns8g515bo16crvo.mysql.zhangbei.rds.aliyuncs.com
+    #内网主机: rm-8vbjns8g515bo16cr.mysql.zhangbei.rds.aliyuncs.com
+
+    #url: jdbc:mysql://rm-8vbjns8g515bo16crvo.mysql.zhangbei.rds.aliyuncs.com:3306/deecoop?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true
+    url: jdbc:mysql://rm-8vbjns8g515bo16cr.mysql.zhangbei.rds.aliyuncs.com:3306/deecoop?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true
+    username: vmes
     password: agrvqL$D
 
   redis:
