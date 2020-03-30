@@ -65,6 +65,7 @@ public interface BomMapper extends BaseMapper<Bom> {
     * 创建时间：2018-09-29
     */
     List<Map> getDataListPage(PageData pd,Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
 
     /**

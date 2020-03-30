@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-
-
 
 /**
 * 说明：操作日志Controller
@@ -205,8 +202,7 @@ public class BomController {
         logger.info("################bom/listPageBoms 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = bomService.listPageBoms(pd,pg);
+        ResultModel model = bomService.listPageBoms(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################bom/listPageBoms 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

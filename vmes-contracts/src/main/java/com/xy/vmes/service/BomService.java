@@ -113,7 +113,7 @@ public interface BomService {
 
 //    void updateToNotDefaultByPorId(String prodId) throws Exception;
 
-    ResultModel listPageBoms(PageData pd, Pagination pg)throws Exception;
+    ResultModel listPageBoms(PageData pd)throws Exception;
 
     void exportExcelBoms(PageData pd)throws Exception;
 

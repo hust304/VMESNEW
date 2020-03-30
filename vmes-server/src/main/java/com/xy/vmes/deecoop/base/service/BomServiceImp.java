@@ -53,6 +53,8 @@ public class BomServiceImp implements BomService {
     private ColumnService columnService;
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -190,10 +192,16 @@ public class BomServiceImp implements BomService {
     */
     @Override
     public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
+        List<Map> mapList = new ArrayList<>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return bomMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return bomMapper.getDataListPage(pd,pg);
         }
-        return bomMapper.getDataListPage(pd,pg);
+
+        return mapList;
     }
 
     /**
@@ -216,12 +224,9 @@ public class BomServiceImp implements BomService {
     }
 
     @Override
-    public ResultModel listPageBoms(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageBoms(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList(pd.getString("modelCode"));
         if (columnList == null || columnList.size() == 0) {
@@ -230,44 +235,42 @@ public class BomServiceImp implements BomService {
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = bomService.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
+            for(int i=0; i < varList.size(); i++){
+                Map<String, Object> objectMap = varList.get(i);
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
+                objectMap.put("prodInfo", prodInfo);
             }
         }
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = bomService.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
-            }
-        }
         String isNullAlarm = pd.getString("isNullAlarm");
         if("true".equals(isNullAlarm)){
             if(varMapList==null || varMapList.size()<=0){
@@ -277,9 +280,9 @@ public class BomServiceImp implements BomService {
             }
         }
 
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
-
         model.putResult(result);
         return model;
     }

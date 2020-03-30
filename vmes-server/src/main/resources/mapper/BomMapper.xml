@@ -422,6 +422,7 @@
         END prodCode,
         prod.name prodName,
         prod.spec prodSpec,
+        prod.property productProperty,
         genre.name genreName,
         genre.id genreId,
         unit.name unitName,
