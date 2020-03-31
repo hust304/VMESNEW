@@ -266,6 +266,13 @@ public class FinanceBillServiceImp implements FinanceBillService {
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
+        if (pd.getString("inTypes") != null && pd.getString("inTypes").trim().length() > 0) {
+            String inTypes = pd.getString("inTypes").trim();
+            inTypes = StringUtil.stringTrimSpace(inTypes);
+            inTypes = "'" + inTypes.replace(",", "','") + "'";
+            pd.put("inTypes", inTypes);
+        }
+
         //设置查询排序方式
         //pd.put("orderStr", "a.cdate asc");
         String orderStr = pd.getString("orderStr");

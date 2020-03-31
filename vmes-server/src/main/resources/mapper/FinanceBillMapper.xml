@@ -340,6 +340,19 @@
         left join vmes_department dept on dept.id = cuser.dept_id
 
         <where>
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and bill.company_id = #{currentCompanyId}
+            </if>
+            <!--销售相关状态: ( 0:收款单(销售) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售)  8:应收单(销售))-->
+            <!--采购相关状态: (1:付款单 6:收货账单 7:收退货账单)-->
+            <!--queryStr 自定义sql查询语句-->
+            <if test='inTypes != null and inTypes != ""'>
+                and bill.type in (${inTypes})
+            </if>
+
+            <if test='stateStr != null and stateStr != ""' >
+                and bill.state in (${stateStr})
+            </if>
 
             <if test='dataType != null and dataType == "0"'>
                 and cuser.id = #{currentUserId}
@@ -348,23 +361,18 @@
                 and dept.id_${deptLayer} = #{deptRId}
             </if>
 
-            <if test='currentCompanyId != null and currentCompanyId != ""'>
-                and bill.company_id = #{currentCompanyId}
-            </if>
-            <!--queryStr 自定义sql查询语句-->
-            <if test='queryStr != null and queryStr != ""' >
-                and ${queryStr}
-            </if>
-            <if test='stateStr != null and stateStr != ""' >
-                and bill.state in (${stateStr})
-            </if>
-
             <if test='customerCode != null and customerCode != ""'>
                 and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
             </if>
             <if test='customerName != null and customerName != ""'>
                 and customer.name LIKE CONCAT(CONCAT('%', #{customerName}),'%')
             </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+
         </where>
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
