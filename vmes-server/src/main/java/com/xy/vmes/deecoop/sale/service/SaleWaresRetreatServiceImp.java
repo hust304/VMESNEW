@@ -678,6 +678,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             if (retreatDB != null && retreatDB.getTotalSum() != null) {
                 retreatSum = retreatDB.getTotalSum();
             }
+            editRetreat = this.selectById(parentId);
             String remark = "无订单退货单号："+editRetreat.getSysCode() ;
             //创建付款单
             financeBillService.addFinanceBillBySys(retreatDB.getId(),

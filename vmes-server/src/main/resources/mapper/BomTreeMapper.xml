@@ -542,7 +542,7 @@
         product.spec,
         genre.name genre,
         wp.stock_count stockCount,
-        wp.stock_count count,
+        ifnull(wp.stock_count,0) count,
         unit.name unit
         from
         vmes_bom_tree tree

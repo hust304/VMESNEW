@@ -64,6 +64,62 @@ public class ColumnUtil {
         return dataMapList;
     }
 
+
+
+    /**
+     * 查询结果集List<Map>-按照栏位列表Map的显示顺序-重构结果集List<Map>
+     *
+     * @param columnList  栏位列表Map<栏位编码, 栏位名称>
+     * @param dataList   业务查询结果集Map<栏位编码, Object>
+     * @return
+     */
+    public static List<LinkedHashMap<String, String>> modifyDataListNoHideCol(List<Column> columnList, List<Map> dataList) {
+        List<LinkedHashMap<String, String>> dataMapList = new ArrayList<LinkedHashMap<String, String>>();
+        if(dataList == null) {return dataMapList;}
+
+        //1. 获取(第一行:栏位编码 第二行: 栏位名称)
+        LinkedHashMap<String, String> columnCodeMap = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> columnNameMap = new LinkedHashMap<String, String>();
+        for (Column column : columnList) {
+            if("1".equals(column.getIshide())){
+                columnNameMap.put(column.getTitleKey(), column.getTitleName());
+                columnCodeMap.put(column.getTitleKey(), column.getTitleKey());
+            }
+        }
+        dataMapList.add(columnCodeMap);
+        dataMapList.add(columnNameMap);
+
+        //获取栏位值
+        for (Map dataMap : dataList) {
+            LinkedHashMap<String, String> columnValueMap = new LinkedHashMap<String, String>();
+            for (Column column : columnList) {
+                if(column!=null){
+                    String columnMapKey = column.getTitleKey();
+                    if(!StringUtils.isEmpty(columnMapKey)){
+                        String dataValue = "";
+                        Object object = dataMap.get(columnMapKey);
+                        if (object != null) {
+                            dataValue = object.toString();
+                        }
+
+                        if("1".equals(column.getIshide())){
+                            columnValueMap.put(columnMapKey, dataValue);
+                        }
+
+
+                    }
+                }
+
+            }
+            dataMapList.add(columnValueMap);
+        }
+
+        return dataMapList;
+    }
+
+
+
+
     public static List<Column> listAllhideByColumnList(List<Column> columnList) {
         if (columnList == null) {columnList = new ArrayList<Column>();}
         for (Column column : columnList) {

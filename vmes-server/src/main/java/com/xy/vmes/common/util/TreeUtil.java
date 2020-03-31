@@ -696,6 +696,9 @@ public class TreeUtil {
     public static TreeEntity findNodeById(String id, List<TreeEntity> objectList) {
         if (id == null || id.trim().length() == 0) {return null;}
         for (TreeEntity nodeObj : objectList) {
+            if(nodeObj.getStockCount()==null){
+                nodeObj.setStockCount(BigDecimal.ZERO);
+            }
             if (id.equals(nodeObj.getId())) {
                 return nodeObj;
             } else if ("root".equals(id) && id.equals(nodeObj.getPid())) {

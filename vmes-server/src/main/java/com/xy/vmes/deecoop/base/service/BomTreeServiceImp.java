@@ -274,6 +274,7 @@ public class BomTreeServiceImp implements BomTreeService {
                         planCount =  BigDecimal.valueOf(Double.parseDouble(detailMap.get("planCount").toString()));
                     }
                 }
+
                 String productId = detailMap.get("prodId").toString();
                 String bomId = detailMap.get("id").toString();
                 PageData pageData = new PageData();
@@ -306,6 +307,7 @@ public class BomTreeServiceImp implements BomTreeService {
                 map.put("productId",productId);
                 map.put("planCount",planCount);
                 map.put("treeList",treeList);
+
                 treeMapList.add(map);
             }
         }
