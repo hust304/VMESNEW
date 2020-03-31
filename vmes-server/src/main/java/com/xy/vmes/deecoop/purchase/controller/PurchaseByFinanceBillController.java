@@ -132,6 +132,7 @@ public class PurchaseByFinanceBillController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String cuser = pageData.getString("cuser");
         String companyId = pageData.getString("currentCompanyId");
         if (companyId == null || companyId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -166,6 +167,7 @@ public class PurchaseByFinanceBillController {
         for (Map<String, String> mapObject : mapList) {
             FinanceBill addFinanceBill = new FinanceBill();
             addFinanceBill.setCompanyId(companyId);
+            addFinanceBill.setCuser(cuser);
 
             BigDecimal amount = BigDecimal.valueOf(0D);
             String amountStr = mapObject.get("amount");
