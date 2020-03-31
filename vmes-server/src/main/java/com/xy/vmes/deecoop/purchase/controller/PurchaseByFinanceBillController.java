@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +166,19 @@ public class PurchaseByFinanceBillController {
         for (Map<String, String> mapObject : mapList) {
             FinanceBill addFinanceBill = new FinanceBill();
             addFinanceBill.setCompanyId(companyId);
+
+            BigDecimal amount = BigDecimal.valueOf(0D);
+            String amountStr = mapObject.get("amount");
+            if (amountStr != null && amountStr.trim().length() > 0) {
+                try {
+                    amount = new BigDecimal(amountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            addFinanceBill.setAmount(amount);
 
             String customerId = mapObject.get("id");
             addFinanceBill.setCustomerId(customerId);
