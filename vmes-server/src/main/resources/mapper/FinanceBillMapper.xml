@@ -142,6 +142,34 @@
 
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
+    <insert id="purchaseByFinanceBill">
+        delete from vmes_column where model_code = 'purchaseByFinanceBill' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','customerCode','供应商编码',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','customerName','供应商名称',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','customerId','客户/供应商ID',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','type','单据类型',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','typeName','单据类型',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','amount','金额',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','cuser','制单人id',7, '1','1','1','0',now(), 'admin'),
+			(replace(uuid(), '-', ''),'purchaseByFinanceBill','cuserName','制单人',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','cdate','日期',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','suser','审核人id',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','suserName','审核人',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','sdate','审核时间',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','remark','备注',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','isdisable','是否启用',14, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','state','状态',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','stateName','状态',16, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'purchaseByFinanceBill','code','状态',17, '1','1','1','0',now(), 'admin'),
+
+    </insert>
+
     <insert id="insertColumn" >
         delete from vmes_column where model_code = 'FinanceBill' ;
         insert into vmes_column (
@@ -293,8 +321,9 @@
         </if>
     </select>
 
-    <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <!-- model_code:purchaseByFinanceBill (采购-采购应付款-应付款) -->
+    <!-- model_code:FinanceBill (销售-应收款管理-收款单) -->
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         customer.id customerId,
         customer.code customerCode,

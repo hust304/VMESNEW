@@ -37,7 +37,7 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
     public ResultModel listPagePurchaseByFinanceBill(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
 
-        List<Column> columnList = columnService.findColumnList("FinanceBill");
+        List<Column> columnList = columnService.findColumnList("purchaseByFinanceBill");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

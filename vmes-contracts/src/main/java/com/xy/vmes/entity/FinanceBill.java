@@ -64,6 +64,7 @@ public class FinanceBill implements Serializable {
 	//审核时间
 	@TableField("sdate")
 	private Date sdate;
+	//收/付款期间(yyyyMM)
 	@TableField("period")
 	private String period;
 
