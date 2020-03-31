@@ -1031,7 +1031,7 @@ public class SaleOrderServiceImp implements SaleOrderService {
         List<Map> dataList = this.findListOrderByExport(pd);
 
         //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
+        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataListNoHideCol(columnList, dataList);
         HttpServletResponse response = HttpUtils.currentResponse();
 
         //查询数据-Excel文件导出
