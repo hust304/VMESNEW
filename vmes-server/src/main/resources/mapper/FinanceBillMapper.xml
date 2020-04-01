@@ -372,6 +372,16 @@
             <if test='currentCompanyId != null and currentCompanyId != ""'>
                 and bill.company_id = #{currentCompanyId}
             </if>
+
+            <!--销售:客户属性:(companyGenre:company):df7cb67fca4148bc9632c908e4a7fdea-->
+            <if test="'company' == companyGenre">
+                and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            </if>
+            <!--采购:供应商属性:(companyGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == companyGenre">
+                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            </if>
+
             <!--销售相关状态: ( 0:收款单(销售) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售)  8:应收单(销售))-->
             <!--采购相关状态: (1:付款单 6:收货账单 7:收退货账单)-->
             <!--queryStr 自定义sql查询语句-->
@@ -390,6 +400,18 @@
                 and dept.id_${deptLayer} = #{deptRId}
             </if>
 
+            <if test='billCode != null and billCode != ""'>
+                and bill.code = #{billCode}
+            </if>
+            <if test='billType != null and billType != ""'>
+                and bill.type = #{billType}
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[ and bill.cdate >= #{beginDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[ and bill.cdate <= #{endDate} ]]>
+            </if>
             <if test='customerCode != null and customerCode != ""'>
                 and customer.code LIKE CONCAT(CONCAT('%', #{customerCode}),'%')
             </if>

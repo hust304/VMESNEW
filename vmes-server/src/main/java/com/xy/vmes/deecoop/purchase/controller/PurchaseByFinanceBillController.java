@@ -52,6 +52,76 @@ public class PurchaseByFinanceBillController {
     }
 
     /**
+     * 审核(采购)FinanceBill
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePayment/auditFinanceBillByPurchase")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditFinanceBillByPurchase() throws Exception {
+        logger.info("################/purchase/purchasePayment/auditFinanceBillByPurchase 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("单据id为空或空字符串！");
+            return model;
+        }
+
+        FinanceBill editFinanceBill = new FinanceBill();
+        editFinanceBill.setId(id);
+        //状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+        editFinanceBill.setState("2");
+        financeBillService.update(editFinanceBill);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/auditFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 审核退回(采购)FinanceBill
+     * @author 陈刚
+     * @date 2020-02-26
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePayment/rebackAuditFinanceBillByPurchase")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel rebackAuditFinanceBillByPurchase() throws Exception {
+        logger.info("################/purchase/purchasePayment/rebackAuditFinanceBillByPurchase 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("单据id为空或空字符串！");
+            return model;
+        }
+
+        FinanceBill editFinanceBill = new FinanceBill();
+        editFinanceBill.setId(id);
+        //状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+        editFinanceBill.setState("0");
+
+        String remark = pageData.getString("remark");
+        editFinanceBill.setRemark(remark);
+        financeBillService.update(editFinanceBill);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/rebackAuditFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
      * 提交审核(采购)FinanceBill
      * @author 陈刚
      * @date 2020-02-26
