@@ -384,6 +384,46 @@ public class PurchaseByFinanceBillController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String id = pageData.getString("id");
+        if (id == null || id.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("单据id为空或空字符串！");
+            return model;
+        }
+
+        String remark = new String();
+        if (pageData.getString("remark") != null && pageData.getString("remark").trim().length() > 0) {
+            remark = pageData.getString("remark").trim();
+        }
+
+        FinanceBill editFinanceBill = new FinanceBill();
+        editFinanceBill.setId(id);
+        editFinanceBill.setRemark(remark);
+
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+
+        //状态（0：待提交 1：待审核 2：已审核 -1：已取消）
+        editFinanceBill.setState("0");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            editFinanceBill.setState("1");
+        }
+
+        BigDecimal amount = BigDecimal.valueOf(0D);
+        String amountStr = pageData.getString("amount");
+        if (amountStr != null && amountStr.trim().length() > 0) {
+            try {
+                amount = new BigDecimal(amountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //四舍五入到2位小数
+        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        editFinanceBill.setAmount(amount);
+
+        financeBillService.update(editFinanceBill);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchasePayment/updateFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
