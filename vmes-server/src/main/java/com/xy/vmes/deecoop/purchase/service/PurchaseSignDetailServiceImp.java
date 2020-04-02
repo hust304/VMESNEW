@@ -624,6 +624,20 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             String qualityType = objectMap.get("qualityType");
             editSignDetail.setQualityType(qualityType);
 
+            //签收数量 arriveCount
+            BigDecimal arriveCount = BigDecimal.valueOf(0D);
+            String arriveCountStr = objectMap.get("arriveCount");
+            if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
+                try {
+                    arriveCount = new BigDecimal(arriveCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            arriveCount = arriveCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setArriveCount(arriveCount);
+
             //qualityCount (实际)检验数量
             BigDecimal qualityCount = BigDecimal.valueOf(0D);
             String qualityCountStr = objectMap.get("qualityCount");
@@ -686,8 +700,9 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
             //qualityCount (实际)检验数量
             qualityCount = editSignDetail.getQualityCount();
+
             //签收数量 arriveCount
-            BigDecimal arriveCount = editSignDetail.getArriveCount();
+            arriveCount = editSignDetail.getArriveCount();
             //(检验)退货数量 retreatCount
             retreatCount = editSignDetail.getRetreatCount();
 
