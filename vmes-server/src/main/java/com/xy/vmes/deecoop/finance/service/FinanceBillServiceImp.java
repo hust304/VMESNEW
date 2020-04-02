@@ -244,6 +244,28 @@ public class FinanceBillServiceImp implements FinanceBillService {
         return this.dataList(pageData);
     }
 
+    public FinanceBill findFinanceBill(PageData object) throws Exception {
+        List<FinanceBill> objectList = this.findFinanceBillList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public FinanceBill findFinanceBillById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findFinanceBill(findMap);
+    }
+    public List<FinanceBill> findFinanceBillList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
     *
     * @param pd    查询参数对象PageData

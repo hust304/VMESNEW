@@ -136,6 +136,12 @@ public interface FinanceBillService {
      */
     List<FinanceBill> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
 
+    FinanceBill findFinanceBill(PageData object) throws Exception;
+    FinanceBill findFinanceBillById(String id) throws Exception;
+    List<FinanceBill> findFinanceBillList(PageData object) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
     * 分页查询
     * @param pd    查询参数对象PageData

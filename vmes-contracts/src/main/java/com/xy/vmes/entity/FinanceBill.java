@@ -31,7 +31,7 @@ public class FinanceBill implements Serializable {
 	//客户/供应商ID
 	@TableField("customer_id")
 	private String customerId;
-	//单据类型 (0:收款单 1:付款单 2:减免单 3:退款单 4:发货账单 5:发退货账单 6:收货账单 7:收退货账单)
+	//单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
 	@TableField("type")
 	private String type;
 	//金额

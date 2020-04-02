@@ -428,4 +428,85 @@ public class PurchaseByFinanceBillController {
         logger.info("################/purchase/purchasePayment/updateFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    //(添加,修改)扣款单:质量-采购检验
+    @PostMapping("/purchase/purchasePayment/editFinanceBillByPurchase")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel editFinanceBillByPurchase() throws Exception {
+        logger.info("################/purchase/purchasePayment/editFinanceBillByPurchase ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        String signId = pageData.getString("signId");
+        if (signId == null || signId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("签收单id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //供应商id
+        String customerId = pageData.getString("customerId");
+        if (customerId == null || customerId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        BigDecimal amount = BigDecimal.valueOf(0D);
+        String amountStr = pageData.getString("amount");
+        if (amountStr != null && amountStr.trim().length() > 0) {
+            try {
+                amount = new BigDecimal(amountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //四舍五入到2位小数
+        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        String remark = new String();
+        if (pageData.getString("remark") != null && pageData.getString("remark").trim().length() > 0) {
+            remark = pageData.getString("remark").trim();
+        }
+
+        //根据(签收单id)查询 vmes_finance_bill 扣款单是否存在
+        PageData findMap = new PageData();
+        findMap.put("businessId", signId);
+        FinanceBill financeBillDB = financeBillService.findFinanceBill(findMap);
+
+        if (financeBillDB == null) {
+            purchaseByFinanceBillService.addFinanceBillByPurchase(signId,
+                    companyId,
+                    customerId,
+                    cuser,
+                    //单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
+                    "7",
+                    //state 状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "0",
+                    null,
+                    amount,
+                    remark);
+        } else if (financeBillDB != null) {
+            FinanceBill editFinanceBill = new FinanceBill();
+            editFinanceBill.setId(financeBillDB.getId());
+            editFinanceBill.setAmount(amount);
+            editFinanceBill.setRemark(remark);
+
+            financeBillService.update(editFinanceBill);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/editFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 }
