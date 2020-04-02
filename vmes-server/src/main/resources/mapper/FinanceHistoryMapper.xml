@@ -14,23 +14,27 @@
 
     <!-- 字段 自动创建，禁止修改-->
     <sql id="Field">
+        id id, <!-- id -->
         company_id companyId,
-		customer_id customerId,<!-- 客户/供应商ID -->
-		period period,<!-- 账单期间(yyyymm) -->
-		begin_plus beginPlus,<!-- 应收款(期初) -->
-		begin_minus beginMinus,<!-- 预收款(期初) -->
-		now_plus nowPlus,<!-- 本期发生 -->
-		now_minus nowMinus,<!-- 收款金额(本期) -->
-		end_plus endPlus,<!-- 应收款(期末) -->
-		end_minus endMinus,<!-- 预收款(期末) -->
-		overdue overdue,<!-- 逾期账款 -->
-		cuser cuser,<!-- 创建用户id -->
-		cdate cdate,<!-- 创建时间 -->
-		uuser uuser,<!-- 修改用户id -->
-		udate udate,<!-- 修改时间 -->
-		remark remark,<!-- 备注 -->
-		isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
-		id id <!-- id -->
+        customer_id customerId,<!-- 客户/供应商ID -->
+        period period,<!-- 账单期间(yyyymm) -->
+        begin_plus beginPlus,<!-- 应收款(期初) -->
+        begin_minus beginMinus,<!-- 预收款(期初) -->
+        now_plus nowPlus,<!-- 本期发生 -->
+        now_minus nowMinus,<!-- 收款金额(本期) -->
+        end_plus endPlus,<!-- 应收款(期末) -->
+        end_minus endMinus,<!-- 预收款(期末) -->
+        overdue overdue,<!-- 逾期账款 -->
+        cuser cuser,<!-- 创建用户id -->
+        cdate cdate,<!-- 创建时间 -->
+        uuser uuser,<!-- 修改用户id -->
+        udate udate,<!-- 修改时间 -->
+        remark remark,<!-- 备注 -->
+        isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
+
+        begin_value beginValue,
+        now_value nowValue,
+        end_value endValue
     </sql>
 
     <!-- 字段值 自动创建，禁止修改-->

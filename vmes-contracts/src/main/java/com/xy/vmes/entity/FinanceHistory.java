@@ -67,6 +67,16 @@ public class FinanceHistory implements Serializable {
 	@TableField("company_id")
 	private String companyId;
 
+	//期初值
+	@TableField("begin_value")
+	private BigDecimal beginValue;
+	//本期值
+	@TableField("now_value")
+	private BigDecimal nowValue;
+	//期末值
+	@TableField("end_value")
+	private BigDecimal endValue;
+
 	public String getCompanyId() {
 		return companyId;
 	}
@@ -168,6 +178,24 @@ public class FinanceHistory implements Serializable {
 	}
 	public String getIsdisable() {
 		return isdisable;
+	}
+	public BigDecimal getBeginValue() {
+		return beginValue;
+	}
+	public void setBeginValue(BigDecimal beginValue) {
+		this.beginValue = beginValue;
+	}
+	public BigDecimal getNowValue() {
+		return nowValue;
+	}
+	public void setNowValue(BigDecimal nowValue) {
+		this.nowValue = nowValue;
+	}
+	public BigDecimal getEndValue() {
+		return endValue;
+	}
+	public void setEndValue(BigDecimal endValue) {
+		this.endValue = endValue;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
