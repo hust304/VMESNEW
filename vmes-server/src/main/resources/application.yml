@@ -106,8 +106,8 @@ mybatis-plus:
     cache-enabled: false
 
 
-flowable:
-#关闭定时任务JOB
-  async-executor-activate: false
+#flowable:
+##关闭定时任务JOB
+#  async-executor-activate: true
 
 

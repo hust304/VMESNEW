@@ -8,5 +8,4 @@ com.yvan.mybatis.MyBatisConfigurationAfter,\
 com.yvan.druid.DruidAutoConfiguration,\
 com.yvan.filter.ComonFilter,\
 com.yvan.rabbitmq.config.ProductStockcountLockBinding,\
-com.yvan.socketio.SocketIOConfig,\
-com.yvan.flowable.FlowableConfig
+com.yvan.socketio.SocketIOConfig

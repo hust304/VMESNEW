@@ -2,7 +2,6 @@ package com.xy.vmes.common.util;
 
 import com.xy.vmes.entity.Column;
 import org.apache.commons.lang.StringUtils;
-import org.flowable.task.api.Task;
 
 import java.util.*;
 
