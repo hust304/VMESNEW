@@ -104,6 +104,7 @@
 
         (replace(uuid(), '-', ''),'PurchaseSign','isShowEdit','是否显示修改按钮',18, '1','0','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'PurchaseSign','orderCode','采购单号',19, '1','0','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'PurchaseSign','supplierCode','供应商编号',20, '1','0','1','0',now(), 'admin'),
 
 
     </insert>
@@ -139,6 +140,7 @@
             <!-- 采购单 -->
             purchaseOrder.code orderCode,
             purchaseOrder.supplier_id supplierId,
+            supplier.code supplierCode,
             supplier.name supplierName,
             signUser.user_name signUserName,
 

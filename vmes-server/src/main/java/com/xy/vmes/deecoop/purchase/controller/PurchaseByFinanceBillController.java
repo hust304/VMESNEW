@@ -455,8 +455,8 @@ public class PurchaseByFinanceBillController {
         }
 
         //供应商id
-        String customerId = pageData.getString("customerId");
-        if (customerId == null || customerId.trim().length() == 0) {
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("供应商id为空或空字符串！");
             return model;
@@ -487,7 +487,7 @@ public class PurchaseByFinanceBillController {
         if (financeBillDB == null) {
             purchaseByFinanceBillService.addFinanceBillByPurchase(signId,
                     companyId,
-                    customerId,
+                    supplierId,
                     cuser,
                     //单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                     "7",
