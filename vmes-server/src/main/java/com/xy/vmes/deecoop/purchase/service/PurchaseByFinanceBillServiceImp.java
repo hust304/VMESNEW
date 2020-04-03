@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.deecoop.finance.dao.FinanceBillMapper;
+import com.xy.vmes.deecoop.finance.dao.FinanceBillByPurchaseMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.FinanceBill;
 import com.xy.vmes.service.CoderuleService;
@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：vmes_finance_bill:(采购)应付 实现类
@@ -35,6 +32,8 @@ import java.util.Map;
 public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillService {
     @Autowired
     private FinanceBillService financeBillService;
+    @Autowired
+    private FinanceBillByPurchaseMapper financeBillByPurchaseMapper;
 
     @Autowired
     private ColumnService columnService;
@@ -76,6 +75,50 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         }
 
         List<Map> varList = financeBillService.getDataListPage(pd, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel listPageFinanceBillByPurchaseView(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("financeBillByPurchaseView");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+//        if (pd.getString("inTypes") != null && pd.getString("inTypes").trim().length() > 0) {
+//            String inTypes = pd.getString("inTypes").trim();
+//            inTypes = StringUtil.stringTrimSpace(inTypes);
+//            inTypes = "'" + inTypes.replace(",", "','") + "'";
+//            pd.put("inTypes", inTypes);
+//        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.findFinanceBillByPurchaseView(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -143,6 +186,19 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         addObject.setPeriod(period);
 
         financeBillService.save(addObject);
+    }
+
+    private List<Map> findFinanceBillByPurchaseView(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return financeBillByPurchaseMapper.findFinanceBillByPurchaseView(pd);
+        } else if (pg != null) {
+            return financeBillByPurchaseMapper.findFinanceBillByPurchaseView(pd, pg);
+        }
+
+        return mapList;
     }
 
 }

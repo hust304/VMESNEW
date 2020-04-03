@@ -52,9 +52,28 @@ public class PurchaseByFinanceBillController {
     }
 
     /**
+     * 采购应付 FinanceBill
+     * @author 陈刚
+     * @date 2020-04-01
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePayment/listPageFinanceBillByPurchaseView")
+    public ResultModel listPageFinanceBillByPurchaseView() throws Exception {
+        logger.info("################/purchase/purchasePayment/listPageFinanceBillByPurchaseView 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = purchaseByFinanceBillService.listPageFinanceBillByPurchaseView(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/listPageFinanceBillByPurchaseView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
      * 审核(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/auditFinanceBillByPurchase")
@@ -87,7 +106,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 审核退回(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/rebackAuditFinanceBillByPurchase")
@@ -124,7 +143,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 提交审核(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/submitFinanceBillByPurchase")
@@ -157,7 +176,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 撤回提交审核(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/rebackSubmitFinanceBillByPurchase")
@@ -190,7 +209,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 添加(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/addFinanceBillByPurchase")
@@ -283,7 +302,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 取消(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/cancelFinanceBillByPurchase")
@@ -316,7 +335,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 恢复(取消)(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/rebackCancelFinanceBillByPurchase")
@@ -349,7 +368,7 @@ public class PurchaseByFinanceBillController {
     /**
      * 删除(采购)FinanceBill
      * @author 陈刚
-     * @date 2020-02-26
+     * @date 2020-04-01
      * @throws Exception
      */
     @PostMapping("/purchase/purchasePayment/deleteFinanceBillByPurchase")
@@ -509,4 +528,6 @@ public class PurchaseByFinanceBillController {
         logger.info("################/purchase/purchasePayment/editFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

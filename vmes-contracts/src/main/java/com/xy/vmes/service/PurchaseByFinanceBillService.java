@@ -14,6 +14,8 @@ public interface PurchaseByFinanceBillService {
 
     ResultModel listPagePurchaseByFinanceBill(PageData pd) throws Exception;
 
+    ResultModel listPageFinanceBillByPurchaseView(PageData pd) throws Exception;
+
     /**
      *
      * @param businessId  业务单据id

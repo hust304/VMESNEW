@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_finance_bill:采购财务单 Mapper.xml
+创建人：陈刚
+创建时间：2020-04-03
+ -->
+<mapper namespace="com.xy.vmes.deecoop.finance.dao.FinanceBillByPurchaseMapper">
+    <insert id="financeBillByPurchaseView">
+        delete from vmes_column where model_code = 'financeBillByPurchaseView';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','customerId','供应商id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','supplierCode','供应商编码',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','supplierName','供应商名称',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','currentPeriod','期间',4, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginPlus','期初发生',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginMinus','期初付款',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginValue','期初值',7, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','nowPlus','本期发生',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','nowMinus','本期付款',9, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','endPlus','当前应付',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','endMinus','当前预付',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','endValue','期末值',12, '1','1','1','0',now(), 'admin'),
+
+    </insert>
+
+    <!--采购业务财务单汇总 -->
+    <select id="findFinanceBillByPurchaseView" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            customer.id customerId,
+            customer.genre,
+            customer.code supplierCode,
+            customer.name supplierName,
+
+            <!--期初值:上期期末 -->
+            round(ifnull(beginHistory.end_value,0),2) beginValue,
+
+            <!--nowPlus:发生额:  -->
+            round(ifnull(nowBill.nowPlus,0),2) nowPlus,
+            <!--nowMinus:付款 -->
+            round(ifnull(nowBill.nowMinus,0),2) nowMinus,
+
+            <!--java 类实现 -->
+            '' beginPlus,
+            '' beginMinus,
+            '' endPlus,
+            '' endMinus,
+            '' endValue,
+            '' currentPeriod
+
+        from vmes_customer customer
+
+            <!--期初:上期期末 -->
+            left join (
+                select customer_id,end_value
+                from vmes_finance_history
+                <where>
+                    <if test='companyId != null and companyId != ""'>
+                        and company_id = #{companyId}
+                    </if>
+                    <if test='forePeriod != null and forePeriod != ""'>
+                        and period = #{forePeriod}
+                    </if>
+                </where>
+            ) beginHistory on customer.id = beginHistory.customer_id
+
+            <!--本期(发生额,付款) -->
+            left join (
+                select a.id customer_id,
+                    <!--本期(发生额:nowPlus:收货账单-(扣款单+退款)) -->
+                    round((ifnull(b.amount,0) - ifnull(c.amount,0)),2) nowPlus,
+
+                    <!--本期(付款:nowMinus:) -->
+                    round(ifnull(d.amount,0),2) nowMinus
+                from vmes_customer a
+                    <!--本期(收货账单) -->
+                    left join (
+                        select customer_id,sum(amount) amount
+                        from vmes_finance_bill
+                        <where>
+                            <if test='companyId != null and companyId != ""'>
+                                and company_id = #{companyId}
+                            </if>
+                            <if test='period != null and period != ""'>
+                                and period = #{period}
+                            </if>
+                            and type = '6' and state = '2'
+                        </where>
+                        group by customer_id
+                    ) b on a.id = b.customer_id
+                    <!--本期(扣款单+退款) -->
+                    left join (
+                        select customer_id,sum(amount) amount
+                        from vmes_finance_bill
+                        <where>
+                            <if test='companyId != null and companyId != ""'>
+                                and company_id = #{companyId}
+                            </if>
+                            <if test='period != null and period != ""'>
+                                and period = #{period}
+                            </if>
+                            and type = '7,9' and state = '2'
+                        </where>
+                        group by customer_id
+                    ) c on a.id = c.customer_id
+                    <!--本期(付款) -->
+                    left join (
+                        select customer_id,sum(amount) amount
+                        from vmes_finance_bill
+                        <where>
+                            <if test='companyId != null and companyId != ""'>
+                                and company_id = #{companyId}
+                            </if>
+                            <if test='period != null and period != ""'>
+                                and period = #{period}
+                            </if>
+                            and type = '1' and state = '2'
+                        </where>
+                        group by customer_id
+                    ) d on a.id = d.customer_id
+                <where>
+                    <if test='companyId != null and companyId != ""'>
+                        and a.company_id = #{companyId}
+                    </if>
+                    <!--采购:供应商属性:(companyGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                    <if test="'supplier' == companyGenre">
+                        and a.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                    </if>
+                </where>
+            ) nowBill on customer.id = nowBill.customer_id
+
+        <where>
+            <if test='companyId != null and companyId != ""'>
+                and customer.company_id = #{companyId}
+            </if>
+            <!--采购:供应商属性:(companyGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == companyGenre">
+                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            </if>
+        </where>
+
+
+    </select>
+
+</mapper>
