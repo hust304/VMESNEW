@@ -70,9 +70,6 @@ public class FinanceHistory implements Serializable {
 	//期初值
 	@TableField("begin_value")
 	private BigDecimal beginValue;
-	//本期值
-	@TableField("now_value")
-	private BigDecimal nowValue;
 	//期末值
 	@TableField("end_value")
 	private BigDecimal endValue;
@@ -184,12 +181,6 @@ public class FinanceHistory implements Serializable {
 	}
 	public void setBeginValue(BigDecimal beginValue) {
 		this.beginValue = beginValue;
-	}
-	public BigDecimal getNowValue() {
-		return nowValue;
-	}
-	public void setNowValue(BigDecimal nowValue) {
-		this.nowValue = nowValue;
 	}
 	public BigDecimal getEndValue() {
 		return endValue;

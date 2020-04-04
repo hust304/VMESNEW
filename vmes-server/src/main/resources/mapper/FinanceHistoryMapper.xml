@@ -33,7 +33,6 @@
         isdisable isdisable,<!-- 是否启用(0:已禁用 1:启用) -->
 
         begin_value beginValue,
-        now_value nowValue,
         end_value endValue
     </sql>
 
