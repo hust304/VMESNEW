@@ -2,9 +2,9 @@ package com.xy.vmes.deecoop.purchase.controller;
 
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.FinanceBill;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.FinanceBillService;
-import com.xy.vmes.service.PurchaseByFinanceBillService;
+import com.xy.vmes.entity.FinanceHistory;
+import com.xy.vmes.entity.PurchaseCompanyPeriod;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,12 @@ public class PurchaseByFinanceBillController {
     private PurchaseByFinanceBillService purchaseByFinanceBillService;
     @Autowired
     private FinanceBillService financeBillService;
+    @Autowired
+    private PurchaseCompanyPeriodService purchaseCompanyPeriodService;
+
+    @Autowired
+    private FinanceHistoryService financeHistoryService;
+
     @Autowired
     private CoderuleService coderuleService;
 
@@ -530,4 +538,157 @@ public class PurchaseByFinanceBillController {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //结账:采购付款
+    @PostMapping("/purchase/purchasePayment/updateFinanceHistoryByCheckOut")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateFinanceHistoryByCheckOut() throws Exception {
+        logger.info("################/purchase/purchasePayment/updateFinanceHistoryByCheckOut ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        pageData.put("companyId", companyId);
+
+        //系统时间(yyyymm)
+        String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+        //查询付款期
+        String queryPeriod = sysMonthStr;
+
+        //paymentPeriod:当前付款期(yyyymm)
+        String paymentPeriod = new String();
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        PurchaseCompanyPeriod companyPeriodDB = purchaseCompanyPeriodService.findPurchaseCompanyPeriod(findMap);
+        if (companyPeriodDB != null && companyPeriodDB.getPaymentPeriod() != null) {
+            paymentPeriod = companyPeriodDB.getPaymentPeriod();
+            queryPeriod = paymentPeriod;
+        }
+
+        //验证当前付款期间(yyyyMM)+ 1个月 与系统时间(yyyyMM) 比较
+        String msgStr = this.checkPaymentPeriodBySysDate(paymentPeriod, sysMonthStr);
+        if (msgStr != null && msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Map<String, String> periodMap = purchaseByFinanceBillService.findQueryPeriodMap(queryPeriod);
+        if (periodMap != null && periodMap.size() > 0) {
+            pageData.put("period", periodMap.get("period"));
+            pageData.put("forePeriod", periodMap.get("forePeriod"));
+            List<Map> varList = purchaseByFinanceBillService.findFinanceBillByPurchaseView(pageData, null);
+            if (varList != null && varList.size() > 0) {
+                purchaseByFinanceBillService.modifyCheckOutFinanceBillByPurchase(varList, queryPeriod);
+                for (Map<String, Object> mapData : varList) {
+                    FinanceHistory addDinanceHistory = (FinanceHistory) HttpUtils.pageData2Entity(mapData, new FinanceHistory());
+                    addDinanceHistory.setId(null);
+                    addDinanceHistory.setCompanyId(companyId);
+                    addDinanceHistory.setCuser(cuser);
+                    addDinanceHistory.setUuser(cuser);
+                    financeHistoryService.save(addDinanceHistory);
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //更新当前期间(vmes_purchase_company_period:采购应付期间表)
+        if (companyPeriodDB == null) {
+            PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
+            addCompanyPeriod.setCompanyId(companyId);
+            addCompanyPeriod.setCuser(cuser);
+            addCompanyPeriod.setUuser(cuser);
+
+            //queryPeriod 查询付款期(yyyyMM)
+            Date queryPeriodDate = DateFormat.dateString2Date(queryPeriod+"01", "yyyyMMdd");
+
+            addCompanyPeriod.setInitialPeriod(queryPeriod);
+            addCompanyPeriod.setInitialPeriodDate(queryPeriodDate);
+
+            addCompanyPeriod.setPaymentPeriod(queryPeriod);
+            addCompanyPeriod.setPaymentPeriodDate(queryPeriodDate);
+
+            purchaseCompanyPeriodService.save(addCompanyPeriod);
+        } else if (companyPeriodDB != null) {
+            PurchaseCompanyPeriod editCompanyPeriod = new PurchaseCompanyPeriod();
+            editCompanyPeriod.setId(companyPeriodDB.getId());
+
+            //queryPeriod 查询付款期(yyyyMM)
+            Date queryPeriodDate = DateFormat.dateString2Date(queryPeriod+"01", "yyyyMMdd");
+            editCompanyPeriod.setPaymentPeriod(queryPeriod);
+            editCompanyPeriod.setPaymentPeriodDate(queryPeriodDate);
+
+            purchaseCompanyPeriodService.update(editCompanyPeriod);
+        }
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/updateFinanceHistoryByCheckOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //反结账:采购付款
+    @PostMapping("/purchase/purchasePayment/updateFinanceHistoryByUnCheckOut")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateFinanceHistoryByUnCheckOut() throws Exception {
+        logger.info("################/purchase/purchasePayment/updateFinanceHistoryByUnCheckOut ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/updateFinanceHistoryByUnCheckOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 验证当前付款期间(yyyyMM)+ 1个月 与系统时间(yyyyMM) 比较
+     *
+     * @param paymentPeriod
+     * @param sysMonth
+     * @return
+     */
+    private String checkPaymentPeriodBySysDate(String paymentPeriod, String sysMonth) throws ParseException {
+        String msgStr = new String();
+
+        long sysMonthLong = 0L;
+        if (sysMonth != null && sysMonth.trim().length() > 0) {
+            Date sysMonthDate = DateFormat.dateString2Date(sysMonth, "yyyyMM");
+            if (sysMonthDate != null) {
+                sysMonthLong = sysMonthDate.getTime();
+            }
+        }
+
+        long paymentPeriodLong = 0L;
+        if (paymentPeriod != null && paymentPeriod.trim().length() > 0) {
+
+            //当前期间(yyyymm) 加1个月
+            String paymentPeriodStr = DateFormat.getAddDay(paymentPeriod, DateFormat.DEFAULT_MONTH, 1, "yyyyMM");
+            Date paymentPeriodDate = DateFormat.dateString2Date(paymentPeriodStr, "yyyyMM");
+
+            if (paymentPeriodDate != null) {
+                paymentPeriodLong = paymentPeriodDate.getTime();
+            }
+
+            if (sysMonthLong != 0L
+                && paymentPeriodLong != 0L
+                && (sysMonthLong < paymentPeriodLong)
+            ) {
+                String msgTemp = "结账期间({0})不可大于当前自然月！";
+                msgStr = MessageFormat.format(msgTemp, paymentPeriodStr);
+            }
+        }
+
+        return msgStr;
+    }
 }

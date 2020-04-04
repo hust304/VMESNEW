@@ -7,10 +7,8 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.finance.dao.FinanceBillByPurchaseMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.FinanceBill;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.FinanceBillService;
-import com.xy.vmes.service.PurchaseByFinanceBillService;
+import com.xy.vmes.entity.PurchaseCompanyPeriod;
+import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.common.util.Common;
@@ -20,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -34,11 +33,26 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
     private FinanceBillService financeBillService;
     @Autowired
     private FinanceBillByPurchaseMapper financeBillByPurchaseMapper;
+    @Autowired
+    private PurchaseCompanyPeriodService purchaseCompanyPeriodService;
 
     @Autowired
     private ColumnService columnService;
     @Autowired
     private CoderuleService coderuleService;
+
+    public List<Map> findFinanceBillByPurchaseView(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return financeBillByPurchaseMapper.findFinanceBillByPurchaseView(pd);
+        } else if (pg != null) {
+            return financeBillByPurchaseMapper.findFinanceBillByPurchaseView(pd, pg);
+        }
+
+        return mapList;
+    }
 
     public ResultModel listPagePurchaseByFinanceBill(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
@@ -101,12 +115,32 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         }
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-//        if (pd.getString("inTypes") != null && pd.getString("inTypes").trim().length() > 0) {
-//            String inTypes = pd.getString("inTypes").trim();
-//            inTypes = StringUtil.stringTrimSpace(inTypes);
-//            inTypes = "'" + inTypes.replace(",", "','") + "'";
-//            pd.put("inTypes", inTypes);
-//        }
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        pd.put("companyId", companyId);
+
+        //系统时间(yyyymm)
+        String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+        //查询付款期
+        String queryPeriod = sysMonthStr;
+
+        //paymentPeriod:当前付款期(yyyymm)
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriod(findMap);
+        if (companyPeriod != null && companyPeriod.getPaymentPeriod() != null) {
+            queryPeriod = companyPeriod.getPaymentPeriod();
+        }
+
+        Map<String, String> periodMap = this.findQueryPeriodMap(queryPeriod);
+        if (periodMap != null && periodMap.size() > 0) {
+            pd.put("period", periodMap.get("period"));
+            pd.put("forePeriod", periodMap.get("forePeriod"));
+        }
 
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
@@ -119,13 +153,111 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         }
 
         List<Map> varList = this.findFinanceBillByPurchaseView(pd, pg);
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+        this.modifyCheckOutFinanceBillByPurchase(varList, queryPeriod);
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         model.putResult(result);
         return model;
+    }
+
+    /**
+     * 根据查询期间(yyyyMM)获取采购应付查询功能查询条件
+     * 返回值Map:
+     *   period: 当前期间(yyyyMM)
+     *   forePeriod: 当前期间(yyyyMM) -1 个月
+     *
+     * @param queryPeriod
+     * @return
+     */
+    public Map<String, String> findQueryPeriodMap(String queryPeriod) throws ParseException {
+        Map<String, String> queryPeriodMap = new HashMap<>();
+
+        if (queryPeriod != null && queryPeriod.trim().length() > 0) {
+            //当前期间
+            queryPeriodMap.put("period", queryPeriod);
+
+            //当前期间(yyyyMM) -1 个月
+            String forePeriod = DateFormat.getAddDay(queryPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+            queryPeriodMap.put("forePeriod", forePeriod);
+        }
+
+        return queryPeriodMap;
+    }
+
+    public void modifyCheckOutFinanceBillByPurchase(List<Map> queryList, String period) {
+        if (queryList == null || queryList.size() == 0) {return;}
+
+        for (Map<String, Object> mapData : queryList) {
+            //beginValue 期初值
+            BigDecimal beginValue = BigDecimal.valueOf(0D);
+
+            //defaultBeginValue 期初默认值
+            BigDecimal defaultBeginValue = BigDecimal.valueOf(-1);
+            if (mapData.get("defaultBeginValue") != null) {
+                defaultBeginValue = (BigDecimal)mapData.get("defaultBeginValue");
+            }
+            if (defaultBeginValue.doubleValue() != -1) {
+                beginValue = defaultBeginValue;
+            }
+
+            //historyBeginValue 期初值(上期期末)
+            BigDecimal historyBeginValue = BigDecimal.valueOf(-1);
+            if (mapData.get("historyBeginValue") != null) {
+                historyBeginValue = (BigDecimal)mapData.get("historyBeginValue");
+            }
+            if (historyBeginValue.doubleValue() != -1) {
+                beginValue = historyBeginValue;
+            }
+
+            //四舍五入到2位小数
+            beginValue = beginValue.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            mapData.put("beginValue", beginValue);
+
+            //beginPlus 期初应付 期初值(正数)
+            //beginMinus 期初预付 期初值(负数)
+            if (beginValue.doubleValue() >= 0) {
+                mapData.put("beginPlus", beginValue);
+                mapData.put("beginMinus", "0.00");
+            } else if (beginValue.doubleValue() < 0) {
+                mapData.put("beginPlus", "0.00");
+                mapData.put("beginMinus", BigDecimal.valueOf(beginValue.doubleValue() * -1));
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //nowPlus 本期发生
+            BigDecimal nowPlus = BigDecimal.valueOf(0D);
+            if (mapData.get("nowPlus") != null) {
+                nowPlus = (BigDecimal)mapData.get("nowPlus");
+            }
+
+            //nowMinus 本期付款
+            BigDecimal nowMinus = BigDecimal.valueOf(0D);
+            if (mapData.get("nowMinus") != null) {
+                nowMinus = (BigDecimal)mapData.get("nowMinus");
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //endValue 期末值:= 期初值 + 本期发生 - 本期付款
+            BigDecimal endValue = BigDecimal.valueOf(beginValue.doubleValue() + nowPlus.doubleValue() - nowMinus.doubleValue());
+            endValue = endValue.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            mapData.put("endValue", endValue);
+
+            //endPlus 当前应付 期末值(正数)
+            //endMinus 当前预付 期末值(负数)
+            if (endValue.doubleValue() >= 0) {
+                mapData.put("endPlus", endValue);
+                mapData.put("endMinus", "0.00");
+            } else if (endValue.doubleValue() < 0) {
+                mapData.put("endMinus", BigDecimal.valueOf(endValue.doubleValue() * -1));
+                mapData.put("endPlus", "0.00");
+            }
+
+            //period 期间
+            mapData.put("period", period);
+        }
     }
 
     /**
@@ -186,19 +318,6 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         addObject.setPeriod(period);
 
         financeBillService.save(addObject);
-    }
-
-    private List<Map> findFinanceBillByPurchaseView(PageData pd, Pagination pg) throws Exception{
-        List<Map> mapList = new ArrayList<Map>();
-        if (pd == null) {return mapList;}
-
-        if (pg == null) {
-            return financeBillByPurchaseMapper.findFinanceBillByPurchaseView(pd);
-        } else if (pg != null) {
-            return financeBillByPurchaseMapper.findFinanceBillByPurchaseView(pd, pg);
-        }
-
-        return mapList;
     }
 
 }

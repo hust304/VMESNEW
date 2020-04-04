@@ -19,9 +19,11 @@
             (replace(uuid(), '-', ''),'financeBillByPurchaseView','supplierName','供应商名称',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillByPurchaseView','currentPeriod','期间',4, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginPlus','期初发生',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginMinus','期初付款',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginPlus','期初应付',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginMinus','期初预付',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillByPurchaseView','beginValue','期初值',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','defaultBeginValue','期初默认值',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillByPurchaseView','historyBeginValue','期初值(上期期末)',7, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'financeBillByPurchaseView','nowPlus','本期发生',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillByPurchaseView','nowMinus','本期付款',9, '1','1','1','0',now(), 'admin'),
@@ -41,8 +43,10 @@
             customer.code supplierCode,
             customer.name supplierName,
 
+            <!--期初:默认值 -->
+            round(ifnull(beginDefault.begin_value,0), -1) defaultBeginValue,
             <!--期初值:上期期末 -->
-            round(ifnull(beginHistory.end_value,0),2) beginValue,
+            round(ifnull(beginHistory.end_value,0), -1) historyBeginValue,
 
             <!--nowPlus:发生额:  -->
             round(ifnull(nowBill.nowPlus,0),2) nowPlus,
@@ -50,14 +54,31 @@
             round(ifnull(nowBill.nowMinus,0),2) nowMinus,
 
             <!--java 类实现 -->
+            '' beginValue,
             '' beginPlus,
             '' beginMinus,
             '' endPlus,
             '' endMinus,
             '' endValue,
-            '' currentPeriod
+            '' period
 
         from vmes_customer customer
+            <!--期初:默认值 -->
+            left join (
+                select customer_id,begin_value
+                from vmes_finance_base
+                <where>
+                    <if test='companyId != null and companyId != ""'>
+                        and company_id = #{companyId}
+                    </if>
+                    <if test='period != null and period != ""'>
+                        and period = #{period}
+                    </if>
+                    <!--类型(0:应收 1:应付)-->
+                    and type = '1' and isdisable = '1'
+
+                </where>
+            ) beginDefault on customer.id = beginDefault.customer_id
 
             <!--期初:上期期末 -->
             left join (
