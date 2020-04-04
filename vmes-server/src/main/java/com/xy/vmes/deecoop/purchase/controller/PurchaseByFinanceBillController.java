@@ -644,6 +644,55 @@ public class PurchaseByFinanceBillController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String cuser = pageData.getString("cuser");
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //系统时间(yyyymm)
+        String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+        //查询付款期
+        String queryPeriod = sysMonthStr;
+
+        //paymentPeriod:当前付款期(yyyymm)
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        PurchaseCompanyPeriod companyPeriodDB = purchaseCompanyPeriodService.findPurchaseCompanyPeriod(findMap);
+        if (companyPeriodDB != null && companyPeriodDB.getPaymentPeriod() != null) {
+            queryPeriod = companyPeriodDB.getPaymentPeriod();
+        }
+
+        //当前期间(yyyymm) 减1个月
+        String frontPaymentPeriodStr = DateFormat.getAddDay(queryPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+        Date frontPaymentPeriodDate = DateFormat.dateString2Date(frontPaymentPeriodStr+"01", "yyyyMMdd");
+
+        //更新当前期间(vmes_purchase_company_period:采购应付期间表)
+        if (companyPeriodDB == null) {
+            PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
+            addCompanyPeriod.setCompanyId(companyId);
+            addCompanyPeriod.setCuser(cuser);
+            addCompanyPeriod.setUuser(cuser);
+
+            addCompanyPeriod.setInitialPeriod(frontPaymentPeriodStr);
+            addCompanyPeriod.setInitialPeriodDate(frontPaymentPeriodDate);
+
+            addCompanyPeriod.setPaymentPeriod(frontPaymentPeriodStr);
+            addCompanyPeriod.setPaymentPeriodDate(frontPaymentPeriodDate);
+
+            purchaseCompanyPeriodService.save(addCompanyPeriod);
+        } else if (companyPeriodDB != null) {
+            PurchaseCompanyPeriod editCompanyPeriod = new PurchaseCompanyPeriod();
+            editCompanyPeriod.setId(companyPeriodDB.getId());
+
+            editCompanyPeriod.setPaymentPeriod(frontPaymentPeriodStr);
+            editCompanyPeriod.setPaymentPeriodDate(frontPaymentPeriodDate);
+
+            purchaseCompanyPeriodService.update(editCompanyPeriod);
+        }
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchasePayment/updateFinanceHistoryByUnCheckOut 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
