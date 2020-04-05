@@ -550,6 +550,12 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
             return model;
         }
 
+        //type:类型(0:应收 1:应付)
+        String type = new String("0");
+        if (pd.getString("type") != null && pd.getString("type").trim().length() > 0) {
+            type = pd.getString("type").trim();
+        }
+
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
         if (mapList == null || mapList.size() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -570,6 +576,8 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
                     }else{
                         financeBase.setBeginValue(financeBase.getBeginPlus());
                     }
+
+                    financeBase.setType(type);
                     financeBase.setCompanyId(currentCompanyId);
                     financeBase.setPeriod(priod);
                     financeBase.setPeriodDate(currentDate);
