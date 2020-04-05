@@ -152,8 +152,8 @@
                     <if test='companyId != null and companyId != ""'>
                         and a.company_id = #{companyId}
                     </if>
-                    <!--采购:供应商属性:(companyGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
-                    <if test="'supplier' == companyGenre">
+                    <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                    <if test="'supplier' == customerGenre">
                         and a.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
                     </if>
                 </where>
@@ -163,8 +163,8 @@
             <if test='companyId != null and companyId != ""'>
                 and customer.company_id = #{companyId}
             </if>
-            <!--采购:供应商属性:(companyGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
-            <if test="'supplier' == companyGenre">
+            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == customerGenre">
                 and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
             </if>
         </where>

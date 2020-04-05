@@ -376,12 +376,12 @@
                 and bill.company_id = #{currentCompanyId}
             </if>
 
-            <!--销售:客户属性:(companyGenre:company):df7cb67fca4148bc9632c908e4a7fdea-->
-            <if test="'company' == companyGenre">
+            <!--销售:客户属性:(customerGenre:customer):df7cb67fca4148bc9632c908e4a7fdea-->
+            <if test="'customer' == customerGenre">
                 and customer.genre = 'df7cb67fca4148bc9632c908e4a7fdea'
             </if>
-            <!--采购:供应商属性:(companyGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
-            <if test="'supplier' == companyGenre">
+            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == customerGenre">
                 and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
             </if>
 
