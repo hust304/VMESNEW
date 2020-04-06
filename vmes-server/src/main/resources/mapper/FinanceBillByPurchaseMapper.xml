@@ -167,6 +167,10 @@
             <if test="'supplier' == customerGenre">
                 and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
             </if>
+
+            <if test='customerValue != null and customerValue != ""'>
+                and (customer.code LIKE CONCAT(CONCAT('%', #{customerValue}),'%') or customer.name LIKE CONCAT(CONCAT('%', #{customerValue}),'%'))
+            </if>
         </where>
     </select>
 

@@ -359,8 +359,9 @@
             when bill.type='4' then '发货账单'
             when bill.type='5' then '退货账单'
             when bill.type='6' then '收货账单'
-            when bill.type='7' then '收退货账单'
+            when bill.type='7' then '扣款单'
             when bill.type='8' then '应收单'
+            when bill.type='9' then '退款单'
         else null end typeName,
 
         bill.remark
@@ -408,6 +409,9 @@
             </if>
             <if test='billType != null and billType != ""'>
                 and bill.type = #{billType}
+            </if>
+            <if test='billState != null and billState != ""'>
+                and bill.state = #{billState}
             </if>
             <if test="beginDate != null and beginDate != ''">
                 <![CDATA[ and bill.cdate >= #{beginDate} ]]>
