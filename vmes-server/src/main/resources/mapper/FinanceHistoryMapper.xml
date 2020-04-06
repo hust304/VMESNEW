@@ -170,6 +170,23 @@
             (replace(uuid(), '-', ''),'FinanceHistory','endMinus','预收款(期末)',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'FinanceHistory','remark','备注',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'FinanceHistory','id','id',0, '1','1','1','0',now(), 'admin')
+
+        delete from vmes_column where model_code = 'FinanceHistoryByPurchase' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','customerId','供应商ID',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','period','账单期间',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','beginPlus','期初应付',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','beginMinus','期初预付',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','nowPlus','本期发生',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','nowMinus','本期付款',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','endPlus','当前应付',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','endMinus','当前预付',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'FinanceHistoryByPurchase','remark','备注',9, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
@@ -293,15 +310,17 @@
         customer_id customerId
         from vmes_finance_history
         <where>
+
+            <if test='currentCompanyId != null and currentCompanyId != ""'>
+                and company_id = #{currentCompanyId}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and customer_id = #{customerId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
-            </if>
-            <if test='currentCompanyId != null and currentCompanyId != ""'>
-                and company_id LIKE CONCAT(CONCAT('%', #{currentCompanyId}),'%')
-            </if>
-            <if test='customerId != null and customerId != ""'>
-                and customer_id LIKE CONCAT(CONCAT('%', #{customerId}),'%')
             </if>
         </where>
         <if test='orderStr != null and orderStr != ""' >

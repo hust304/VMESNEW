@@ -16,9 +16,11 @@ import java.util.Map;
  */
 public interface PurchaseByFinanceBillService {
     List<Map> findFinanceBillByPurchaseView(PageData pd, Pagination pg) throws Exception;
+    List<Map> findFinanceBillDetailByPurchase(PageData pd, Pagination pg) throws Exception;
 
     ResultModel listPagePurchaseByFinanceBill(PageData pd) throws Exception;
     ResultModel listPageFinanceBillByPurchaseView(PageData pd) throws Exception;
+    ResultModel listPageFinanceBillDetailByPurchase(PageData pd) throws Exception;
 
     /**
      * 根据查询期间(yyyyMM)获取采购应付查询功能查询条件

@@ -34,7 +34,7 @@
 
     </insert>
 
-    <!--采购业务财务单汇总 -->
+    <!--(采购-采购应付款-应付款查询) 采购业务财务单汇总 -->
     <select id="findFinanceBillByPurchaseView" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             md5(uuid()) id,
@@ -168,7 +168,116 @@
                 and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
             </if>
         </where>
+    </select>
 
+    <!--(采购-采购应付款-应付款查询) 当前付款期财务单据明细-->
+    <insert id="financeBillDetailByPurchase">
+        delete from vmes_column where model_code = 'financeBillDetailByPurchase';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','code','单据号',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','companyId','企业id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','customerId','供应商id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','period','期间',4, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','type','类型id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','typeName','业务名称',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','amount','金额值',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','paymentAmount','付款金额',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','occurAmount','本期发生',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','queryType','查询类型',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','cdate','创建日期',11, '1','1','1','0',now(), 'admin'),
+    </insert>
+    <select id="findFinanceBillDetailByPurchase" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
+            bill.code,
+            bill.company_id companyId,
+            bill.customer_id customerId,
+            bill.period,
+            bill.type,
+            case
+                when bill.type='1' then '付款单'
+                when bill.type='6' then '收货账单'
+                when bill.type='7' then '扣款单'
+                when bill.type='9' then '退款单'
+            else null
+            end typeName,
+
+            bill.amount,
+            case
+              when bill.type in ('1') then bill.amount
+            else null
+            end paymentAmount,
+
+            case
+                when bill.type in ('6') then bill.amount
+                when bill.type in ('7','9') then bill.amount * -1
+            else null
+            end occurAmount,
+            'bill' queryType
+
+        from vmes_finance_bill bill
+        left join vmes_customer customer on bill.customer_id = customer.id
+        <where>
+            <if test='companyId != null and companyId != ""'>
+                and bill.company_id = #{companyId}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and bill.customer_id = #{customerId}
+            </if>
+            <if test='period != null and period != ""'>
+                and bill.period = #{period}
+            </if>
+
+            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == customerGenre">
+                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                <!--type:单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))-->
+                <!--type:单据类型 ( 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购))-->
+                and bill.type in ('1','6','7','9')
+            </if>
+            and bill.state = '2'
+        </where>
+
+        union all
+
+        select
+            md5(uuid()) id,
+            DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
+            '' code,
+            history.company_id companyId,
+            history.customer_id customerId,
+            history.period,
+            '' type,
+            '上期结转' typeName,
+
+            round(ifnull(begin_value,0),2) amount,
+            '' paymentAmount,
+            '' occurAmount,
+            'history' queryType
+        from vmes_finance_history history
+            left join vmes_customer customer on history.customer_id = customer.id
+        <where>
+            <if test='companyId != null and companyId != ""'>
+                and history.company_id = #{companyId}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and history.customer_id = #{customerId}
+            </if>
+            <if test='period != null and period != ""'>
+                and history.period = #{period}
+            </if>
+            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == customerGenre">
+                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            </if>
+        </where>
 
     </select>
 

@@ -76,6 +76,23 @@ public class PurchaseByFinanceBillController {
         return model;
     }
 
+    /**
+     * 采购应付(付款单)明细 FinanceBill
+     * @author 陈刚
+     * @date 2020-04-01
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePayment/listPageFinanceBillDetailByPurchase")
+    public ResultModel listPageFinanceBillDetailByPurchase() throws Exception {
+        logger.info("################/purchase/purchasePayment/listPageFinanceBillDetailByPurchase 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = purchaseByFinanceBillService.listPageFinanceBillDetailByPurchase(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/listPageFinanceBillDetailByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

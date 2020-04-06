@@ -240,7 +240,13 @@ public class FinanceHistoryServiceImp implements FinanceHistoryService {
     */
     public ResultModel listPageFinanceHistorys(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
-        List<Column> columnList = columnService.findColumnList("FinanceHistory");
+
+        String modelCode = new String("FinanceHistory");
+        if (pd.getString("modelCode") != null && pd.getString("modelCode").trim().length() > 0) {
+            modelCode = pd.getString("modelCode").trim();
+        }
+
+        List<Column> columnList = columnService.findColumnList(modelCode);
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

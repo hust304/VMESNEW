@@ -19,4 +19,7 @@ import java.util.Map;
 public interface FinanceBillByPurchaseMapper {
     List<Map> findFinanceBillByPurchaseView(PageData pd, Pagination pg);
     List<Map> findFinanceBillByPurchaseView(PageData pd);
+
+    List<Map> findFinanceBillDetailByPurchase(PageData pd, Pagination pg);
+    List<Map> findFinanceBillDetailByPurchase(PageData pd);
 }

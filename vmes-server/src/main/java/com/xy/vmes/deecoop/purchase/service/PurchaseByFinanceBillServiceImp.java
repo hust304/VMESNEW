@@ -54,6 +54,21 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         return mapList;
     }
 
+    public List<Map> findFinanceBillDetailByPurchase(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return financeBillByPurchaseMapper.findFinanceBillDetailByPurchase(pd);
+        } else if (pg != null) {
+            return financeBillByPurchaseMapper.findFinanceBillDetailByPurchase(pd, pg);
+        }
+
+        return mapList;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public ResultModel listPagePurchaseByFinanceBill(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
 
@@ -155,6 +170,51 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         List<Map> varList = this.findFinanceBillByPurchaseView(pd, pg);
         this.modifyCheckOutFinanceBillByPurchase(varList, queryPeriod);
 
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel listPageFinanceBillDetailByPurchase(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<Column> columnList = columnService.findColumnList("financeBillDetailByPurchase");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        pd.put("companyId", companyId);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.findFinanceBillDetailByPurchase(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
