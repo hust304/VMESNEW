@@ -137,7 +137,6 @@ public interface FinanceBaseService {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
@@ -146,7 +145,6 @@ public interface FinanceBaseService {
     /**
     * 导出
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @throws Exception
     */
     void exportExcelFinanceBases(PageData pd) throws Exception;
@@ -165,6 +163,7 @@ public interface FinanceBaseService {
     ResultModel deleteFinanceBase(PageData pd) throws Exception;
 
     ResultModel initialFinanceSale(PageData pd) throws Exception;
+    ResultModel initialFinancePurchase(PageData pd) throws Exception;
 
     ResultModel isDisableSaleInit(PageData pd) throws Exception;
 

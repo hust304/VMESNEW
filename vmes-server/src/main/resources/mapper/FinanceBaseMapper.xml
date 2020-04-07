@@ -370,11 +370,187 @@
             DELETE FROM vmes_sale_retreat WHERE company_id =  #{currentCompanyId};
 
             DELETE FROM vmes_finance_period WHERE company_id =  #{currentCompanyId};
-            DELETE FROM vmes_finance_bill WHERE company_id =  #{currentCompanyId};
-            DELETE FROM vmes_finance_base WHERE company_id =  #{currentCompanyId};
+
+            DELETE FROM vmes_finance_bill WHERE customer_id in (
+                <!--销售:客户属性:(customerGenre:customer):df7cb67fca4148bc9632c908e4a7fdea-->
+                select id
+                from vmes_customer
+                where genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            ) and company_id =  #{currentCompanyId};
+
+            <!--type:类型(0:应收:销售 1:应付:采购)-->
+            DELETE FROM vmes_finance_base WHERE type = '0' and company_id =  #{currentCompanyId};
+
+            DELETE FROM vmes_finance_history WHERE customer_id in (
+                <!--销售:客户属性:(customerGenre:customer):df7cb67fca4148bc9632c908e4a7fdea-->
+                select id
+                from vmes_customer
+                where genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            ) and company_id =  #{currentCompanyId};
         </if>
     </delete>
 
+    <delete id="initialFinancePurchase" parameterType="com.yvan.PageData" >
+        <if test='currentCompanyId != null and currentCompanyId != ""'>
+
+            <!--入库单 in_detail_id: quality_inDtl_id: receive_inDtl_id:-->
+            DELETE FROM vmes_warehouse_in WHERE id in (
+                select parent_id
+                from vmes_warehouse_in_detail
+                where id in  (
+                    select in_detail_id
+                    from vmes_purchase_sign_detail
+                        where parent_id in (
+                        select id
+                        from vmes_purchase_sign
+                        where company_id = #{currentCompanyId}
+                    ) and in_detail_id is not null
+                    union all
+                    select quality_inDtl_id
+                    from vmes_purchase_sign_detail
+                    where parent_id in (
+                        select id
+                        from vmes_purchase_sign
+                        where company_id = #{currentCompanyId}
+                    ) and quality_inDtl_id is not null
+                    union all
+                    select receive_inDtl_id
+                    from vmes_purchase_sign_detail
+                    where parent_id in (
+                    select id
+                    from vmes_purchase_sign
+                    where company_id = #{currentCompanyId}
+                    ) and receive_inDtl_id is not null
+                )
+            );
+
+            <!--入库单明细 in_detail_id: quality_inDtl_id: receive_inDtl_id:-->
+            DELETE FROM vmes_warehouse_in_detail WHERE id in (
+                select in_detail_id
+                from vmes_purchase_sign_detail
+                where parent_id in (
+                    select id
+                    from vmes_purchase_sign
+                    where company_id = #{currentCompanyId}
+                ) and in_detail_id is not null
+                union all
+                select quality_inDtl_id
+                from vmes_purchase_sign_detail
+                where parent_id in (
+                    select id
+                    from vmes_purchase_sign
+                    where company_id = #{currentCompanyId}
+                ) and quality_inDtl_id is not null
+                union all
+                select receive_inDtl_id
+                from vmes_purchase_sign_detail
+                where parent_id in (
+                    select id
+                    from vmes_purchase_sign
+                    where company_id = #{currentCompanyId}
+                ) and receive_inDtl_id is not null
+            );
+
+            <!--=========================================================================================-->
+            <!--vmes_purchase_quality_detail:采购质检项明细-->
+            DELETE FROM vmes_purchase_quality_detail WHERE sign_detail_id in (
+                select id
+                from vmes_purchase_sign_detail
+                where parent_id in (
+                    select id
+                    from vmes_purchase_sign
+                    where company_id = #{currentCompanyId}
+                )
+            );
+
+            DELETE FROM vmes_purchase_sign_detail WHERE parent_id in (
+                select id
+                from vmes_purchase_sign
+                where company_id = #{currentCompanyId}
+            );
+
+            DELETE FROM vmes_purchase_sign WHERE company_id = #{currentCompanyId};
+
+            <!--=========================================================================================-->
+            DELETE FROM vmes_purchase_order_detail WHERE parent_id in (
+                select id
+                from vmes_purchase_order
+                where company_id = #{currentCompanyId}
+            );
+
+            DELETE FROM vmes_purchase_order WHERE company_id = #{currentCompanyId};
+
+            <!--=========================================================================================-->
+            DELETE FROM vmes_purchase_plan_detail_child WHERE plan_id in (
+                select id
+                from vmes_purchase_plan
+                where company_id = #{currentCompanyId}
+            );
+
+            DELETE FROM vmes_purchase_plan_detail WHERE parent_id in (
+                select id
+                from vmes_purchase_plan
+                where company_id = #{currentCompanyId}
+            );
+
+            DELETE FROM vmes_purchase_plan WHERE company_id = #{currentCompanyId};
+
+            <!--=========================================================================================-->
+            <!--出库单 out_detail_id:-->
+            DELETE FROM vmes_warehouse_out WHERE id in (
+                select parent_id
+                from vmes_warehouse_out_detail
+                where id in  (
+                    select out_detail_id
+                    from vmes_purchase_retreat_detail
+                    where parent_id in (
+                        select id
+                        from vmes_purchase_retreat
+                        where company_id = #{currentCompanyId}
+                    ) and out_detail_id is not null
+                )
+            );
+
+            DELETE FROM vmes_warehouse_out_detail WHERE id in (
+                select out_detail_id
+                from vmes_purchase_retreat_detail
+                where parent_id in (
+                    select id
+                    from vmes_purchase_retreat
+                    where company_id = #{currentCompanyId}
+                ) and out_detail_id is not null
+            );
+
+            <!--=========================================================================================-->
+            DELETE FROM vmes_purchase_retreat_detail WHERE parent_id in (
+                select id
+                from vmes_purchase_retreat
+                where company_id = #{currentCompanyId}
+            );
+
+            DELETE FROM vmes_purchase_retreat WHERE company_id = #{currentCompanyId};
+
+            <!--采购财务单据=========================================================================================-->
+            <!--type:类型(0:应收:销售 1:应付:采购)-->
+            DELETE FROM vmes_finance_base WHERE type = '1' and company_id =  #{currentCompanyId};
+
+            DELETE FROM vmes_finance_history WHERE customer_id in (
+                <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                select id
+                from vmes_customer
+                where genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            ) and company_id =  #{currentCompanyId};
+
+            DELETE FROM vmes_finance_bill WHERE customer_id in (
+                <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                select id
+                from vmes_customer
+                where genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            ) and company_id =  #{currentCompanyId};
+
+            DELETE FROM vmes_purchase_company_period WHERE company_id =  #{currentCompanyId};
+        </if>
+    </delete>
 
 
 </mapper>

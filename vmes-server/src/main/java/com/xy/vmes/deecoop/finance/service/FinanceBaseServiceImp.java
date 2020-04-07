@@ -493,6 +493,12 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
         return model;
     }
 
+    public ResultModel initialFinancePurchase(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        financeBaseMapper.initialFinancePurchase(pd);
+        return model;
+    }
+
     @Override
     public ResultModel isDisableSaleInit(PageData pd) throws Exception {
         ResultModel model = new ResultModel();

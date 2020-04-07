@@ -90,6 +90,7 @@ public interface FinanceBaseMapper extends BaseMapper<FinanceBase> {
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
     void initialFinanceSale(PageData pd);
+    void initialFinancePurchase(PageData pd);
 }
 
 

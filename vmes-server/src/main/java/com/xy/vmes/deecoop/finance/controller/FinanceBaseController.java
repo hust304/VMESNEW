@@ -261,6 +261,23 @@ public class FinanceBaseController {
         return model;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 采购模块数据初始化
+     * @author 陈刚
+     * @date 2020-04-07
+     */
+    @PostMapping("/finance/financeBase/initialFinancePurchase")
+    public ResultModel initialFinancePurchase()  throws Exception {
+        logger.info("################/finance/financeBase/initialFinancePurchase 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = financeBaseService.initialFinancePurchase(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeBase/initialFinancePurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 
