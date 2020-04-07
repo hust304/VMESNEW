@@ -608,7 +608,7 @@ public class PurchaseRetreatController {
         String remark = "退货单号："+retreat.getSysCode();
         financeBillService.addFinanceBillBySys(retreat.getId(),
                 companyId,
-                companyId,
+                supplierId,
                 cuser,
                 //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                 "9",

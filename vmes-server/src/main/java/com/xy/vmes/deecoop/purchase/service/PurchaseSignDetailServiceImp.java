@@ -776,7 +776,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             //生成采购付款单(vmes_finance_bill)
             financeBillService.addFinanceBillBySys(editSignDetail.getId(),
                     companyId,
-                    companyId,
+                    supplierId,
                     cuser,
                     //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                     "6",
@@ -1249,11 +1249,12 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             }
         }
 
+        String supplierId = (String)signDetailMap.get("supplierId");
         //生成采购(vmes_finance_bill)付款单
         //String remark = "签收单号："+saleDeliver.getDeliverCode();
         financeBillService.addFinanceBillBySys(editSignDetail.getId(),
                 companyId,
-                companyId,
+                supplierId,
                 cuser,
                 //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                 "6",
@@ -1390,7 +1391,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        String supplierId = (String)signDetailMap.get("supplierId");
+        supplierId = (String)signDetailMap.get("supplierId");
         String supplierName = (String)signDetailMap.get("supplierName");
 
         //正常接收入库(正常接收Map businessByInMap)
