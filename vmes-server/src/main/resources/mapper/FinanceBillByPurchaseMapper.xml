@@ -129,7 +129,7 @@
                             <if test='period != null and period != ""'>
                                 and period = #{period}
                             </if>
-                            and type = '7,9' and state = '2'
+                            and type in ('7','9') and state = '2'
                         </where>
                         group by customer_id
                     ) c on a.id = c.customer_id
