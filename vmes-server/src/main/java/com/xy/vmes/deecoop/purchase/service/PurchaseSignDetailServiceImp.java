@@ -757,6 +757,33 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
             this.update(editSignDetail);
 
+            //price 单价(采购订单明细)
+            BigDecimal price = BigDecimal.valueOf(0D);
+            String priceStr = objectMap.get("price");
+            if (priceStr != null && priceStr.trim().length() > 0) {
+                try {
+                    price = new BigDecimal(priceStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //amount 签收金额 = 收货合格数(signFineCount) * 单价(采购订单明细)
+            BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * signFineCount.doubleValue());
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //生成采购付款单(vmes_finance_bill)
+            financeBillService.addFinanceBillBySys(editSignDetail.getId(),
+                    companyId,
+                    companyId,
+                    cuser,
+                    //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
+                    "6",
+                    null,
+                    amount,
+                    "");
+
             //采购签收单id
             String parentId = objectMap.get("parentId");
             if (parentId != null && parentId.trim().length() > 0) {
