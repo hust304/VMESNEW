@@ -569,10 +569,16 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
 
         //退货单编号
         //D+yyyyMMdd+00001 = 14位
-        String code = coderuleService.createCoderCdateByDate(companyID,
+//        String code = coderuleService.createCoderCdateByDate(companyID,
+//                "vmes_purchase_retreat",
+//                "yyyyMMdd",
+//                "PR");
+
+        String code = coderuleService.createCoderCdateOnShortYearByDate(
+                companyID,
                 "vmes_purchase_retreat",
-                "yyyyMMdd",
-                "PR");
+                "PR",
+                Common.CODE_RULE_LENGTH_3);
         retreat.setSysCode(code);
         this.save(retreat);
 

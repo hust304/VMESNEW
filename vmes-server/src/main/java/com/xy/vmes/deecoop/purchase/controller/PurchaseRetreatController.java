@@ -54,6 +54,8 @@ public class PurchaseRetreatController {
     private PurchaseOrderDetailToolService purchaseOrderDetailToolService;
 
     @Autowired
+    private FinanceBillService financeBillService;
+    @Autowired
     private RoleMenuService roleMenuService;
 
     /**
@@ -581,39 +583,6 @@ public class PurchaseRetreatController {
             String retreatDtl_id = jsonObject.get("id");
             detailEdit.setId(retreatDtl_id);
 
-//            //count: 退货数量
-//            BigDecimal count = BigDecimal.valueOf(0D);
-//            String count_str = jsonObject.get("count");
-//            if (count_str != null && count_str.trim().length() > 0) {
-//                try {
-//                    count = new BigDecimal(count_str.trim());
-//                    //四舍五入到2位小数
-//                    count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//                } catch (NumberFormatException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            detailEdit.setCount(count);
-//
-//            //price: 货品单价
-//            BigDecimal price = BigDecimal.valueOf(0D);
-//            String price_str = jsonObject.get("price");
-//            if (price_str != null && price_str.trim().length() > 0) {
-//                try {
-//                    price = new BigDecimal(price_str.trim());
-//                    //四舍五入到2位小数
-//                    price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//                } catch (NumberFormatException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            //amount: 退货金额 := 退货数量 * 货品单价
-//            BigDecimal amount = BigDecimal.valueOf(count.doubleValue() * price.doubleValue());
-//            //四舍五入到2位小数
-//            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//            detailEdit.setAmount(amount);
-
             //(关联)出库单明细
             String productId = jsonObject.get("productId");
             if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(productId) != null) {
@@ -667,6 +636,24 @@ public class PurchaseRetreatController {
             return model;
         }
 
+
+        //生成(vmes_finance_bill)付款单
+        BigDecimal retreatSum = BigDecimal.valueOf(0D);
+        if (retreat != null && retreat.getTotalSum() != null) {
+            retreatSum = retreat.getTotalSum();
+        }
+        String remark = "退货单号："+retreat.getSysCode();
+        //创建付款单
+        financeBillService.addFinanceBillBySys(retreat.getId(),
+                companyId,
+                companyId,
+                cuser,
+                //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
+                "9",
+                null,
+                retreatSum,
+                remark);
+
         //根据退货类型
         //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款
         //retreatChange: c90c2081328c427e8d65014d98335601 退货换货
@@ -680,12 +667,12 @@ public class PurchaseRetreatController {
             valueMap.put("orderDtlList", orderDtlList);
             purchaseRetreatService.updatePurchaseOrder(valueMap);
 
-            //创建(负值)的付款单
-            purchaseRetreatService.createPurchasePaymentByMinus(realityTotal_big,
-                    supplierId,
-                    companyId,
-                    retreat.getOrderId(),
-                    cuser);
+//            //创建(负值)的付款单
+//            purchaseRetreatService.createPurchasePaymentByMinus(realityTotal_big,
+//                    supplierId,
+//                    companyId,
+//                    retreat.getOrderId(),
+//                    cuser);
         }
 
         //4. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)////////////////////////////////////////////////////////////////////////////////////////////
@@ -744,7 +731,7 @@ public class PurchaseRetreatController {
                         purchasePlanService.updateState(planId);
                     }
                 } else if (planDtlId != null && planDtlId.trim().length() > 0
-                    && "3".equals(detailEdit.getState())
+                    && "2".equals(detailEdit.getState())
                 ) {
                     PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
                     planDtlEdit.setId(planDtlId);
