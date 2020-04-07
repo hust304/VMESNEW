@@ -107,6 +107,7 @@
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'signInParentId', '合格入库单id', 47, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'signInCode', '合格入库单', 48, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityTypeValue', '检验方式Value', 49, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'price', '单价', 50, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -255,6 +256,7 @@
             orderDtl.parent_id orderId,
             purchaseOrder.supplier_id supplierId,
             supplier.name supplierName,
+            round(ifnull(orderDtl.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
 
             <!--(免检)入库单-->
             inDetail.parent_id inParentId,
