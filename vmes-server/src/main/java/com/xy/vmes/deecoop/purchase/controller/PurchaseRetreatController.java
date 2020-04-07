@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
 
-
 /**
 * 说明：vmes_purchase_retreat:退货单Controller
 * @author 陈刚 自动生成
@@ -28,18 +27,7 @@ import java.util.*;
 @RestController
 @Slf4j
 public class PurchaseRetreatController {
-
     private Logger logger = LoggerFactory.getLogger(PurchaseRetreatController.class);
-
-    @Autowired
-    private PurchasePlanService purchasePlanService;
-    @Autowired
-    private PurchasePlanDetailService purchasePlanDetailService;
-
-    @Autowired
-    private PurchaseOrderService purchaseOrderService;
-    @Autowired
-    private PurchaseOrderDetailService purchaseOrderDetailService;
 
     @Autowired
     private PurchaseRetreatService purchaseRetreatService;
@@ -47,11 +35,7 @@ public class PurchaseRetreatController {
     private PurchaseRetreatDetailService purchaseRetreatDetailService;
 
     @Autowired
-    private WarehouseService warehouseService;
-    @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
-    @Autowired
-    private PurchaseOrderDetailToolService purchaseOrderDetailToolService;
 
     @Autowired
     private FinanceBillService financeBillService;
@@ -427,23 +411,23 @@ public class PurchaseRetreatController {
             return model;
         }
 
-        //退货总额:实际退货金额
-        BigDecimal realityTotal_big = BigDecimal.valueOf(0D);
-        String realityTotal = pageData.getString("realityTotal");
-        if (realityTotal == null || realityTotal.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("退货总额为空或空字符串！");
-            return model;
-        }
+//        //退货总额:实际退货金额
+//        BigDecimal realityTotal_big = BigDecimal.valueOf(0D);
+//        String realityTotal = pageData.getString("realityTotal");
+//        if (realityTotal == null || realityTotal.trim().length() == 0) {
+//            model.putCode(Integer.valueOf(1));
+//            model.putMsg("退货总额为空或空字符串！");
+//            return model;
+//        }
 
-        //实际退货金额 审核界面获得
-        if (realityTotal != null && realityTotal.trim().length() > 0) {
-            try {
-                realityTotal_big = new BigDecimal(realityTotal);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
+//        //实际退货金额 审核界面获得
+//        if (realityTotal != null && realityTotal.trim().length() > 0) {
+//            try {
+//                realityTotal_big = new BigDecimal(realityTotal);
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
@@ -459,46 +443,46 @@ public class PurchaseRetreatController {
             return model;
         }
 
-        //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
-        //warehouseList: 复杂版仓库,简版仓库
-        //spareList:     备件库
-        Map<String, List<Map<String, String>>> listMap = purchaseOrderDetailService.findMapByProductGenre(jsonMapList);
-        if (listMap == null || listMap.size() == 0) {return model;}
+//        //遍历JsonMapList-根据货品属性(productGenre)-返回Map结构体
+//        //warehouseList: 复杂版仓库,简版仓库
+//        //spareList:     备件库
+//        Map<String, List<Map<String, String>>> listMap = purchaseOrderDetailService.findMapByProductGenre(jsonMapList);
+//        if (listMap == null || listMap.size() == 0) {return model;}
 
-        List<Map<String, String>> warehouseList = new ArrayList<>();
-        if (listMap != null && listMap.get("warehouseList") != null) {
-            warehouseList = listMap.get("warehouseList");
-        }
+//        List<Map<String, String>> warehouseList = new ArrayList<>();
+//        if (listMap != null && listMap.get("warehouseList") != null) {
+//            warehouseList = listMap.get("warehouseList");
+//        }
 
-        //备件库-表对象
-        Warehouse warehouseSpare = null;
-        List<Map<String, String>> spareList = new ArrayList<>();
-        if (listMap != null && listMap.get("spareList") != null) {
-            spareList = listMap.get("spareList");
-        }
+//        //备件库-表对象
+//        Warehouse warehouseSpare = null;
+//        List<Map<String, String>> spareList = new ArrayList<>();
+//        if (listMap != null && listMap.get("spareList") != null) {
+//            spareList = listMap.get("spareList");
+//        }
 
-        //系统备件库是否存在
-        if (spareList != null && spareList.size() > 0) {
-            try {
-                //获取备件库
-                PageData findMap = new PageData();
-                findMap.put("companyId", companyId);
-                findMap.put("name", "备件库");
-                findMap.put("layer", Integer.valueOf(2));
-                //是否启用(0:已禁用 1:启用)
-                findMap.put("isdisable", "1");
-                findMap.put("mapSize", Integer.valueOf(findMap.size()));
-                warehouseSpare = warehouseService.findWarehouse(findMap);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (warehouseSpare == null) {
-                model.putCode(Integer.valueOf(1));
-                model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
-                return model;
-            }
-        }
+//        //系统备件库是否存在
+//        if (spareList != null && spareList.size() > 0) {
+//            try {
+//                //获取备件库
+//                PageData findMap = new PageData();
+//                findMap.put("companyId", companyId);
+//                findMap.put("name", "备件库");
+//                findMap.put("layer", Integer.valueOf(2));
+//                //是否启用(0:已禁用 1:启用)
+//                findMap.put("isdisable", "1");
+//                findMap.put("mapSize", Integer.valueOf(findMap.size()));
+//                warehouseSpare = warehouseService.findWarehouse(findMap);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            if (warehouseSpare == null) {
+//                model.putCode(Integer.valueOf(1));
+//                model.putMsg("您所在的企业不存在(备件库)，请与管理员联系！");
+//                return model;
+//            }
+//        }
 
         // 货品入库Map<货品id, 货品Map<String, Object>>
         // 货品Map<String, Object>
@@ -508,10 +492,10 @@ public class PurchaseRetreatController {
         Map<String, Map<String, Object>> businessProdOutMapByEditDetail = new HashMap<String, Map<String, Object>>();
 
         //1. 创建出库单////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+        if (jsonMapList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
 
-            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(warehouseList);
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
             warehouseOutCreateService.createWarehouseOutByComplex(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
@@ -530,10 +514,10 @@ public class PurchaseRetreatController {
                 }
             }
 
-        } else if (warehouseList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+        } else if (jsonMapList.size() > 0 && Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
 
-            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(warehouseList);
+            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
             warehouseOutCreateService.createWarehouseOutBySimple(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
@@ -553,27 +537,27 @@ public class PurchaseRetreatController {
             }
         }
 
-        //备件库////////////////////////////////////////////////////////////////////////////////////////////////
-        if (spareList.size() > 0) {
-            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(spareList);
-            warehouseOutCreateService.createWarehouseOutByBySpare(supplierId,
-                    supplierName,
-                    //备件库
-                    warehouseSpare.getId(),
-                    cuser,
-                    companyId,
-                    //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
-                    Common.DICTIONARY_MAP.get("purchaseOut"),
-                    productByOutMap);
-
-            if (productByOutMap != null) {
-                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
-                    String mapKey = (String) iterator.next();
-                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
-                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
-                }
-            }
-        }
+//        //备件库////////////////////////////////////////////////////////////////////////////////////////////////
+//        if (spareList.size() > 0) {
+//            Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(spareList);
+//            warehouseOutCreateService.createWarehouseOutByBySpare(supplierId,
+//                    supplierName,
+//                    //备件库
+//                    warehouseSpare.getId(),
+//                    cuser,
+//                    companyId,
+//                    //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
+//                    Common.DICTIONARY_MAP.get("purchaseOut"),
+//                    productByOutMap);
+//
+//            if (productByOutMap != null) {
+//                for (Iterator iterator = productByOutMap.keySet().iterator(); iterator.hasNext();) {
+//                    String mapKey = (String) iterator.next();
+//                    Map<String, Object> mapValue = productByOutMap.get(mapKey);
+//                    businessProdOutMapByEditDetail.put(mapKey, mapValue);
+//                }
+//            }
+//        }
 
         //2. 修改退货单明细 (退货单明细(关联)出库单明细)/////////////////////////////////////////////////////////////////////////////////
         for (Map<String, String> jsonObject : jsonMapList) {
@@ -612,30 +596,9 @@ public class PurchaseRetreatController {
 //        }
         purchaseRetreatService.update(retreatEdit);
 
-        //3. 修改采购订单明细(订购数量,货品金额)////////////////////////////////////////////////////////////////////////////////////////////
+        //3. 创建采购退款单////////////////////////////////////////////////////////////////////////////////////////////
         //获取退货单表对象-根据退货单id查询(vmes_purchase_retreat)
         PurchaseRetreat retreat = purchaseRetreatService.findPurchaseRetreatById(retreatId);
-        //采购订单id
-        String purchaseOrderId = retreat.getOrderId();
-
-        //根据(退货单id)-获取退货单明细List
-        List<PurchaseRetreatDetail> retreatDtlList = purchaseRetreatDetailService.findPurchaseRetreatDetailListByParentId(retreatId);
-        //获取 <采购订单明细id, <采购订单明细退货信息Map(count:退货数量,amount:退货金额)>
-        Map<String, Map<String, BigDecimal>> orderDtlRetreatMap = purchaseRetreatDetailService.findOrderDtlRetreatCountMap(retreatDtlList);
-        //获取采购订单明细id字符串-(','逗号分隔字符串)
-        String orderDtlIds = purchaseRetreatDetailService.findOrderDtlIdsByRetreatDtlList(retreatDtlList);
-        if (orderDtlIds == null || orderDtlIds.trim().length() == 0) {
-            return model;
-        }
-
-        PageData findMap = new PageData();
-        orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
-        findMap.put("ids", orderDtlIds);
-        List<PurchaseOrderDetail> orderDtlList = purchaseOrderDetailService.findPurchaseOrderDetailList(findMap);
-        if (orderDtlList == null || orderDtlList.size() == 0) {
-            return model;
-        }
-
 
         //生成(vmes_finance_bill)付款单
         BigDecimal retreatSum = BigDecimal.valueOf(0D);
@@ -643,7 +606,6 @@ public class PurchaseRetreatController {
             retreatSum = retreat.getTotalSum();
         }
         String remark = "退货单号："+retreat.getSysCode();
-        //创建付款单
         financeBillService.addFinanceBillBySys(retreat.getId(),
                 companyId,
                 companyId,
@@ -653,103 +615,6 @@ public class PurchaseRetreatController {
                 null,
                 retreatSum,
                 remark);
-
-        //根据退货类型
-        //retreatRefund: f69839bbf2394846a65894f0da120df9 退货退款
-        //retreatChange: c90c2081328c427e8d65014d98335601 退货换货
-        if (Common.DICTIONARY_MAP.get("retreatRefund").equals(retreat.getType())) {
-            //退货类型:= (f69839bbf2394846a65894f0da120df9)退货退款
-            //修改采购订单明细-变更订单明细(订购数量,货品金额)
-            Map<String, Object> valueMap = new HashMap<String, Object>();
-            valueMap.put("retreatId", retreatId);
-            valueMap.put("realityTotal", realityTotal_big);
-            valueMap.put("orderDtlRetreatMap", orderDtlRetreatMap);
-            valueMap.put("orderDtlList", orderDtlList);
-            purchaseRetreatService.updatePurchaseOrder(valueMap);
-
-//            //创建(负值)的付款单
-//            purchaseRetreatService.createPurchasePaymentByMinus(realityTotal_big,
-//                    supplierId,
-//                    companyId,
-//                    retreat.getOrderId(),
-//                    cuser);
-        }
-
-        //4. 修改采购订单明细状态-根据(采购订单明细id,采购数量,到货数量)////////////////////////////////////////////////////////////////////////////////////////////
-//获取(采购数量,签收数量,退货数量[已完成])
-//Map<采购订单明细id, 采购明细Map<String, Object>>
-//采购明细Map<String, Object>
-//    detailId: 采购订单明细id
-//    parentId: 采购订单id
-//    detailCount: 采购数量
-//    signCount: 签收数量
-//    retreatCount: 退货数量(已完成)
-//    arriveCount: 到货数量:= 签收数量 - 退货数量(已完成)
-        Map<String, Map<String, Object>> detailMap = purchaseOrderDetailToolService.findPurchaseOrderDetailMap(purchaseOrderId);
-        //修改采购订单明细
-        if (jsonMapList != null && jsonMapList.size() > 0) {
-            for (Map<String, String> jsonObject : jsonMapList) {
-                String orderDetailId = jsonObject.get("orderDetailId");
-                Map<String, Object> detailValue = detailMap.get(orderDetailId);
-
-                //detailCount: 采购数量
-                BigDecimal detailCount = BigDecimal.valueOf(0D);
-                if (detailValue.get("detailCount") != null) {
-                    detailCount = (BigDecimal)detailValue.get("detailCount");
-                }
-
-                //arriveCount 到货数量:= 签收数量 - 退货数量(已完成)
-                BigDecimal arriveCount = BigDecimal.valueOf(0D);
-                if (detailValue.get("detailCount") != null) {
-                    arriveCount = (BigDecimal)detailValue.get("arriveCount");
-                }
-
-                //状态(0:待提交 1:待审核 2:采购中 3:部分签收(无此状态) 4:已完成 -1:已取消)
-                PurchaseOrderDetail detailEdit = new PurchaseOrderDetail();
-                detailEdit.setId(orderDetailId);
-                if (arriveCount.doubleValue() >= detailCount.doubleValue()) {
-                    detailEdit.setState("4");
-                } else {
-                    detailEdit.setState("2");
-                }
-                purchaseOrderDetailService.update(detailEdit);
-
-                //采购计划明细id planDtlId
-                String planDtlId = jsonObject.get("planDtlId");
-                if (planDtlId != null && planDtlId.trim().length() > 0
-                    && "4".equals(detailEdit.getState())
-                ) {
-                    PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
-                    planDtlEdit.setId(planDtlId);
-                    //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                    planDtlEdit.setState("4");
-                    purchasePlanDetailService.update(planDtlEdit);
-
-                    //采购计划id planId
-                    String planId = jsonObject.get("planId");
-                    if (planId != null && planId.trim().length() > 0) {
-                        purchasePlanService.updateState(planId);
-                    }
-                } else if (planDtlId != null && planDtlId.trim().length() > 0
-                    && "2".equals(detailEdit.getState())
-                ) {
-                    PurchasePlanDetail planDtlEdit = new PurchasePlanDetail();
-                    planDtlEdit.setId(planDtlId);
-                    //采购计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                    planDtlEdit.setState("3");
-                    purchasePlanDetailService.update(planDtlEdit);
-
-                    //采购计划id planId
-                    String planId = jsonObject.get("planId");
-                    if (planId != null && planId.trim().length() > 0) {
-                        purchasePlanService.updateState(planId);
-                    }
-                }
-            }
-        }
-
-        //修改采购订单状态
-        purchaseOrderService.updateState(purchaseOrderId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseRetreat/auditPassPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
