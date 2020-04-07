@@ -60,6 +60,8 @@ public class TreeEntity implements Cloneable {
     private String spec;
     private String genre;
     private String unit;
+    private String unitId;
+    private String property;
     private String edate;
     private BigDecimal totalCount;
     private BigDecimal assembledCount;
@@ -88,6 +90,22 @@ public class TreeEntity implements Cloneable {
 
     public BigDecimal getSetCount() {
         return setCount;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
+    public String getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
     }
 
     public void setSetCount(BigDecimal setCount) {

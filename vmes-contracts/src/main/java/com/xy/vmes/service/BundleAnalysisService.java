@@ -22,6 +22,8 @@ public interface BundleAnalysisService {
     ResultModel getBomTreeProduct(PageData pd) throws Exception;
 
     ResultModel getLackProduct(PageData pd,Pagination pg) throws Exception;
+
+    ResultModel getLackProductNew(PageData pd, Pagination pg) throws Exception;
 }
 
 

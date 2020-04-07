@@ -62,6 +62,23 @@ public class BundleAnalysisController {
     }
 
 
+    /**
+     * @author 刘威
+     * @date 2018-07-31
+     */
+    @PostMapping("/purchase/bundleAnalysis/getLackProductNew")
+    public ResultModel getLackProductNew()  throws Exception {
+        logger.info("################/purchase/bundleAnalysis/getLackProductNew 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        Pagination pg = HttpUtils.parsePagination(pd);
+//        pd.getString("productId"),pd.getString("expectCount")
+        ResultModel model = bundleAnalysisService.getLackProductNew(pd,pg);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/bundleAnalysis/getLackProductNew 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

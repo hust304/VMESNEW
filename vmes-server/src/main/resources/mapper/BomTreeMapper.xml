@@ -540,9 +540,11 @@
         product.name,
         case when product.source_code is null then product.code else product.source_code end code,
         product.spec,
+        product.property,
         genre.name genre,
         wp.stock_count stockCount,
         ifnull(wp.stock_count,0) count,
+        unit.id unitId,
         unit.name unit
         from
         vmes_bom_tree tree
