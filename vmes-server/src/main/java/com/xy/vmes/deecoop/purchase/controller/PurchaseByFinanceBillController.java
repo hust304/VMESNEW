@@ -523,31 +523,17 @@ public class PurchaseByFinanceBillController {
             remark = pageData.getString("remark").trim();
         }
 
-        //根据(签收单id)查询 vmes_finance_bill 扣款单是否存在
-        PageData findMap = new PageData();
-        findMap.put("businessId", signId);
-        FinanceBill financeBillDB = financeBillService.findFinanceBill(findMap);
-
-        if (financeBillDB == null) {
-            purchaseByFinanceBillService.addFinanceBillByPurchase(signId,
-                    companyId,
-                    supplierId,
-                    cuser,
-                    //单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
-                    "7",
-                    //state 状态(0：待提交 1：待审核 2：已审核 -1：已取消)
-                    "0",
-                    null,
-                    amount,
-                    remark);
-        } else if (financeBillDB != null) {
-            FinanceBill editFinanceBill = new FinanceBill();
-            editFinanceBill.setId(financeBillDB.getId());
-            editFinanceBill.setAmount(amount);
-            editFinanceBill.setRemark(remark);
-
-            financeBillService.update(editFinanceBill);
-        }
+        purchaseByFinanceBillService.addFinanceBillByPurchase(signId,
+                companyId,
+                supplierId,
+                cuser,
+                //单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
+                "7",
+                //state 状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                "0",
+                null,
+                amount,
+                remark);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchasePayment/editFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
