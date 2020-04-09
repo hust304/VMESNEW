@@ -376,6 +376,9 @@
             <if test='currentCompanyId != null and currentCompanyId != ""'>
                 and bill.company_id = #{currentCompanyId}
             </if>
+            <if test='businessId != null and businessId != ""'>
+                and bill.business_id = #{businessId}
+            </if>
 
             <!--销售:客户属性:(customerGenre:customer):df7cb67fca4148bc9632c908e4a7fdea-->
             <if test="'customer' == customerGenre">
