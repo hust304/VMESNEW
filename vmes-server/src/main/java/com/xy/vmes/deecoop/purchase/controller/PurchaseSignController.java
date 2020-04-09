@@ -53,6 +53,9 @@ public class PurchaseSignController {
 //    private PurchaseQualityDetailService purchaseQualityDetailService;
 
     @Autowired
+    private FinanceBillService financeBillService;
+
+    @Autowired
     private WarehouseInService inService;
     @Autowired
     private WarehouseInDetailService inDetailService;
@@ -373,6 +376,56 @@ public class PurchaseSignController {
                     signDetailService.update(editSignDetail);
                 }
             }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //生成免检:收货账单(采购)
+        //获取该签收单(免检)明细
+        //List<Map<String, String>> notQualityList //质检属性:1:免检 (1:免检 2:检验)
+        BigDecimal amountSum = BigDecimal.valueOf(0D);
+        if (notQualityList != null && notQualityList.size() > 0) {
+            for (Map<String, String> objectMap : notQualityList) {
+                // arriveCount:签收数量
+                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                String arriveCountStr = objectMap.get("arriveCount");
+                if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
+                    try {
+                        arriveCount = new BigDecimal(arriveCountStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //price: 单价(采购订单明细)
+                BigDecimal price = BigDecimal.valueOf(0D);
+                String priceStr = objectMap.get("price");
+                if (priceStr != null && priceStr.trim().length() > 0) {
+                    try {
+                        price = new BigDecimal(priceStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //amount 签收金额 = 签收数量 * 单价
+                BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * arriveCount.doubleValue());
+                amountSum = BigDecimal.valueOf(amountSum.doubleValue() + amount.doubleValue());
+            }
+        }
+
+        if (amountSum.doubleValue() > 0) {
+            //四舍五入到2位小数
+            amountSum = amountSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            //生成采购付款单(vmes_finance_bill)
+            financeBillService.addFinanceBillBySys(addSign.getId(),
+                    companyId,
+                    supplierId,
+                    cuser,
+                    //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
+                    "6",
+                    null,
+                    amountSum,
+                    "");
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
