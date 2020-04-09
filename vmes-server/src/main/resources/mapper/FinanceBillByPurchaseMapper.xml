@@ -215,13 +215,13 @@
 
             bill.amount,
             case
-              when bill.type in ('1') then bill.amount
+              when bill.type in ('1') then round(ifnull(bill.amount,0),2)
             else null
             end paymentAmount,
 
             case
-                when bill.type in ('6') then bill.amount
-                when bill.type in ('7','9') then bill.amount * -1
+                when bill.type in ('6') then round(ifnull(bill.amount,0),2)
+                when bill.type in ('7','9') then round(ifnull(bill.amount,0),2) * -1
             else null
             end occurAmount,
             'bill' queryType
