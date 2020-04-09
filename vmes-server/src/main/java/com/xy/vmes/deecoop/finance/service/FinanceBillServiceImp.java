@@ -693,6 +693,11 @@ public class FinanceBillServiceImp implements FinanceBillService {
     }
 
     @Override
+    public Map<String,Object>  getFinanceReceiveGroup(PageData pd) throws Exception {
+        return  financeBillMapper.getFinanceReceiveGroup(pd);
+    }
+
+    @Override
     public ResultModel getFinanceReceiveView(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("FinanceReceiveView");
@@ -729,7 +734,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
         List<Map> varList = this.getFinanceReceiveView(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
-        Map<String,Object> receiveMap = financeBillMapper.getFinanceReceiveGroup(pd);
+        Map<String,Object> receiveMap = this.getFinanceReceiveGroup(pd);
         if(receiveMap!=null){
             result.put("preReceiveAmount", receiveMap.get("preReceiveAmount"));
             result.put("nowReceiveAmount", receiveMap.get("nowReceiveAmount"));

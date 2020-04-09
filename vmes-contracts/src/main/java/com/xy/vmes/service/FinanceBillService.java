@@ -194,6 +194,8 @@ public interface FinanceBillService {
 
     List<Map> getFinanceReceiveView(PageData pd,Pagination pg) throws Exception;
 
+    Map<String,Object>  getFinanceReceiveGroup(PageData pd) throws Exception;
+
     /**
      *
      * @param businessId  业务单据id

@@ -739,6 +739,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getFinanceReceiveGroup"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
+        <![CDATA[ sum(case when nowPlus-nowMinus>0 then round(ifnull(nowPlus-nowMinus,0),2) else 0.00 end) currentMonthReceiveAmount ]]>,
         <![CDATA[ sum(case when nowPlus-nowMinus+beginPlus-beginMinus>0 then round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2) else 0.00 end) nowReceiveAmount ]]>,
         <![CDATA[ sum(case when nowPlus-nowMinus+beginPlus-beginMinus<0 then round(ifnull(-(nowPlus-nowMinus+beginPlus-beginMinus),0),2) else 0.00 end) preReceiveAmount ]]>
         from (
