@@ -213,7 +213,7 @@
             else null
             end typeName,
 
-            bill.amount,
+            round(ifnull(bill.amount,0),2) amount,
             case
               when bill.type in ('1') then round(ifnull(bill.amount,0),2)
             else null
