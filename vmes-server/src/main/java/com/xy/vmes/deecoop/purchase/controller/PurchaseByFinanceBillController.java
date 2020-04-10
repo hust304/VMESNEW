@@ -672,12 +672,8 @@ public class PurchaseByFinanceBillController {
             queryPeriod = companyPeriodDB.getPaymentPeriod();
         }
 
-        //当前期间(yyyymm) 减1个月
-        String frontPaymentPeriodStr = DateFormat.getAddDay(queryPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
-        Date frontPaymentPeriodDate = DateFormat.dateString2Date(frontPaymentPeriodStr+"01", "yyyyMMdd");
-
         //删除(企业id,付款期间)采购财务结账历史(vmes_finance_history)
-        financeHistoryService.deleteFinanceHistoryByPurchase(companyId, frontPaymentPeriodStr);
+        financeHistoryService.deleteFinanceHistoryByPurchase(companyId, queryPeriod);
 
         //删除(企业id,付款期间)采购付款结账当前期间(vmes_purchase_company_period)
         Map<String, String> columnMap = new HashMap<>();
@@ -685,6 +681,9 @@ public class PurchaseByFinanceBillController {
         purchaseCompanyPeriodService.deleteByColumnMap(columnMap);
 
         //更新当前期间(vmes_purchase_company_period:采购应付期间表)
+        //当前期间(yyyymm) 减1个月
+        String frontPaymentPeriodStr = DateFormat.getAddDay(queryPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
+        Date frontPaymentPeriodDate = DateFormat.dateString2Date(frontPaymentPeriodStr+"01", "yyyyMMdd");
         PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
         addCompanyPeriod.setCompanyId(companyId);
         addCompanyPeriod.setCuser(cuser);
