@@ -342,8 +342,6 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             }
         }
 
-
-
         model.putResult(result);
         return model;
     }
@@ -358,19 +356,17 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
                 volumeTotal = volumeTotal.add(volume);
             }
-        }
 
-        if(volumeTotal.compareTo(BigDecimal.ZERO)>0){
-            for(Map svbc : salesVolumeByCustomerList){
-                String volumeStr = (String)svbc.get("volume");
-                BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
-                svbc.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
+            if(volumeTotal.compareTo(BigDecimal.ZERO)>0){
+                for(Map svbc : salesVolumeByCustomerList){
+                    String volumeStr = (String)svbc.get("volume");
+                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+                    svbc.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
+                }
             }
-        }else{
-            return null;
         }
 
-        return salesVolumeByCustomerList;
+        return  salesVolumeByCustomerList!=null?salesVolumeByCustomerList:new ArrayList();
     }
 
     private List<Map> getProductReturnRate(PageData pd) {
@@ -382,19 +378,17 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
                 numberTotal = numberTotal.add(number);
             }
-        }
 
-        if(numberTotal.compareTo(BigDecimal.ZERO)>0){
-            for(Map prr : productReturnRateList){
-                String numberStr = (String)prr.get("number");
-                BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
-                prr.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
+            if(numberTotal.compareTo(BigDecimal.ZERO)>0){
+                for(Map prr : productReturnRateList){
+                    String numberStr = (String)prr.get("number");
+                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+                    prr.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
+                }
             }
-        }else{
-            return new ArrayList<>();
         }
 
-        return productReturnRateList;
+        return productReturnRateList!=null?productReturnRateList:new ArrayList();
     }
 
     private List<Map> getSalesVolumeNumberByProduct(PageData pd, String type) {
@@ -410,25 +404,24 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 volumeTotal = volumeTotal.add(volume);
                 numberTotal = numberTotal.add(number);
             }
+
+
+            if(volumeTotal.compareTo(BigDecimal.ZERO)>0&&"volume".equals(type)){
+                for(Map vnp : salesVolumeNumberByProductList){
+                    String volumeStr = (String)vnp.get("volume");
+                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+                    vnp.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
+                }
+            }else if(numberTotal.compareTo(BigDecimal.ZERO)>0&&"number".equals(type)){
+                for(Map vnp : salesVolumeNumberByProductList){
+                    String numberStr = (String)vnp.get("number");
+                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+                    vnp.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
+                }
+            }
         }
 
-        if(volumeTotal.compareTo(BigDecimal.ZERO)>0&&"volume".equals(type)){
-            for(Map vnp : salesVolumeNumberByProductList){
-                String volumeStr = (String)vnp.get("volume");
-                BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
-                vnp.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
-            }
-        }else if(numberTotal.compareTo(BigDecimal.ZERO)>0&&"number".equals(type)){
-            for(Map vnp : salesVolumeNumberByProductList){
-                String numberStr = (String)vnp.get("number");
-                BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
-                vnp.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
-            }
-        }else{
-            return new ArrayList<>();
-        }
-
-        return salesVolumeNumberByProductList;
+        return  salesVolumeNumberByProductList!=null?salesVolumeNumberByProductList:new ArrayList();
 
     }
 
@@ -447,7 +440,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     private Map getSalesOrderNumber(PageData pd) {
         List<Map>  result = saleAnalysisMapper.getSalesOrderNumber(pd);
         if(result!=null&&result.size()>0){
-            return result.get(0);
+            return result.get(0)!=null?result.get(0):new HashMap();
         }else{
             return new HashMap();
         }
@@ -456,7 +449,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     private Map getSalesVolumeNumber(PageData pd) {
         List<Map>  result = saleAnalysisMapper.getSalesVolumeNumber(pd);
         if(result!=null&&result.size()>0){
-            return result.get(0);
+            return result.get(0)!=null?result.get(0):new HashMap();
         }else{
             return new HashMap();
         }
