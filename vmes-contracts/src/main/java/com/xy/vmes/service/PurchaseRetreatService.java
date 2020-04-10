@@ -101,49 +101,49 @@ public interface PurchaseRetreatService {
     List<PurchaseRetreat> findPurchaseRetreatList(PageData object) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * 修改订单明细和订单
-     * 修改采购订单明细-变更订单明细(订购数量,货品金额)
-     *
-     * @param valueMap 入口参数
-     * 参数说明:
-     * Map<String, Object>
-     *   retreatId:          退货单id
-     *   realityTotal:       退货金额
-     *   orderDtlRetreatMap: 采购订单明细退货信息
-     *   orderDtlList:       采购订单明细
-     */
-    void updatePurchaseOrder(Map<String, Object> valueMap) throws Exception;
+//    /**
+//     * 修改订单明细和订单
+//     * 修改采购订单明细-变更订单明细(订购数量,货品金额)
+//     *
+//     * @param valueMap 入口参数
+//     * 参数说明:
+//     * Map<String, Object>
+//     *   retreatId:          退货单id
+//     *   realityTotal:       退货金额
+//     *   orderDtlRetreatMap: 采购订单明细退货信息
+//     *   orderDtlList:       采购订单明细
+//     */
+//    void updatePurchaseOrder(Map<String, Object> valueMap) throws Exception;
 
-    /**
-     * 创建(负值)的付款单
-     *
-     * @param realityTotal 金额
-     * @param supplierId   供应商id
-     * @param companyId    企业id
-     * @param orderId      采购订单id
-     * @param cuser        用户id
-     */
-    void createPurchasePaymentByMinus(BigDecimal realityTotal,
-                                      String supplierId,
-                                      String companyId,
-                                      String orderId,
-                                      String cuser) throws Exception;
+//    /**
+//     * 创建(负值)的付款单
+//     *
+//     * @param realityTotal 金额
+//     * @param supplierId   供应商id
+//     * @param companyId    企业id
+//     * @param orderId      采购订单id
+//     * @param cuser        用户id
+//     */
+//    void createPurchasePaymentByMinus(BigDecimal realityTotal,
+//                                      String supplierId,
+//                                      String companyId,
+//                                      String orderId,
+//                                      String cuser) throws Exception;
 
-    /**
-     * 创建(正值)的付款单
-     *
-     * @param realityTotal 金额
-     * @param supplierId   供应商id
-     * @param companyId    企业id
-     * @param orderId      采购订单id
-     * @param cuser        用户id
-     */
-    void createPurchasePaymentByPlus(BigDecimal realityTotal,
-                                     String supplierId,
-                                     String companyId,
-                                     String orderId,
-                                     String cuser) throws Exception;
+//    /**
+//     * 创建(正值)的付款单
+//     *
+//     * @param realityTotal 金额
+//     * @param supplierId   供应商id
+//     * @param companyId    企业id
+//     * @param orderId      采购订单id
+//     * @param cuser        用户id
+//     */
+//    void createPurchasePaymentByPlus(BigDecimal realityTotal,
+//                                     String supplierId,
+//                                     String companyId,
+//                                     String orderId,
+//                                     String cuser) throws Exception;
 
     /**
      * 生成采购退货单-采购质量检验(退货)
