@@ -329,15 +329,14 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 newReceiveMap.put("name",receiveMap.get("name"));
                 newReceiveMap.put("endPlus",receiveMap.get("endPlus"));
                 newReceiveMap.put("proportion","0.00");
-                String endPlusStr = receiveMap.get("endPlus")!=null?(String)receiveMap.get("endPlus"):"0.00";
-                endPlusTotal = endPlusTotal.add(BigDecimal.valueOf(Double.parseDouble(endPlusStr)));
+                BigDecimal endPlus = receiveMap.get("endPlus")!=null?(BigDecimal)receiveMap.get("endPlus"):BigDecimal.ZERO;
+                endPlusTotal = endPlusTotal.add(endPlus);
 
                 result.add(newReceiveMap);
             }
 
             for(Map elem : result){
-                String endPlusStr = (String)elem.get("endPlus");
-                BigDecimal endPlus = BigDecimal.valueOf(Double.parseDouble(endPlusStr));
+                BigDecimal endPlus = elem.get("endPlus")!=null?(BigDecimal)elem.get("endPlus"):BigDecimal.ZERO;
                 elem.put("proportion",endPlus.divide(endPlusTotal,2,BigDecimal.ROUND_HALF_UP));
             }
         }
@@ -352,15 +351,15 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
         BigDecimal volumeTotal = BigDecimal.ZERO;
         if(salesVolumeByCustomerList!=null&&salesVolumeByCustomerList.size()>0){
             for(Map svbc : salesVolumeByCustomerList){
-                String volumeStr = (String)svbc.get("volume");
-                BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+                BigDecimal volume = svbc.get("volume")!=null?(BigDecimal)svbc.get("volume"):BigDecimal.ZERO;
                 volumeTotal = volumeTotal.add(volume);
             }
 
             if(volumeTotal.compareTo(BigDecimal.ZERO)>0){
                 for(Map svbc : salesVolumeByCustomerList){
-                    String volumeStr = (String)svbc.get("volume");
-                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+//                    String volumeStr = (String)svbc.get("volume");
+//                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+                    BigDecimal volume = svbc.get("volume")!=null?(BigDecimal)svbc.get("volume"):BigDecimal.ZERO;
                     svbc.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
@@ -374,15 +373,17 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
         BigDecimal numberTotal = BigDecimal.ZERO;
         if(productReturnRateList!=null&&productReturnRateList.size()>0){
             for(Map prr : productReturnRateList){
-                String numberStr = (String)prr.get("number");
-                BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+//                String numberStr = (String)prr.get("number");
+//                BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+                BigDecimal number = prr.get("number")!=null?(BigDecimal)prr.get("number"):BigDecimal.ZERO;
                 numberTotal = numberTotal.add(number);
             }
 
             if(numberTotal.compareTo(BigDecimal.ZERO)>0){
                 for(Map prr : productReturnRateList){
-                    String numberStr = (String)prr.get("number");
-                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+//                    String numberStr = (String)prr.get("number");
+//                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+                    BigDecimal number = prr.get("number")!=null?(BigDecimal)prr.get("number"):BigDecimal.ZERO;
                     prr.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
@@ -397,10 +398,12 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
         BigDecimal numberTotal = BigDecimal.ZERO;
         if(salesVolumeNumberByProductList!=null&&salesVolumeNumberByProductList.size()>0){
             for(Map vnp : salesVolumeNumberByProductList){
-                String volumeStr = (String)vnp.get("volume");
-                String numberStr = (String)vnp.get("number");
-                BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
-                BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+//                String volumeStr = (String)vnp.get("volume");
+//                String numberStr = (String)vnp.get("number");
+//                BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+//                BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+                BigDecimal number = vnp.get("number")!=null?(BigDecimal)vnp.get("number"):BigDecimal.ZERO;
+                BigDecimal volume = vnp.get("volume")!=null?(BigDecimal)vnp.get("volume"):BigDecimal.ZERO;
                 volumeTotal = volumeTotal.add(volume);
                 numberTotal = numberTotal.add(number);
             }
@@ -408,14 +411,16 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
 
             if(volumeTotal.compareTo(BigDecimal.ZERO)>0&&"volume".equals(type)){
                 for(Map vnp : salesVolumeNumberByProductList){
-                    String volumeStr = (String)vnp.get("volume");
-                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+//                    String volumeStr = (String)vnp.get("volume");
+//                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
+                    BigDecimal volume = vnp.get("volume")!=null?(BigDecimal)vnp.get("volume"):BigDecimal.ZERO;
                     vnp.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }else if(numberTotal.compareTo(BigDecimal.ZERO)>0&&"number".equals(type)){
                 for(Map vnp : salesVolumeNumberByProductList){
-                    String numberStr = (String)vnp.get("number");
-                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+//                    String numberStr = (String)vnp.get("number");
+//                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
+                    BigDecimal number = vnp.get("number")!=null?(BigDecimal)vnp.get("number"):BigDecimal.ZERO;
                     vnp.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
