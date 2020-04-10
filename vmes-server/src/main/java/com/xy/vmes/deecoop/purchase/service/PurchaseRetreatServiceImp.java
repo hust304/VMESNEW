@@ -394,6 +394,9 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
         addRetreat.setType(Common.DICTIONARY_MAP.get("retreatQualityByPurchase"));
         //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
         addRetreat.setState("3");
+        //退货完成日期 retreatDate
+        addRetreat.setRetreatDate(new Date());
+
         addRetreat.setTotalSum(BigDecimal.valueOf(0D));
         addRetreat.setRealityTotal(BigDecimal.valueOf(0D));
         addRetreat.setAuditId(Common.SYS_COMPANYAPPLICATION_ADMIN_USER_ID);
