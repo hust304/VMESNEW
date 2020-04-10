@@ -260,17 +260,18 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
             if (mapData.get("defaultBeginValue") != null) {
                 defaultBeginValue = (BigDecimal)mapData.get("defaultBeginValue");
             }
+
             if (defaultBeginValue.doubleValue() != -1) {
                 beginValue = defaultBeginValue;
-            }
-
-            //historyBeginValue 期初值(上期期末)
-            BigDecimal historyBeginValue = BigDecimal.valueOf(-1);
-            if (mapData.get("historyBeginValue") != null) {
-                historyBeginValue = (BigDecimal)mapData.get("historyBeginValue");
-            }
-            if (historyBeginValue.doubleValue() != -1) {
-                beginValue = historyBeginValue;
+            } else if (defaultBeginValue.doubleValue() == -1) {
+                //historyBeginValue 期初值(上期期末)
+                BigDecimal historyBeginValue = BigDecimal.valueOf(-1);
+                if (mapData.get("historyBeginValue") != null) {
+                    historyBeginValue = (BigDecimal)mapData.get("historyBeginValue");
+                }
+                if (historyBeginValue.doubleValue() != -1) {
+                    beginValue = historyBeginValue;
+                }
             }
 
             //四舍五入到2位小数

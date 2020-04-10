@@ -44,9 +44,9 @@
             customer.name supplierName,
 
             <!--期初:默认值 -->
-            round(ifnull(beginDefault.begin_value,0), -1) defaultBeginValue,
+            round(ifnull(beginDefault.begin_value,-1), 2) defaultBeginValue,
             <!--期初值:上期期末 -->
-            round(ifnull(beginHistory.end_value,0), -1) historyBeginValue,
+            round(ifnull(beginHistory.end_value,-1), 2) historyBeginValue,
 
             <!--nowPlus:发生额:  -->
             round(ifnull(nowBill.nowPlus,0),2) nowPlus,

@@ -1,19 +1,16 @@
 package com.xy.vmes.deecoop.finance.service;
 
-
 import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.deecoop.finance.dao.FinanceBaseMapper;
-import com.xy.vmes.entity.FinanceBase;
-import com.xy.vmes.entity.FinancePeriod;
-import com.xy.vmes.entity.SaleOrderDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.FinanceBaseService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.FinancePeriodService;
+import com.xy.vmes.service.PurchaseCompanyPeriodService;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -42,6 +39,9 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
     private FinancePeriodService financePeriodService;
     @Autowired
     private FinanceBaseMapper financeBaseMapper;
+
+    @Autowired
+    private PurchaseCompanyPeriodService purchaseCompanyPeriodService;
     @Autowired
     private ColumnService columnService;
     /**
@@ -388,13 +388,43 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
         Date currentDate = new Date();
         String priod = sdf.format(currentDate);
         FinanceBase financeBase = (FinanceBase)HttpUtils.pageData2Entity(pd, new FinanceBase());
+
+        String cuser = pd.getString("cuser");
         String currentCompanyId = pd.getString("currentCompanyId");
         financeBase.setCompanyId(currentCompanyId);
         financeBase.setPeriod(priod);
         financeBase.setPeriodDate(currentDate);
 
         this.setFinanceBaseValue(pd,financeBase,model);
-        this.saveFinancePeriod(financeBase);
+
+        //type:类型(0:应收:销售 1:应付:采购)
+        PurchaseCompanyPeriod purchaseCompanyPeriodDB = null;
+        if ("0".equals(financeBase.getType())) {
+            this.saveFinancePeriod(financeBase);
+        } else if ("1".equals(financeBase.getType())) {
+            purchaseCompanyPeriodDB = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(currentCompanyId);
+            if (purchaseCompanyPeriodDB == null) {
+                PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
+                addCompanyPeriod.setCompanyId(currentCompanyId);
+                addCompanyPeriod.setCuser(cuser);
+                addCompanyPeriod.setUuser(cuser);
+
+                //系统时间(yyyymm)
+                String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+                Date sysPeriodDate = DateFormat.dateString2Date(sysMonthStr+"01", "yyyyMMdd");
+
+                addCompanyPeriod.setInitialPeriod(sysMonthStr);
+                addCompanyPeriod.setInitialPeriodDate(sysPeriodDate);
+
+                addCompanyPeriod.setPaymentPeriod(sysMonthStr);
+                addCompanyPeriod.setPaymentPeriodDate(sysPeriodDate);
+                purchaseCompanyPeriodService.save(addCompanyPeriod);
+                purchaseCompanyPeriodDB = addCompanyPeriod;
+            }
+        }
+        financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
+        financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+
         this.save(financeBase);
 
         return model;
@@ -455,7 +485,6 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
 
     }
 
-
     @Override
     public ResultModel eidtFinanceBase(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
@@ -463,12 +492,43 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
         Date currentDate = new Date();
         String priod = sdf.format(currentDate);
         FinanceBase financeBase = (FinanceBase)HttpUtils.pageData2Entity(pd, new FinanceBase());
+
+        String cuser = pd.getString("cuser");
         String currentCompanyId = pd.getString("currentCompanyId");
+
         financeBase.setCompanyId(currentCompanyId);
         financeBase.setPeriod(priod);
         financeBase.setPeriodDate(currentDate);
         this.setFinanceBaseValue(pd,financeBase,model);
-        this.saveFinancePeriod(financeBase);
+
+        //type:类型(0:应收:销售 1:应付:采购)
+        PurchaseCompanyPeriod purchaseCompanyPeriodDB = null;
+        if ("0".equals(financeBase.getType())) {
+            this.saveFinancePeriod(financeBase);
+        } else if ("1".equals(financeBase.getType())) {
+            purchaseCompanyPeriodDB = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(currentCompanyId);
+            if (purchaseCompanyPeriodDB == null) {
+                PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
+                addCompanyPeriod.setCompanyId(currentCompanyId);
+                addCompanyPeriod.setCuser(cuser);
+                addCompanyPeriod.setUuser(cuser);
+
+                //系统时间(yyyymm)
+                String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+                Date sysPeriodDate = DateFormat.dateString2Date(sysMonthStr+"01", "yyyyMMdd");
+
+                addCompanyPeriod.setInitialPeriod(sysMonthStr);
+                addCompanyPeriod.setInitialPeriodDate(sysPeriodDate);
+
+                addCompanyPeriod.setPaymentPeriod(sysMonthStr);
+                addCompanyPeriod.setPaymentPeriodDate(sysPeriodDate);
+                purchaseCompanyPeriodService.save(addCompanyPeriod);
+                purchaseCompanyPeriodDB = addCompanyPeriod;
+            }
+        }
+        financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
+        financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+
         this.update(financeBase);
         return model;
     }
@@ -568,10 +628,36 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
             model.putMsg("Json字符串-转换成List错误！");
             return model;
         }
+
+        String cuser = pd.getString("cuser");
         String currentCompanyId = pd.getString("currentCompanyId");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
         Date currentDate = new Date();
         String priod = sdf.format(currentDate);
+
+        //type:类型(0:应收:销售 1:应付:采购)
+        PurchaseCompanyPeriod purchaseCompanyPeriodDB = null;
+        if ("1" == type) {
+            purchaseCompanyPeriodDB = purchaseCompanyPeriodService.findPurchaseCompanyPeriodByCompanyId(currentCompanyId);
+            if (purchaseCompanyPeriodDB == null) {
+                PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
+                addCompanyPeriod.setCompanyId(currentCompanyId);
+                addCompanyPeriod.setCuser(cuser);
+                addCompanyPeriod.setUuser(cuser);
+
+                //系统时间(yyyymm)
+                String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+                Date sysPeriodDate = DateFormat.dateString2Date(sysMonthStr+"01", "yyyyMMdd");
+
+                addCompanyPeriod.setInitialPeriod(sysMonthStr);
+                addCompanyPeriod.setInitialPeriodDate(sysPeriodDate);
+
+                addCompanyPeriod.setPaymentPeriod(sysMonthStr);
+                addCompanyPeriod.setPaymentPeriodDate(sysPeriodDate);
+                purchaseCompanyPeriodService.save(addCompanyPeriod);
+                purchaseCompanyPeriodDB = addCompanyPeriod;
+            }
+        }
 
         for (Map<String, String> mapObject : mapList) {
             FinanceBase financeBase = (FinanceBase) HttpUtils.pageData2Entity(mapObject, new FinanceBase());
@@ -588,7 +674,14 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
                     financeBase.setPeriod(priod);
                     financeBase.setPeriodDate(currentDate);
                     if(StringUtils.isEmpty(financeBase.getId())){
-                        this.saveFinancePeriod(financeBase);
+                        //type:类型(0:应收:销售 1:应付:采购)
+                        if ("0" == type) {
+                            this.saveFinancePeriod(financeBase);
+                        } else if ("1" == type && purchaseCompanyPeriodDB != null) {
+                            financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
+                            financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+                        }
+
                         this.save(financeBase);
                     }else{
                         this.update(financeBase);
