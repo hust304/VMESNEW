@@ -391,7 +391,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 prr.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
             }
         }else{
-            return null;
+            return new ArrayList<>();
         }
 
         return productReturnRateList;
@@ -425,7 +425,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 vnp.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
             }
         }else{
-            return null;
+            return new ArrayList<>();
         }
 
         return salesVolumeNumberByProductList;
@@ -449,7 +449,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
         if(result!=null&&result.size()>0){
             return result.get(0);
         }else{
-            return null;
+            return new HashMap();
         }
     }
 
@@ -458,7 +458,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
         if(result!=null&&result.size()>0){
             return result.get(0);
         }else{
-            return null;
+            return new HashMap();
         }
     }
 }
