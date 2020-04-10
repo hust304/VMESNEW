@@ -600,21 +600,26 @@ public class PurchaseRetreatController {
         //获取退货单表对象-根据退货单id查询(vmes_purchase_retreat)
         PurchaseRetreat retreat = purchaseRetreatService.findPurchaseRetreatById(retreatId);
 
-        //生成(vmes_finance_bill)付款单
-        BigDecimal retreatSum = BigDecimal.valueOf(0D);
-        if (retreat != null && retreat.getTotalSum() != null) {
-            retreatSum = retreat.getTotalSum();
+        //type:退货类型-(字典表-vmes_dictionary.id)
+        //f69839bbf2394846a65894f0da120df9 退货退款:retreatRefund
+        //c90c2081328c427e8d65014d98335601 退货换货:retreatChange
+        if (Common.DICTIONARY_MAP.get("retreatRefund").equals(retreat.getType())) {
+            //生成(vmes_finance_bill)付款单
+            BigDecimal retreatSum = BigDecimal.valueOf(0D);
+            if (retreat != null && retreat.getTotalSum() != null) {
+                retreatSum = retreat.getTotalSum();
+            }
+            String remark = "退货单号："+retreat.getSysCode();
+            financeBillService.addFinanceBillBySys(retreat.getId(),
+                    companyId,
+                    supplierId,
+                    cuser,
+                    //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
+                    "9",
+                    null,
+                    retreatSum,
+                    remark);
         }
-        String remark = "退货单号："+retreat.getSysCode();
-        financeBillService.addFinanceBillBySys(retreat.getId(),
-                companyId,
-                supplierId,
-                cuser,
-                //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
-                "9",
-                null,
-                retreatSum,
-                remark);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseRetreat/auditPassPurchaseRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
