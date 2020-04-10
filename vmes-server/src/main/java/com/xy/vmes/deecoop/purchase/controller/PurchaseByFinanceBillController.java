@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -592,6 +593,8 @@ public class PurchaseByFinanceBillController {
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //删除(企业id,付款期间)采购财务结账历史(vmes_finance_history)
+        financeHistoryService.deleteFinanceHistoryByPurchase(companyId, queryPeriod);
         Map<String, String> periodMap = purchaseByFinanceBillService.findQueryPeriodMap(queryPeriod);
         if (periodMap != null && periodMap.size() > 0) {
             pageData.put("period", periodMap.get("period"));
@@ -610,6 +613,12 @@ public class PurchaseByFinanceBillController {
             }
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //删除(企业id,付款期间)采购付款结账当前期间(vmes_purchase_company_period)
+        Map<String, String> columnMap = new HashMap<>();
+        columnMap.put("company_id", companyId);
+        columnMap.put("payment_period", queryPeriod);
+        purchaseCompanyPeriodService.deleteByColumnMap(columnMap);
+
         //更新当前期间(vmes_purchase_company_period:采购应付期间表)
         if (companyPeriodDB == null) {
             PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
@@ -627,16 +636,6 @@ public class PurchaseByFinanceBillController {
             addCompanyPeriod.setPaymentPeriodDate(queryPeriodDate);
 
             purchaseCompanyPeriodService.save(addCompanyPeriod);
-        } else if (companyPeriodDB != null) {
-            PurchaseCompanyPeriod editCompanyPeriod = new PurchaseCompanyPeriod();
-            editCompanyPeriod.setId(companyPeriodDB.getId());
-
-            //queryPeriod 查询付款期(yyyyMM)
-            Date queryPeriodDate = DateFormat.dateString2Date(queryPeriod+"01", "yyyyMMdd");
-            editCompanyPeriod.setPaymentPeriod(queryPeriod);
-            editCompanyPeriod.setPaymentPeriodDate(queryPeriodDate);
-
-            purchaseCompanyPeriodService.update(editCompanyPeriod);
         }
 
         Long endTime = System.currentTimeMillis();
@@ -679,6 +678,15 @@ public class PurchaseByFinanceBillController {
         String frontPaymentPeriodStr = DateFormat.getAddDay(queryPeriod, DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
         Date frontPaymentPeriodDate = DateFormat.dateString2Date(frontPaymentPeriodStr+"01", "yyyyMMdd");
 
+        //删除(企业id,付款期间)采购财务结账历史(vmes_finance_history)
+        financeHistoryService.deleteFinanceHistoryByPurchase(companyId, frontPaymentPeriodStr);
+
+        //删除(企业id,付款期间)采购付款结账当前期间(vmes_purchase_company_period)
+        Map<String, String> columnMap = new HashMap<>();
+        columnMap.put("company_id", companyId);
+        columnMap.put("payment_period", frontPaymentPeriodStr);
+        purchaseCompanyPeriodService.deleteByColumnMap(columnMap);
+
         //更新当前期间(vmes_purchase_company_period:采购应付期间表)
         if (companyPeriodDB == null) {
             PurchaseCompanyPeriod addCompanyPeriod = new PurchaseCompanyPeriod();
@@ -693,14 +701,6 @@ public class PurchaseByFinanceBillController {
             addCompanyPeriod.setPaymentPeriodDate(frontPaymentPeriodDate);
 
             purchaseCompanyPeriodService.save(addCompanyPeriod);
-        } else if (companyPeriodDB != null) {
-            PurchaseCompanyPeriod editCompanyPeriod = new PurchaseCompanyPeriod();
-            editCompanyPeriod.setId(companyPeriodDB.getId());
-
-            editCompanyPeriod.setPaymentPeriod(frontPaymentPeriodStr);
-            editCompanyPeriod.setPaymentPeriodDate(frontPaymentPeriodDate);
-
-            purchaseCompanyPeriodService.update(editCompanyPeriod);
         }
 
         Long endTime = System.currentTimeMillis();

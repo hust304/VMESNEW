@@ -379,6 +379,13 @@ public class FinanceHistoryServiceImp implements FinanceHistoryService {
     public void deleteFinanceHistory(PageData pd) throws Exception {
         financeHistoryMapper.deleteFinanceHistory(pd);
     }
+
+    public void deleteFinanceHistoryByPurchase(String companyId, String period) throws Exception {
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("period", period);
+        financeHistoryMapper.deleteFinanceHistoryByPurchase(findMap);
+    }
 }
 
 

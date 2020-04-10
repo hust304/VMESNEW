@@ -329,12 +329,35 @@
     </select>
 
 
-
-    <delete id="deleteFinanceHistory"  parameterType="com.yvan.PageData" >
+    <!--删除:销售相关财务结账历史表-->
+    <delete id="deleteFinanceHistory" parameterType="com.yvan.PageData" >
         delete from
         vmes_finance_history
-        where
-        period = #{period} and company_id = #{companyId}
+        <where>
+            and company_id = #{companyId}
+            and period = #{period}
+            and customer_id in (
+                <!--销售:客户属性:(customerGenre:customer):df7cb67fca4148bc9632c908e4a7fdea-->
+                select id
+                from vmes_customer
+                where genre = 'df7cb67fca4148bc9632c908e4a7fdea'
+            )
+        </where>
+    </delete>
+
+    <!--删除:采购相关财务结账历史表-->
+    <delete id="deleteFinanceHistoryByPurchase" parameterType="com.yvan.PageData" >
+        delete from vmes_finance_history
+        <where>
+            and company_id = #{companyId}
+            and period = #{period}
+            and customer_id in (
+                <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                select id
+                from vmes_customer
+                where genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            )
+        </where>
     </delete>
 
 

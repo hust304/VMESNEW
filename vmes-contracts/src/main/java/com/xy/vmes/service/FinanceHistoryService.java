@@ -1,6 +1,5 @@
 package com.xy.vmes.service;
 
-
 import com.xy.vmes.entity.FinanceHistory;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
@@ -157,6 +156,7 @@ public interface FinanceHistoryService {
     ResultModel importExcelFinanceHistorys(MultipartFile file) throws Exception;
 
     void deleteFinanceHistory(PageData pageData) throws Exception;
+    void deleteFinanceHistoryByPurchase(String companyId, String period) throws Exception;
 }
 
 
