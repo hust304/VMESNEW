@@ -5,14 +5,18 @@ import com.xy.vmes.service.SaleDeliverService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Created by 46368 on 2020/4/8.
  */
+@RestController
+@Slf4j
 public class SaleAnalysisController {
     private Logger logger = LoggerFactory.getLogger(SaleDeliverController.class);
 
