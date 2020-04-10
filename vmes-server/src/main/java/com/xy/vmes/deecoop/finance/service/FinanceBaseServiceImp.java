@@ -422,8 +422,11 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
                 purchaseCompanyPeriodDB = addCompanyPeriod;
             }
         }
-        financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
-        financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+
+        if (purchaseCompanyPeriodDB != null) {
+            financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
+            financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+        }
 
         this.save(financeBase);
 
@@ -526,8 +529,11 @@ public class FinanceBaseServiceImp implements FinanceBaseService {
                 purchaseCompanyPeriodDB = addCompanyPeriod;
             }
         }
-        financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
-        financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+
+        if (purchaseCompanyPeriodDB != null) {
+            financeBase.setPeriod(purchaseCompanyPeriodDB.getPaymentPeriod());
+            financeBase.setPeriodDate(purchaseCompanyPeriodDB.getPaymentPeriodDate());
+        }
 
         this.update(financeBase);
         return model;
