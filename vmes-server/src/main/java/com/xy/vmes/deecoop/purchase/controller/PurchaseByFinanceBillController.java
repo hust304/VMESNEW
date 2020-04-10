@@ -110,6 +110,7 @@ public class PurchaseByFinanceBillController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String userId = pageData.getString("cuser");
         String id = pageData.getString("id");
         if (id == null || id.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -121,6 +122,12 @@ public class PurchaseByFinanceBillController {
         editFinanceBill.setId(id);
         //状态(0：待提交 1：待审核 2：已审核 -1：已取消)
         editFinanceBill.setState("2");
+
+        //suser:审核用户id
+        editFinanceBill.setSuser(userId);
+        //sdate:审核时间
+        editFinanceBill.setSdate(new Date());
+
         financeBillService.update(editFinanceBill);
 
         Long endTime = System.currentTimeMillis();
