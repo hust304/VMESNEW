@@ -335,10 +335,13 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 result.add(newReceiveMap);
             }
 
-            for(Map elem : result){
-                BigDecimal endPlus = elem.get("endPlus")!=null?(BigDecimal)elem.get("endPlus"):BigDecimal.ZERO;
-                elem.put("proportion",endPlus.divide(endPlusTotal,2,BigDecimal.ROUND_HALF_UP));
+            if(endPlusTotal.compareTo(BigDecimal.ZERO)>0){
+                for(Map elem : result){
+                    BigDecimal endPlus = elem.get("endPlus")!=null?(BigDecimal)elem.get("endPlus"):BigDecimal.ZERO;
+                    elem.put("proportion",endPlus.divide(endPlusTotal,2,BigDecimal.ROUND_HALF_UP));
+                }
             }
+
         }
 
         model.putResult(result);
