@@ -241,6 +241,27 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
                         BigDecimal occurAmount = BigDecimal.valueOf(amount.doubleValue() * -1);
                         mapObject.put("occurAmount", occurAmount);
                     }
+                } else if ("bill".equals(queryType)) {
+                    //paymentAmount 付款金额
+                    Double paymentAmountDouble = Double.valueOf(0D);
+                    if (mapObject.get("paymentAmount") != null) {
+                        paymentAmountDouble = (Double)mapObject.get("paymentAmount");
+                    }
+
+                    BigDecimal paymentAmount = BigDecimal.valueOf(paymentAmountDouble.doubleValue());
+                    //四舍五入到2位小数
+                    paymentAmount = paymentAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    mapObject.put("paymentAmount", paymentAmount);
+
+                    //occurAmount 本期发生
+                    Double occurAmountDouble = Double.valueOf(0D);
+                    if (mapObject.get("occurAmount") != null) {
+                        occurAmountDouble = (Double)mapObject.get("occurAmount");
+                    }
+                    BigDecimal occurAmount = BigDecimal.valueOf(occurAmountDouble.doubleValue());
+                    //四舍五入到2位小数
+                    occurAmount = occurAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    mapObject.put("occurAmount", occurAmount);
                 }
             }
         }
