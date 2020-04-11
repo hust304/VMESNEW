@@ -215,6 +215,27 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         }
 
         List<Map> varList = this.findFinanceBillDetailByPurchase(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //queryType:history
+                String queryType = (String)mapObject.get("queryType");
+                if ("history".equals(queryType)) {
+                    //amount 库存数量
+                    BigDecimal amount = BigDecimal.valueOf(0D);
+                    if (mapObject.get("amount") != null) {
+                        amount = (BigDecimal)mapObject.get("amount");
+                    }
+                    //四舍五入到2位小数
+                    amount = amount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                    if (amount.doubleValue() >= 0) {
+                        mapObject.put("paymentAmount", amount);
+                    } else if (amount.doubleValue() < 0) {
+                        BigDecimal occurAmount = BigDecimal.valueOf(amount.doubleValue() * -1);
+                    }
+                }
+            }
+        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
