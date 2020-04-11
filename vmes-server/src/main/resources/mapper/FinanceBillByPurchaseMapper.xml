@@ -222,7 +222,7 @@
                 '' type,
                 '上期结转' typeName,
 
-                round(ifnull(begin_value,0),2) amount,
+                round(ifnull(end_value,0),2) amount,
                 '' paymentAmount,
                 '' occurAmount,
                 'history' queryType,
@@ -236,8 +236,8 @@
                 <if test='customerId != null and customerId != ""'>
                     and history.customer_id = #{customerId}
                 </if>
-                <if test='period != null and period != ""'>
-                    and history.period = #{period}
+                <if test='forePeriod != null and forePeriod != ""'>
+                    and history.period = #{forePeriod}
                 </if>
                 <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
                 <if test="'supplier' == customerGenre">
