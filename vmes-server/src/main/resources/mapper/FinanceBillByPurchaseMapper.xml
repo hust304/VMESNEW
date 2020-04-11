@@ -198,92 +198,108 @@
     </insert>
     <select id="findFinanceBillDetailByPurchase" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            md5(uuid()) id,
-            DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
-            '' code,
-            history.company_id companyId,
-            history.customer_id customerId,
-            history.period,
-            '' type,
-            '上期结转' typeName,
+            tab.id,
+            tab.cdate,
+            tab.code,
+            tab.companyId,
+            tab.customerId,
+            tab.period,
+            tab.type,
+            tab.typeName,
+            tab.amount,
+            tab.paymentAmount,
+            tab.occurAmount,
+            tab.queryType,
+            tab.queryIndex
+        from (
+            select
+                md5(uuid()) id,
+                DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
+                '' code,
+                history.company_id companyId,
+                history.customer_id customerId,
+                history.period,
+                '' type,
+                '上期结转' typeName,
 
-            round(ifnull(begin_value,0),2) amount,
-            '' paymentAmount,
-            '' occurAmount,
-            'history' queryType
-        from vmes_finance_history history
-            left join vmes_customer customer on history.customer_id = customer.id
-        <where>
-            <if test='companyId != null and companyId != ""'>
-                and history.company_id = #{companyId}
-            </if>
-            <if test='customerId != null and customerId != ""'>
-                and history.customer_id = #{customerId}
-            </if>
-            <if test='period != null and period != ""'>
-                and history.period = #{period}
-            </if>
-            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
-            <if test="'supplier' == customerGenre">
-                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
-            </if>
-        </where>
+                round(ifnull(begin_value,0),2) amount,
+                '' paymentAmount,
+                '' occurAmount,
+                'history' queryType,
+                '1' queryIndex
+            from vmes_finance_history history
+                left join vmes_customer customer on history.customer_id = customer.id
+            <where>
+                <if test='companyId != null and companyId != ""'>
+                    and history.company_id = #{companyId}
+                </if>
+                <if test='customerId != null and customerId != ""'>
+                    and history.customer_id = #{customerId}
+                </if>
+                <if test='period != null and period != ""'>
+                    and history.period = #{period}
+                </if>
+                <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                <if test="'supplier' == customerGenre">
+                    and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                </if>
+            </where>
 
-        union all
+            union all
 
-        select
-            md5(uuid()) id,
-            DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
-            bill.code,
-            bill.company_id companyId,
-            bill.customer_id customerId,
-            bill.period,
-            bill.type,
-            case
+            select
+                md5(uuid()) id,
+                DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
+                bill.code,
+                bill.company_id companyId,
+                bill.customer_id customerId,
+                bill.period,
+                bill.type,
+                case
                 when bill.type='1' then '付款单'
                 when bill.type='6' then '收货账单'
                 when bill.type='7' then '扣款单'
                 when bill.type='9' then '退款单'
-            else null
-            end typeName,
+                else null
+                end typeName,
 
-            round(ifnull(bill.amount,0),2) amount,
-            case
-              when bill.type in ('1') then round(ifnull(bill.amount,0),2)
-            else null
-            end paymentAmount,
+                round(ifnull(bill.amount,0),2) amount,
+                case
+                when bill.type in ('1') then round(ifnull(bill.amount,0),2)
+                else null
+                end paymentAmount,
 
-            case
+                case
                 when bill.type in ('6') then round(ifnull(bill.amount,0),2)
                 when bill.type in ('7','9') then round(ifnull(bill.amount,0),2) * -1
-            else null
-            end occurAmount,
-            'bill' queryType
+                else null
+                end occurAmount,
+                'bill' queryType,
+                '2' queryIndex
+            from vmes_finance_bill bill
+                left join vmes_customer customer on bill.customer_id = customer.id
+            <where>
+                <if test='companyId != null and companyId != ""'>
+                    and bill.company_id = #{companyId}
+                </if>
+                <if test='customerId != null and customerId != ""'>
+                    and bill.customer_id = #{customerId}
+                </if>
+                <if test='period != null and period != ""'>
+                    and bill.period = #{period}
+                </if>
 
-        from vmes_finance_bill bill
-        left join vmes_customer customer on bill.customer_id = customer.id
-        <where>
-            <if test='companyId != null and companyId != ""'>
-                and bill.company_id = #{companyId}
-            </if>
-            <if test='customerId != null and customerId != ""'>
-                and bill.customer_id = #{customerId}
-            </if>
-            <if test='period != null and period != ""'>
-                and bill.period = #{period}
-            </if>
-
-            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
-            <if test="'supplier' == customerGenre">
-                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
-                <!--type:单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))-->
-                <!--type:单据类型 ( 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购))-->
-                and bill.type in ('1','6','7','9')
-            </if>
-            and bill.state = '2'
-        </where>
-        order by bill.cdate asc
-
+                <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+                <if test="'supplier' == customerGenre">
+                    and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+                    <!--type:单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))-->
+                    <!--type:单据类型 ( 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购))-->
+                    and bill.type in ('1','6','7','9')
+                </if>
+                and bill.state = '2'
+            </where>
+        ) tab
+        order by tab.queryIndex asc, tab.cdate asc
     </select>
 
 </mapper>
