@@ -430,6 +430,10 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     quality = mapObject.get("quality").toString().trim();
                 }
 
+                //qualityTypeName 检验方式 (1:全检 2:抽检)
+                if ("1".equals(quality)) {
+                    mapObject.put("qualityTypeName", "免检");
+                }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //signInParentId  合格入库单id
                 //signInCode 合格入库单号
