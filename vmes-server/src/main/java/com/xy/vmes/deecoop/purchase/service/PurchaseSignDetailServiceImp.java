@@ -63,7 +63,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
     @Autowired
     private SystemToolService systemToolService;
     @Autowired
-    private FinanceBillService financeBillService;
+    private PurchaseByFinanceBillService purchaseByFinanceBillService;
 
     /**
      * 创建人：陈刚 自动创建，禁止修改
@@ -774,15 +774,19 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
             //生成采购付款单(vmes_finance_bill)
-            financeBillService.addFinanceBillBySys(editSignDetail.getId(),
+            //采购签收单号
+            String signCode = objectMap.get("signCode");
+            purchaseByFinanceBillService.addFinanceBillByPurchase(editSignDetail.getId(),
                     companyId,
                     supplierId,
                     cuser,
                     //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                     "6",
+                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "2",
                     null,
                     amount,
-                    "");
+                    signCode);
 
             //采购签收单id
             String parentId = objectMap.get("parentId");
@@ -1250,17 +1254,20 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         }
 
         String supplierId = (String)signDetailMap.get("supplierId");
+
         //生成采购(vmes_finance_bill)付款单
-        //String remark = "签收单号："+saleDeliver.getDeliverCode();
-        financeBillService.addFinanceBillBySys(editSignDetail.getId(),
+        String signCode = (String)signDetailMap.get("signCode");
+        purchaseByFinanceBillService.addFinanceBillByPurchase(editSignDetail.getId(),
                 companyId,
                 supplierId,
                 cuser,
                 //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                 "6",
+                //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                "2",
                 null,
                 amount,
-                "");
+                signCode);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //修改采购订单

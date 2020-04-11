@@ -108,6 +108,7 @@
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'signInCode', '合格入库单', 48, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'qualityTypeValue', '检验方式Value', 49, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'price', '单价', 50, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseSignDetail', 'signCode', '签收单号', 51, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -252,6 +253,9 @@
             prodUnitPrice.p2n_is_scale p2nIsScale,
             prodUnitPrice.p2n_decimal_count p2nDecimalCount,
 
+            <!--关联采购签收订单-->
+            sign.sys_code signCode,
+
             <!--关联采购订单-->
             orderDtl.parent_id orderId,
             purchaseOrder.supplier_id supplierId,
@@ -273,6 +277,7 @@
             '' signInCode,
             '' qualityTypeValue
         from vmes_purchase_sign_detail detail
+            left join vmes_purchase_sign sign on detail.parent_id = sign.id
             left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
             left join vmes_product product on detail.product_id = product.id
             left join vmes_dictionary genre on product.genre = genre.id

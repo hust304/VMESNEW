@@ -47,13 +47,8 @@ public class PurchaseSignController {
     @Autowired
     private PurchasePlanDetailService planDetailService;
 
-//    @Autowired
-//    private QualityService qualityService;
-//    @Autowired
-//    private PurchaseQualityDetailService purchaseQualityDetailService;
-
     @Autowired
-    private FinanceBillService financeBillService;
+    private PurchaseByFinanceBillService purchaseByFinanceBillService;
 
     @Autowired
     private WarehouseInService inService;
@@ -417,15 +412,17 @@ public class PurchaseSignController {
             //四舍五入到2位小数
             amountSum = amountSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             //生成采购付款单(vmes_finance_bill)
-            financeBillService.addFinanceBillBySys(addSign.getId(),
+            purchaseByFinanceBillService.addFinanceBillByPurchase(addSign.getId(),
                     companyId,
                     supplierId,
                     cuser,
                     //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                     "6",
+                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "2",
                     null,
                     amountSum,
-                    "");
+                    addSign.getSysCode());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

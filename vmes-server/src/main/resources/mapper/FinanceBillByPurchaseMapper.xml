@@ -195,6 +195,7 @@
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','occurAmount','本期发生',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','queryType','查询类型',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','cdate','创建日期',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','remark','备注',12, '1','1','1','0',now(), 'admin'),
     </insert>
     <select id="findFinanceBillDetailByPurchase" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
@@ -209,6 +210,7 @@
             round(ifnull(tab.amount,0),2) amount,
             round(ifnull(tab.paymentAmount,0),2) paymentAmount,
             round(ifnull(tab.occurAmount,0),2) occurAmount,
+            tab.remark,
             tab.queryType,
             tab.queryIndex
         from (
@@ -225,6 +227,7 @@
                 history.end_value amount,
                 '' paymentAmount,
                 '' occurAmount,
+                '' remark,
                 'history' queryType,
                 '1' queryIndex
             from vmes_finance_history history
@@ -274,6 +277,7 @@
                 when bill.type in ('7','9') then bill.amount * -1
                 else null
                 end occurAmount,
+                bill.remark,
                 'bill' queryType,
                 '2' queryIndex
             from vmes_finance_bill bill
