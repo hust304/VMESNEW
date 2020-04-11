@@ -199,6 +199,40 @@
     <select id="findFinanceBillDetailByPurchase" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             md5(uuid()) id,
+            DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
+            '' code,
+            history.company_id companyId,
+            history.customer_id customerId,
+            history.period,
+            '' type,
+            '上期结转' typeName,
+
+            round(ifnull(begin_value,0),2) amount,
+            '' paymentAmount,
+            '' occurAmount,
+            'history' queryType
+        from vmes_finance_history history
+            left join vmes_customer customer on history.customer_id = customer.id
+        <where>
+            <if test='companyId != null and companyId != ""'>
+                and history.company_id = #{companyId}
+            </if>
+            <if test='customerId != null and customerId != ""'>
+                and history.customer_id = #{customerId}
+            </if>
+            <if test='period != null and period != ""'>
+                and history.period = #{period}
+            </if>
+            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
+            <if test="'supplier' == customerGenre">
+                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
+            </if>
+        </where>
+
+        union all
+
+        select
+            md5(uuid()) id,
             DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
             bill.code,
             bill.company_id companyId,
@@ -248,40 +282,7 @@
             </if>
             and bill.state = '2'
         </where>
-
-        union all
-
-        select
-            md5(uuid()) id,
-            DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
-            '' code,
-            history.company_id companyId,
-            history.customer_id customerId,
-            history.period,
-            '' type,
-            '上期结转' typeName,
-
-            round(ifnull(begin_value,0),2) amount,
-            '' paymentAmount,
-            '' occurAmount,
-            'history' queryType
-        from vmes_finance_history history
-            left join vmes_customer customer on history.customer_id = customer.id
-        <where>
-            <if test='companyId != null and companyId != ""'>
-                and history.company_id = #{companyId}
-            </if>
-            <if test='customerId != null and customerId != ""'>
-                and history.customer_id = #{customerId}
-            </if>
-            <if test='period != null and period != ""'>
-                and history.period = #{period}
-            </if>
-            <!--采购:供应商属性:(customerGenre:supplier):49c0a7ebcb4c4175bd5195837a6a9a13-->
-            <if test="'supplier' == customerGenre">
-                and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
-            </if>
-        </where>
+        order by bill.cdate asc
 
     </select>
 
