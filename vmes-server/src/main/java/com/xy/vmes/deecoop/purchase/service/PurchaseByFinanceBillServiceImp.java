@@ -214,6 +214,13 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
             result.put("pageData", pg);
         }
 
+        String period = pd.getString("period");
+        Map<String, String> periodMap = this.findQueryPeriodMap(period);
+        if (periodMap != null && periodMap.size() > 0) {
+            pd.put("period", periodMap.get("period"));
+            pd.put("forePeriod", periodMap.get("forePeriod"));
+        }
+
         List<Map> varList = this.findFinanceBillDetailByPurchase(pd, pg);
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> mapObject : varList) {
@@ -226,12 +233,13 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
                         amount = (BigDecimal)mapObject.get("amount");
                     }
                     //四舍五入到2位小数
-                    amount = amount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                    amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
                     if (amount.doubleValue() >= 0) {
                         mapObject.put("paymentAmount", amount);
                     } else if (amount.doubleValue() < 0) {
                         BigDecimal occurAmount = BigDecimal.valueOf(amount.doubleValue() * -1);
+                        mapObject.put("occurAmount", occurAmount);
                     }
                 }
             }

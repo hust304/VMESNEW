@@ -206,9 +206,9 @@
             tab.period,
             tab.type,
             tab.typeName,
-            tab.amount,
-            tab.paymentAmount,
-            tab.occurAmount,
+            round(ifnull(tab.amount,0),2) amount,
+            round(ifnull(tab.paymentAmount,0),2) paymentAmount,
+            round(ifnull(tab.occurAmount,0),2) occurAmount,
             tab.queryType,
             tab.queryIndex
         from (
@@ -222,7 +222,7 @@
                 '' type,
                 '上期结转' typeName,
 
-                round(ifnull(end_value,0),2) amount,
+                history.end_value amount,
                 '' paymentAmount,
                 '' occurAmount,
                 'history' queryType,
@@ -263,15 +263,15 @@
                 else null
                 end typeName,
 
-                round(ifnull(bill.amount,0),2) amount,
+                bill.amount amount,
                 case
-                when bill.type in ('1') then round(ifnull(bill.amount,0),2)
+                when bill.type in ('1') then bill.amount
                 else null
                 end paymentAmount,
 
                 case
-                when bill.type in ('6') then round(ifnull(bill.amount,0),2)
-                when bill.type in ('7','9') then round(ifnull(bill.amount,0),2) * -1
+                when bill.type in ('6') then bill.amount
+                when bill.type in ('7','9') then bill.amount * -1
                 else null
                 end occurAmount,
                 'bill' queryType,
