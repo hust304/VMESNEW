@@ -38,7 +38,7 @@ public class PurchaseRetreatController {
     private WarehouseOutCreateService warehouseOutCreateService;
 
     @Autowired
-    private FinanceBillService financeBillService;
+    private PurchaseByFinanceBillService purchaseByFinanceBillService;
     @Autowired
     private RoleMenuService roleMenuService;
 
@@ -609,16 +609,18 @@ public class PurchaseRetreatController {
             if (retreat != null && retreat.getTotalSum() != null) {
                 retreatSum = retreat.getTotalSum();
             }
-            String remark = "退货单号："+retreat.getSysCode();
-            financeBillService.addFinanceBillBySys(retreat.getId(),
+            String retreatCode = retreat.getSysCode();
+            purchaseByFinanceBillService.addFinanceBillByPurchase(retreat.getId(),
                     companyId,
                     supplierId,
                     cuser,
                     //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
                     "9",
+                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "2",
                     null,
                     retreatSum,
-                    remark);
+                    retreatCode);
         }
 
         Long endTime = System.currentTimeMillis();
