@@ -240,15 +240,15 @@ public class PurchaseByFinanceBillController {
     }
 
     /**
-     * 添加(采购)FinanceBill
+     * 批量添加-(采购)付款FinanceBill
      * @author 陈刚
      * @date 2020-04-01
      * @throws Exception
      */
-    @PostMapping("/purchase/purchasePayment/addFinanceBillByPurchase")
+    @PostMapping("/purchase/purchasePayment/addBatchFinanceBillByPurchase")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel addFinanceBillByPurchase() throws Exception {
-        logger.info("################/purchase/purchasePayment/addFinanceBillByPurchase 执行开始 ################# ");
+    public ResultModel addBatchFinanceBillByPurchase() throws Exception {
+        logger.info("################/purchase/purchasePayment/addBatchFinanceBillByPurchase 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -328,7 +328,7 @@ public class PurchaseByFinanceBillController {
         }
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/purchase/purchasePayment/addFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/purchase/purchasePayment/addBatchFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
@@ -481,11 +481,11 @@ public class PurchaseByFinanceBillController {
         return model;
     }
 
-    //(添加,修改)扣款单:质量-采购检验
-    @PostMapping("/purchase/purchasePayment/editFinanceBillByPurchase")
+    //(添加)扣款单:质量-采购检验
+    @PostMapping("/purchase/purchasePayment/addFinanceBillByPurchase")
     @Transactional(rollbackFor=Exception.class)
-    public ResultModel editFinanceBillByPurchase() throws Exception {
-        logger.info("################/purchase/purchasePayment/editFinanceBillByPurchase ################# ");
+    public ResultModel addFinanceBillByPurchase() throws Exception {
+        logger.info("################/purchase/purchasePayment/addFinanceBillByPurchase ################# ");
         Long startTime = System.currentTimeMillis();
 
         ResultModel model = new ResultModel();
@@ -526,11 +526,8 @@ public class PurchaseByFinanceBillController {
         //四舍五入到2位小数
         amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
-        String remark = new String();
-        if (pageData.getString("remark") != null && pageData.getString("remark").trim().length() > 0) {
-            remark = pageData.getString("remark").trim();
-        }
-
+        //sysCode 签收单号
+        String sysCode = pageData.getString("amount");
         purchaseByFinanceBillService.addFinanceBillByPurchase(signId,
                 companyId,
                 supplierId,
@@ -541,10 +538,10 @@ public class PurchaseByFinanceBillController {
                 "1",
                 null,
                 amount,
-                remark);
+                sysCode);
 
         Long endTime = System.currentTimeMillis();
-        logger.info("################/purchase/purchasePayment/editFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/purchase/purchasePayment/addFinanceBillByPurchase 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
