@@ -201,6 +201,7 @@
         select
             tab.id,
             tab.cdate,
+            tab.queryDate,
             tab.code,
             tab.companyId,
             tab.customerId,
@@ -217,6 +218,7 @@
             select
                 md5(uuid()) id,
                 DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
+                history.cdate queryDate,
                 '' code,
                 history.company_id companyId,
                 history.customer_id customerId,
@@ -253,6 +255,7 @@
             select
                 md5(uuid()) id,
                 DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
+                bill.cdate queryDate,
                 bill.code,
                 bill.company_id companyId,
                 bill.customer_id customerId,
@@ -303,7 +306,7 @@
                 and bill.state = '2'
             </where>
         ) tab
-        order by tab.queryIndex asc, tab.cdate asc
+        order by tab.queryIndex asc, tab.queryDate desc
     </select>
 
 </mapper>
