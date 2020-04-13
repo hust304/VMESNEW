@@ -512,7 +512,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         String planId = pd.getString("planId");
         if (planId == null || planId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
-            model.putMsg("生产计划id为空或空字符串！");
+            model.putMsg("采购计划id为空或空字符串！");
             return model;
         }
 
@@ -530,7 +530,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             return model;
         }
 
-        //1. 修改生产计划
+        //1. 修改采购计划
         PurchasePlan editPlan = new PurchasePlan();
         editPlan.setId(planId);
 
@@ -551,13 +551,19 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
         this.update(editPlan);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
-        //Date sysDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
-        Map<String, List<Map<String, String>>> valueMap = this.findAddEditMap(jsonMapList);
+        //采购计划明细修改: 先删除后添加方式
 
-        //界面添加行数据
-        List<Map<String, String>> addMapList = valueMap.get("addList");
-        for (Map<String, String> mapObject : addMapList) {
+        //(plan_id:采购计划ID) 删除 vmes_purchase_plan_detail_child:采购划明细子表
+        Map columnMap = new HashMap();
+        columnMap.put("plan_id", planId);
+        purchasePlanDetailChildService.deleteByColumnMap(columnMap);
+
+        //(parent_id:采购计划ID) 删除 vmes_purchase_plan_detail:采购计划明细
+        columnMap.clear();
+        columnMap.put("parent_id", planId);
+        purchasePlanDetailService.deleteByColumnMap(columnMap);
+
+        for (Map<String, String> mapObject : jsonMapList) {
             PurchasePlanDetail addPlanDtl = new PurchasePlanDetail();
             addPlanDtl.setParentId(editPlan.getId());
             addPlanDtl.setCuser(cuser);
@@ -606,6 +612,7 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             //四舍五入到2位小数
             count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             addPlanDtl.setCount(count);
+            purchasePlanDetailService.save(addPlanDtl);
 
             //采购计划明细子表对象
             String jsonStr = mapObject.get("jsonStr");
@@ -649,126 +656,6 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //界面修改行数据
-        List<Map<String, String>> editMapList = valueMap.get("editList");
-        for (Map<String, String> mapObject : editMapList) {
-            PurchasePlanDetail editPlanDtl = new PurchasePlanDetail();
-
-            //planDtlId 采购计划明细id
-            String planDtlId = mapObject.get("planDtlId");
-            editPlanDtl.setId(planDtlId);
-
-            //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-            editPlanDtl.setState("0");
-            if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-                editPlanDtl.setState("1");
-            }
-
-            BigDecimal count = BigDecimal.valueOf(0D);
-            String countStr = mapObject.get("count");
-            if (countStr != null && countStr.trim().length() > 0) {
-                try {
-                    count = new BigDecimal(countStr);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            //四舍五入到2位小数
-            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            editPlanDtl.setCount(count);
-
-            editPlanDtl.setEdate(null);
-            String edate_dtl_Str = mapObject.get("edate");
-            if (edate_dtl_Str != null && edate_dtl_Str.trim().length() > 0) {
-                Date edate_dtl = DateFormat.dateString2Date(edate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
-                editPlanDtl.setEdate(edate_dtl);
-            }
-
-            //reason:采购原因(字典表-vmes_dictionary.id)
-            String reason = new String();
-            if (mapObject.get("reason") != null && mapObject.get("reason").trim().length() > 0) {
-                reason = mapObject.get("reason");
-            }
-            editPlanDtl.setReason(reason);
-
-            //remark:备注
-            String remark_dtl = new String();
-            if (mapObject.get("remark") != null ) {
-                remark_dtl = mapObject.get("remark").trim();
-            }
-            editPlanDtl.setRemark(remark_dtl);
-
-            purchasePlanDetailService.update(editPlanDtl);
-
-            //生产计划明细子表对象
-            String jsonStr = mapObject.get("jsonStr");
-            if (jsonStr != null && jsonStr.trim().length() > 0) {
-                Map columnMap = new HashMap();
-                columnMap.put("plan_dtl_id", planDtlId);
-                purchasePlanDetailChildService.deleteByColumnMap(columnMap);
-
-                //界面点击(按货品合并)按钮
-                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
-                if (childMapList != null && childMapList.size() > 0) {
-                    for (Map<String, String> childMap : childMapList) {
-                        PurchasePlanDetailChild addDtlChile = new PurchasePlanDetailChild();
-                        addDtlChile.setCuser(cuser);
-                        addDtlChile.setPlanId(editPlan.getId());
-                        addDtlChile.setPlanDtlId(editPlanDtl.getId());
-
-                        addDtlChile.setProductId(editPlanDtl.getProductId());
-                        addDtlChile.setUnitId(editPlanDtl.getUnitId());
-
-                        //orderDtlId 销售订单明细id
-                        String orderDtlId = childMap.get("orderDtlId");
-                        addDtlChile.setSaleOrderDtlId(orderDtlId);
-
-                        purchasePlanDetailChildService.save(addDtlChile);
-                    }
-                }
-            }
-        }
-
-        //deleteIds 采购计划明细id字符串
-        String deleteIds = new String();
-        if (pd.getString("deleteIds") != null) {
-            deleteIds = pd.getString("deleteIds").trim();
-        }
-
-        String[] planDtlArry = deleteIds.split(",");
-        for (String planDtlId : planDtlArry) {
-            if (planDtlId != null && planDtlId.trim().length() > 0) {
-                //删除采购计划明细子表
-                Map columnMap = new HashMap();
-                columnMap.put("plan_dtl_id", planDtlId);
-                purchasePlanDetailChildService.deleteByColumnMap(columnMap);
-
-                //删除采购计划明细表
-                purchasePlanDetailService.deleteById(planDtlId);
-            }
-        }
-
-//        Map columnMap = new HashMap();
-//        columnMap.put("parent_id",purchasePlan.getId());
-//        purchasePlanDetailService.deleteByColumnMap(columnMap);
-//
-//        if(mapList!=null&&mapList.size()>0){
-//            for(int i=0;i<mapList.size();i++){
-//                Map<String, String> detailMap = mapList.get(i);
-//                PurchasePlanDetail purchasePlanDetail = (PurchasePlanDetail) HttpUtils.pageData2Entity(detailMap, new PurchasePlanDetail());
-//                purchasePlanDetail.setParentId(purchasePlan.getId());
-//                //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-//                //purchasePlanDetail.setState("0");
-//                if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
-//                    purchasePlanDetail.setState("1");
-//                }
-//
-//                purchasePlanDetail.setCuser(purchasePlan.getCuser());
-//                purchasePlanDetail.setUuser(purchasePlan.getUuser());
-//                purchasePlanDetailService.save(purchasePlanDetail);
-//            }
-//        }
         return model;
     }
 
@@ -1029,29 +916,29 @@ public class PurchasePlanServiceImp implements PurchasePlanService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private Map<String, List<Map<String, String>>> findAddEditMap(List<Map<String, String>> jsonMapList) {
-        Map<String, List<Map<String, String>>> valueMap = new HashMap<>();
-
-        List<Map<String, String>> addMapList = new ArrayList<>();
-        List<Map<String, String>> editMapList = new ArrayList<>();
-        //遍历 jsonMapList 添加生产计划明细
-        if (jsonMapList != null && jsonMapList.size() > 0) {
-            for (Map<String, String> mapObject : jsonMapList) {
-                //operType 操作类型(add:添加, edit:修改)
-                String operType = mapObject.get("operType");
-
-                if ("add".equals(operType)) {
-                    addMapList.add(mapObject);
-                } else if ("edit".equals(operType)) {
-                    editMapList.add(mapObject);
-                }
-            }
-        }
-
-        valueMap.put("addList", addMapList);
-        valueMap.put("editList", editMapList);
-        return valueMap;
-    }
+//    private Map<String, List<Map<String, String>>> findAddEditMap(List<Map<String, String>> jsonMapList) {
+//        Map<String, List<Map<String, String>>> valueMap = new HashMap<>();
+//
+//        List<Map<String, String>> addMapList = new ArrayList<>();
+//        List<Map<String, String>> editMapList = new ArrayList<>();
+//        //遍历 jsonMapList 添加采购计划明细
+//        if (jsonMapList != null && jsonMapList.size() > 0) {
+//            for (Map<String, String> mapObject : jsonMapList) {
+//                //operType 操作类型(add:添加, edit:修改)
+//                String operType = mapObject.get("operType");
+//
+//                if ("add".equals(operType)) {
+//                    addMapList.add(mapObject);
+//                } else if ("edit".equals(operType)) {
+//                    editMapList.add(mapObject);
+//                }
+//            }
+//        }
+//
+//        valueMap.put("addList", addMapList);
+//        valueMap.put("editList", editMapList);
+//        return valueMap;
+//    }
 }
 
 

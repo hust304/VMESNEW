@@ -389,6 +389,9 @@
                     <if test="pid != null and pid!=''" >
                         and pid = #{pid}
                     </if>
+                    <if test="inIds != null and inIds != ''" >
+                        and id in (${inIds})
+                    </if>
                     <if test="idNotin != null and idNotin!=''" >
                         and id not in (${idNotin})
                     </if>

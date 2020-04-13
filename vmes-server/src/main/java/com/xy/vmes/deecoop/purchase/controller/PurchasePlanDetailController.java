@@ -1,6 +1,9 @@
 package com.xy.vmes.deecoop.purchase.controller;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.Dictionary;
+import com.xy.vmes.service.DictionaryService;
 import com.xy.vmes.service.PurchasePlanDetailService;
 import com.xy.vmes.entity.PurchasePlanDetail;
 
@@ -22,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.*;
 
-
 /**
 * 说明：vmes_purchase_plan_detail:采购计划Controller
 * @author 刘威 自动生成
@@ -38,6 +40,9 @@ public class PurchasePlanDetailController {
 
     @Autowired
     private SaleOrderDetailService orderDetailService;
+
+    @Autowired
+    private DictionaryService dictionaryService;
 
     /**
     * @author 刘威 自动创建，禁止修改
@@ -193,15 +198,18 @@ public class PurchasePlanDetailController {
             String jsonStr = this.findJsonStringByMapList(mapTempList);
             productMap.put("jsonStr", jsonStr);
 
-            //获取(销售订单编号;订单最小约定交期)
+            //获取(销售订单编号;最大期望到货时间)
             Map<String, String> valueMap = this.findOrderCodeByMapList(mapTempList);
             //mapKey:orderCodes:销售订单编号
             String orderCodes = valueMap.get("orderCodes");
             productMap.put("orderCode", orderCodes);
 
-//            //mapKey:minExpectDate:订单最小约定交期
-//            String minExpectDate = valueMap.get("minExpectDate");
-//            productMap.put("expectDate", minExpectDate);
+            //mapKey:maxDate:最大期望到货时间(yyyy-MM-dd)
+            String maxDate = valueMap.get("maxDate");
+            productMap.put("edate", maxDate);
+
+            productMap.put("reasonId", valueMap.get("reasonId"));
+            productMap.put("reason", valueMap.get("reason"));
 
             mergeProductMapList.add(productMap);
         }
@@ -378,11 +386,11 @@ public class PurchasePlanDetailController {
     }
 
     /**
-     * 获取(销售订单编号;订单最小约定交期)
+     * 获取(销售订单编号;最大期望到货时间)
      * 返回值:Map<String, String>
      *     mapKey:
      *         orderCodes:    销售订单编号
-     *         minExpectDate: 订单最小约定交期(yyyy-MM-dd)
+     *         maxDate:       最大期望到货时间(yyyy-MM-dd)
      *
      * @param mapList
      * @return
@@ -421,7 +429,6 @@ public class PurchasePlanDetailController {
             }
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         //遍历orderDetailMap<销售订单明细id, 销售订单明细id> 并查询销售订单明细
         StringBuffer orderDtlIdBuf = new StringBuffer();
         if (orderDetailMap != null) {
@@ -434,7 +441,6 @@ public class PurchasePlanDetailController {
         }
 
         StringBuffer orderCodeBuf = new StringBuffer();
-        //long minExpectDateLong = -1;
         if (orderDtlIdBuf != null && orderDtlIdBuf.toString().trim().length() > 0) {
             String orderDtlIds = StringUtil.stringTrimSpace(orderDtlIdBuf.toString().trim());
             orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
@@ -452,23 +458,6 @@ public class PurchasePlanDetailController {
                     }
                 }
             }
-
-//            //获取(订单最小约定交期)expectDate(yyyy-MM-dd)
-//            if (tableMapList != null && tableMapList.size() > 0) {
-//                for (int i = 0; i < tableMapList.size(); i++) {
-//                    Map<String, Object> mapData = tableMapList.get(i);
-//
-//                    String expectDateStr = (String)mapData.get("expectDate");
-//                    Date expectDate = DateFormat.dateString2Date(expectDateStr, DateFormat.DEFAULT_DATE_FORMAT);
-//                    long expectL = expectDate.getTime();
-//
-//                    if (i == 0) {
-//                        minExpectDateLong = expectL;
-//                    } else if (i > 0) {
-//                        if (expectL < minExpectDateLong) {minExpectDateLong = expectL;}
-//                    }
-//                }
-//            }
         }
 
         String orderCodes = new String();
@@ -477,12 +466,79 @@ public class PurchasePlanDetailController {
         }
         valueMap.put("orderCodes", orderCodes);
 
-//        String expectDateStr = new String();
-//        if (minExpectDateLong != -1) {
-//            Date expectDate = new Date(minExpectDateLong);
-//            expectDateStr = DateFormat.date2String(expectDate, DateFormat.DEFAULT_DATE_FORMAT);
-//        }
-//        valueMap.put("minExpectDate", expectDateStr);
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //获取 最大期望到货时间
+        long maxDateLong = -1;
+        StringBuffer dictionaryIds = new StringBuffer();
+        if (mapList != null && mapList.size() > 0) {
+            for (int i = 0; i < mapList.size(); i++) {
+                Map<String, String> mapData = mapList.get(i);
+
+                String edateStr = mapData.get("edate");
+                Date edate = DateFormat.dateString2Date(edateStr, DateFormat.DEFAULT_DATE_FORMAT);
+                long edateL = edate.getTime();
+
+                if (i == 0) {
+                    maxDateLong = edateL;
+                } else if (i > 0) {
+                    if (edateL > maxDateLong) {maxDateLong = edateL;}
+                }
+
+                //reason:采购原因
+                String reasonId = mapData.get("reasonId");
+                if (reasonId != null && reasonId.trim().length() > 0) {
+                    dictionaryIds.append(reasonId.trim()).append(",");
+                }
+            }
+        }
+
+        String edateStr = new String();
+        if (maxDateLong != -1) {
+            Date edate = new Date(maxDateLong);
+            edateStr = DateFormat.date2String(edate, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        valueMap.put("maxDate", edateStr);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //372b0432c06e4792b00b03b8fb5be190 常规补货
+        valueMap.put("reasonId", "372b0432c06e4792b00b03b8fb5be190");
+        valueMap.put("reason", "常规补货");
+
+        if (dictionaryIds != null && dictionaryIds.toString().trim().length() > 0) {
+            String inIds = dictionaryIds.toString().trim();
+            inIds = StringUtil.stringTrimSpace(inIds);
+            inIds = "'" + inIds.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("inIds", inIds);
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+
+            Integer maxNumber = -1;
+            Map<Integer, Dictionary> dictionaryMap = new HashMap<>();
+            List<Dictionary> dictionaryList = dictionaryService.findDictionaryList(findMap);
+            if (dictionaryList != null && dictionaryList.size() > 0) {
+                for (int i = 0; i < dictionaryList.size(); i++) {
+                    Dictionary dictionary = dictionaryList.get(i);
+                    Integer serialNumber = dictionary.getSerialNumber();
+                    dictionaryMap.put(serialNumber, dictionary);
+
+                    if (i == 0) {
+                        maxNumber = serialNumber;
+                    } else if (i > 0) {
+                        if (serialNumber > maxNumber) {
+                            maxNumber = serialNumber;
+                        }
+                    }
+                }
+            }
+
+            if (dictionaryMap.get(maxNumber) != null) {
+                Dictionary dictionary = dictionaryMap.get(maxNumber);
+                valueMap.put("reasonId", dictionary.getId());
+                valueMap.put("reason", dictionary.getName());
+            }
+        }
+
 
         return valueMap;
     }
