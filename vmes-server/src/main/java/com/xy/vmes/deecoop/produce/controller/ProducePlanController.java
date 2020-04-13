@@ -522,12 +522,20 @@ public class ProducePlanController {
 
         producePlanService.update(editPlan);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Map<String, List<Map<String, String>>> valueMap = this.findAddEditMap(jsonMapList);
+        //生产计划明细修改: 先删除后添加方式
+
+        //(plan_id:采购计划ID) 删除 vmes_produce_plan_detail_child:生产计划明细子表
+        Map columnMap = new HashMap();
+        columnMap.put("plan_id", planId);
+        producePlanDetailChildService.deleteByColumnMap(columnMap);
+
+        //(parent_id:采购计划ID) 删除 vmes_produce_plan_detail:生产计划明细
+        columnMap.clear();
+        columnMap.put("parent_id", planId);
+        producePlanDetailService.deleteByColumnMap(columnMap);
 
         //界面添加行数据
-        //List<ProducePlanDetailChild> dtlChildList = new ArrayList<>();
-        List<Map<String, String>> addMapList = valueMap.get("addList");
-        for (Map<String, String> mapObject : addMapList) {
+        for (Map<String, String> mapObject : jsonMapList) {
             ProducePlanDetail addPlanDtl = new ProducePlanDetail();
             addPlanDtl.setParentId(editPlan.getId());
             addPlanDtl.setCuser(cuser);
@@ -616,73 +624,73 @@ public class ProducePlanController {
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //界面修改行数据
-        List<Map<String, String>> editMapList = valueMap.get("editList");
-        for (Map<String, String> mapObject : editMapList) {
-            //planDtlId 生产计划明细id
-            String planDtlId = mapObject.get("planDtlId");
-
-            BigDecimal count = BigDecimal.valueOf(0D);
-            String countStr = mapObject.get("count");
-            if (countStr != null && countStr.trim().length() > 0) {
-                try {
-                    count = new BigDecimal(countStr);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            //四舍五入到2位小数
-            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-            ProducePlanDetail editPlanDtl = new ProducePlanDetail();
-            editPlanDtl.setId(planDtlId);
-            editPlanDtl.setCount(count);
-
-            Date beginDate_dtl = sysDate;
-            String beginDate_dtl_Str = mapObject.get("beginDate");
-            if (beginDate_dtl_Str != null && beginDate_dtl_Str.trim().length() > 0) {
-                beginDate_dtl = DateFormat.dateString2Date(beginDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
-            }
-            editPlanDtl.setBeginDate(beginDate_dtl);
-
-            Date endDate_dtl = sysDate;
-            String endDate_dtl_Str = mapObject.get("endDate");
-            if (endDate_dtl_Str != null && endDate_dtl_Str.trim().length() > 0) {
-                endDate_dtl = DateFormat.dateString2Date(endDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
-            }
-            editPlanDtl.setEndDate(endDate_dtl);
-
-            producePlanDetailService.update(editPlanDtl);
-
-            //生产计划明细子表对象
-            String jsonStr = mapObject.get("jsonStr");
-            if (jsonStr != null && jsonStr.trim().length() > 0) {
-                Map columnMap = new HashMap();
-                columnMap.put("plan_dtl_id", planDtlId);
-                producePlanDetailChildService.deleteByColumnMap(columnMap);
-
-                //界面点击(按货品合并)按钮
-                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
-                if (childMapList != null && childMapList.size() > 0) {
-                    for (Map<String, String> childMap : childMapList) {
-                        ProducePlanDetailChild addDtlChile = new ProducePlanDetailChild();
-                        addDtlChile.setCuser(cuser);
-                        addDtlChile.setPlanId(editPlan.getId());
-                        addDtlChile.setPlanDtlId(editPlanDtl.getId());
-
-                        addDtlChile.setProductId(editPlanDtl.getProductId());
-                        addDtlChile.setUnitId(editPlanDtl.getUnitId());
-
-                        //orderDtlId 销售订单明细id
-                        String orderDtlId = childMap.get("orderDtlId");
-                        addDtlChile.setSaleOrderDtlId(orderDtlId);
-
-                        producePlanDetailChildService.save(addDtlChile);
-                    }
-                }
-            }
-        }
+//        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        //界面修改行数据
+//        List<Map<String, String>> editMapList = valueMap.get("editList");
+//        for (Map<String, String> mapObject : editMapList) {
+//            //planDtlId 生产计划明细id
+//            String planDtlId = mapObject.get("planDtlId");
+//
+//            BigDecimal count = BigDecimal.valueOf(0D);
+//            String countStr = mapObject.get("count");
+//            if (countStr != null && countStr.trim().length() > 0) {
+//                try {
+//                    count = new BigDecimal(countStr);
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            //四舍五入到2位小数
+//            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//
+//            ProducePlanDetail editPlanDtl = new ProducePlanDetail();
+//            editPlanDtl.setId(planDtlId);
+//            editPlanDtl.setCount(count);
+//
+//            Date beginDate_dtl = sysDate;
+//            String beginDate_dtl_Str = mapObject.get("beginDate");
+//            if (beginDate_dtl_Str != null && beginDate_dtl_Str.trim().length() > 0) {
+//                beginDate_dtl = DateFormat.dateString2Date(beginDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+//            }
+//            editPlanDtl.setBeginDate(beginDate_dtl);
+//
+//            Date endDate_dtl = sysDate;
+//            String endDate_dtl_Str = mapObject.get("endDate");
+//            if (endDate_dtl_Str != null && endDate_dtl_Str.trim().length() > 0) {
+//                endDate_dtl = DateFormat.dateString2Date(endDate_dtl_Str, DateFormat.DEFAULT_DATE_FORMAT);
+//            }
+//            editPlanDtl.setEndDate(endDate_dtl);
+//
+//            producePlanDetailService.update(editPlanDtl);
+//
+//            //生产计划明细子表对象
+//            String jsonStr = mapObject.get("jsonStr");
+//            if (jsonStr != null && jsonStr.trim().length() > 0) {
+//                Map columnMap = new HashMap();
+//                columnMap.put("plan_dtl_id", planDtlId);
+//                producePlanDetailChildService.deleteByColumnMap(columnMap);
+//
+//                //界面点击(按货品合并)按钮
+//                List<Map<String, String>> childMapList = (List<Map<String, String>>) YvanUtil.jsonToList(jsonStr);
+//                if (childMapList != null && childMapList.size() > 0) {
+//                    for (Map<String, String> childMap : childMapList) {
+//                        ProducePlanDetailChild addDtlChile = new ProducePlanDetailChild();
+//                        addDtlChile.setCuser(cuser);
+//                        addDtlChile.setPlanId(editPlan.getId());
+//                        addDtlChile.setPlanDtlId(editPlanDtl.getId());
+//
+//                        addDtlChile.setProductId(editPlanDtl.getProductId());
+//                        addDtlChile.setUnitId(editPlanDtl.getUnitId());
+//
+//                        //orderDtlId 销售订单明细id
+//                        String orderDtlId = childMap.get("orderDtlId");
+//                        addDtlChile.setSaleOrderDtlId(orderDtlId);
+//
+//                        producePlanDetailChildService.save(addDtlChile);
+//                    }
+//                }
+//            }
+//        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/produce/producePlan/updateProducePlan 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -690,28 +698,28 @@ public class ProducePlanController {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private Map<String, List<Map<String, String>>> findAddEditMap(List<Map<String, String>> jsonMapList) {
-        Map<String, List<Map<String, String>>> valueMap = new HashMap<>();
-
-        List<Map<String, String>> addMapList = new ArrayList<>();
-        List<Map<String, String>> editMapList = new ArrayList<>();
-        //遍历 jsonMapList 添加生产计划明细
-        if (jsonMapList != null && jsonMapList.size() > 0) {
-            for (Map<String, String> mapObject : jsonMapList) {
-                //operType 操作类型(add:添加, edit:修改)
-                String operType = mapObject.get("operType");
-
-                if ("add".equals(operType)) {
-                    addMapList.add(mapObject);
-                } else if ("edit".equals(operType)) {
-                    editMapList.add(mapObject);
-                }
-            }
-        }
-
-        valueMap.put("addList", addMapList);
-        valueMap.put("editList", editMapList);
-        return valueMap;
-    }
+//    private Map<String, List<Map<String, String>>> findAddEditMap(List<Map<String, String>> jsonMapList) {
+//        Map<String, List<Map<String, String>>> valueMap = new HashMap<>();
+//
+//        List<Map<String, String>> addMapList = new ArrayList<>();
+//        List<Map<String, String>> editMapList = new ArrayList<>();
+//        //遍历 jsonMapList 添加生产计划明细
+//        if (jsonMapList != null && jsonMapList.size() > 0) {
+//            for (Map<String, String> mapObject : jsonMapList) {
+//                //operType 操作类型(add:添加, edit:修改)
+//                String operType = mapObject.get("operType");
+//
+//                if ("add".equals(operType)) {
+//                    addMapList.add(mapObject);
+//                } else if ("edit".equals(operType)) {
+//                    editMapList.add(mapObject);
+//                }
+//            }
+//        }
+//
+//        valueMap.put("addList", addMapList);
+//        valueMap.put("editList", editMapList);
+//        return valueMap;
+//    }
 }
 
