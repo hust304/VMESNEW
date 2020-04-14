@@ -318,8 +318,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     @Override
     public ResultModel accountsReceivableQuery(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        List<Map> result = new ArrayList<>();
+        List<Map> result = new LinkedList();
         pd.put("genre","df7cb67fca4148bc9632c908e4a7fdea");
+        pd.put("orderStr"," case when nowPlus-nowMinus+beginPlus-beginMinus>0 then round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2) else 0.00 end desc ");
         List<Map>  receiveMapList = financeBillService.getFinanceReceiveView(pd,null);
         if(receiveMapList!=null&&receiveMapList.size()>0){
             BigDecimal endPlusTotal = BigDecimal.ZERO;
@@ -338,7 +339,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             if(endPlusTotal.compareTo(BigDecimal.ZERO)>0){
                 for(Map elem : result){
                     BigDecimal endPlus = elem.get("endPlus")!=null?(BigDecimal)elem.get("endPlus"):BigDecimal.ZERO;
-                    elem.put("proportion",endPlus.divide(endPlusTotal,2,BigDecimal.ROUND_HALF_UP));
+                    elem.put("proportion",endPlus.multiply(BigDecimal.valueOf(100)).divide(endPlusTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
 
@@ -363,7 +364,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
 //                    String volumeStr = (String)svbc.get("volume");
 //                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
                     BigDecimal volume = svbc.get("volume")!=null?(BigDecimal)svbc.get("volume"):BigDecimal.ZERO;
-                    svbc.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
+                    svbc.put("proportion",volume.multiply(BigDecimal.valueOf(100)).divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
         }
@@ -387,7 +388,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
 //                    String numberStr = (String)prr.get("number");
 //                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
                     BigDecimal number = prr.get("number")!=null?(BigDecimal)prr.get("number"):BigDecimal.ZERO;
-                    prr.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
+                    prr.put("proportion",number.multiply(BigDecimal.valueOf(100)).divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
         }
@@ -417,14 +418,14 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
 //                    String volumeStr = (String)vnp.get("volume");
 //                    BigDecimal volume = BigDecimal.valueOf(Double.parseDouble(volumeStr));
                     BigDecimal volume = vnp.get("volume")!=null?(BigDecimal)vnp.get("volume"):BigDecimal.ZERO;
-                    vnp.put("proportion",volume.divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
+                    vnp.put("proportion",volume.multiply(BigDecimal.valueOf(100)).divide(volumeTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }else if(numberTotal.compareTo(BigDecimal.ZERO)>0&&"number".equals(type)){
                 for(Map vnp : salesVolumeNumberByProductList){
 //                    String numberStr = (String)vnp.get("number");
 //                    BigDecimal number = BigDecimal.valueOf(Double.parseDouble(numberStr));
                     BigDecimal number = vnp.get("number")!=null?(BigDecimal)vnp.get("number"):BigDecimal.ZERO;
-                    vnp.put("proportion",number.divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
+                    vnp.put("proportion",number.multiply(BigDecimal.valueOf(100)).divide(numberTotal,2,BigDecimal.ROUND_HALF_UP));
                 }
             }
         }

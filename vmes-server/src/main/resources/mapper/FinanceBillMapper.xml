@@ -730,7 +730,17 @@
           ) t
         group by t.id
         )tab
-        order by code asc
+
+
+        <choose>
+            <when  test='orderStr != null and orderStr != ""'>
+                order by ${orderStr}
+            </when>
+            <otherwise>
+                order by code asc
+            </otherwise>
+        </choose>
+
     </select>
 
 
