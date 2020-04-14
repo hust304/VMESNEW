@@ -61,6 +61,7 @@ public class PurchaseByFinanceBillController {
     }
 
     /**
+     * (采购-采购应付款-应付款查询) 列表查询
      * 采购应付 FinanceBill
      * @author 陈刚
      * @date 2020-04-01
@@ -74,6 +75,108 @@ public class PurchaseByFinanceBillController {
         ResultModel model = purchaseByFinanceBillService.listPageFinanceBillByPurchaseView(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchasePayment/listPageFinanceBillByPurchaseView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * (采购-采购应付款-应付款查询)-当前期间期末(应付款,预付款)合计
+     * 采购应付 FinanceBill
+     * @author 陈刚
+     * @date 2020-04-01
+     * @throws Exception
+     */
+    @PostMapping("/purchase/purchasePayment/findFinanceBillByPurchaseView")
+    public ResultModel findFinanceBillByPurchaseView() throws Exception {
+        logger.info("################/purchase/purchasePayment/findFinanceBillByPurchaseView 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = new ResultModel();
+
+        String companyId = pd.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+        pd.put("companyId", companyId);
+
+        //系统时间(yyyymm)
+        String sysMonthStr = DateFormat.date2String(new Date(), "yyyyMM");
+        //查询付款期
+        String queryPeriod = sysMonthStr;
+
+        //paymentPeriod:当前付款期(yyyymm)
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        PurchaseCompanyPeriod companyPeriod = purchaseCompanyPeriodService.findPurchaseCompanyPeriod(findMap);
+        if (companyPeriod != null && companyPeriod.getPaymentPeriod() != null) {
+            queryPeriod = companyPeriod.getPaymentPeriod();
+        }
+
+        //查询语句与(采购-采购应付款-应付款查询)模块查询相同
+        //FinanceBillByPurchaseMapper.findFinanceBillByPurchaseView
+        Map<String, String> periodMap = purchaseByFinanceBillService.findQueryPeriodMap(queryPeriod);
+        if (periodMap != null && periodMap.size() > 0) {
+            pd.put("period", periodMap.get("period"));
+            pd.put("forePeriod", periodMap.get("forePeriod"));
+        }
+
+        List<Map> varList = purchaseByFinanceBillService.findFinanceBillByPurchaseView(pd, null);
+        purchaseByFinanceBillService.modifyCheckOutFinanceBillByPurchase(varList, queryPeriod);
+
+        //当前期间期末(应付款,预付款)合计
+        //endPlusSum 应付款合计
+        BigDecimal endPlusSum = BigDecimal.valueOf(0D);
+        //endMinusSum 预付款合计
+        BigDecimal endMinusSum = BigDecimal.valueOf(0D);
+
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //endPlus 当前应付
+                BigDecimal endPlus = BigDecimal.valueOf(0D);
+                try {
+                    //转换字符串
+                    String endPlusStr = (String)mapObject.get("endPlus");
+                    try {
+                        endPlus = new BigDecimal(endPlusStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } catch (ClassCastException e) {
+                    //转换BigDecimal
+                    endPlus = (BigDecimal)mapObject.get("endPlus");
+                }
+                endPlusSum = BigDecimal.valueOf(endPlusSum.doubleValue() + endPlus.doubleValue());
+
+                //endMinus 当前预付
+                BigDecimal endMinus = BigDecimal.valueOf(0D);
+                try {
+                    //转换字符串
+                    String endMinusStr = (String)mapObject.get("endMinus");
+                    try {
+                        endMinus = new BigDecimal(endMinusStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } catch (ClassCastException e) {
+                    //转换BigDecimal
+                    endMinus = (BigDecimal)mapObject.get("endMinus");
+                }
+                endMinusSum = BigDecimal.valueOf(endMinusSum.doubleValue() + endMinus.doubleValue());
+            }
+        }
+
+        //endPlusSum 应付款合计 四舍五入到2位小数
+        endPlusSum = endPlusSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        model.put("endPlusSum", endPlusSum.toString());
+
+        //endMinusSum 预付款合计 四舍五入到2位小数
+        endMinusSum = endMinusSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        model.put("endMinusSum", endMinusSum.toString());
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/findFinanceBillByPurchaseView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

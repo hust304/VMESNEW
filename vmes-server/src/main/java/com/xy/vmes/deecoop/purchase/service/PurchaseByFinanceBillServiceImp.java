@@ -362,7 +362,9 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
                 mapData.put("endPlus", endValue);
                 mapData.put("endMinus", "0.00");
             } else if (endValue.doubleValue() < 0) {
-                mapData.put("endMinus", BigDecimal.valueOf(endValue.doubleValue() * -1));
+                BigDecimal endMinus = BigDecimal.valueOf(endValue.doubleValue() * -1);
+                endMinus = endMinus.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapData.put("endMinus", endMinus);
                 mapData.put("endPlus", "0.00");
             }
 
