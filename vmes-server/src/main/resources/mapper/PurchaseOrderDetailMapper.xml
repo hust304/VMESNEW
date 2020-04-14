@@ -174,7 +174,7 @@
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','price','单价',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','amount','采购金额',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','edate','期望到货时间',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'PurchaseOrderDetail','arriveCount','已签收数',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'PurchaseOrderDetail','arriveCount','已签收',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','adate','实际到货时间',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','reason','采购原因',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'PurchaseOrderDetail','reasonId','采购原因ID',15, '1','0','1','0',now(), 'admin'),
@@ -209,6 +209,12 @@
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'qualityFineRatio', '合格率', 36, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'signFineRatio', '完成率', 36, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'receiveCount', '让步接收', 37, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'endArriveCount', '(签收完成)签收数', 39, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'endSignFineCount', '(签收完成)收货合格', 40, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'endQualityFineCount', '(签收完成)检验合格数', 41, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'prodInfo', '货品', 42, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'signInCount', '检验中', 43, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -422,6 +428,11 @@
             prodUnit.p2n_is_scale p2nIsScale,
             prodUnit.p2n_decimal_count p2nDecimalCount,
 
+            <!--采购签收明细(签收检验完成)汇总 -->
+            round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
+            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
+            round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+
             <!--采购签收明细汇总 -->
             round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
             round(ifnull(signDetail.sign_fine_count, 0), 2) signFineCount,
@@ -431,7 +442,8 @@
 
             <!--java 类实现(qualityFineRatio,signFineRatio) -->
             '' qualityFineRatio,
-            '' signFineRatio
+            '' signFineRatio,
+            '' signInCount
         from
         vmes_purchase_order_detail detail
             left join vmes_purchase_plan_detail planDtl on detail.plan_id = planDtl.id
@@ -443,7 +455,25 @@
             left join vmes_dictionary type on product.type = type.id
             left join vmes_dictionary reason on detail.reason = reason.id
 
-            <!--采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
+            <!--(采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
+            left join (
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count,
+                    sum(sign_fine_count) sign_fine_count,
+                    sum(quality_fine_count) quality_fine_count
+                from vmes_purchase_sign_detail
+                <where>
+                    <if test="parentId != null and parentId != ''">
+                        and order_id = #{parentId}
+                    </if>
+                    <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
+                    and state = '2'
+                </where>
+                group by order_detail_id
+            ) signDetailEnd on detail.id = signDetailEnd.order_detail_id
+
+            <!--(采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
             left join (
                 select
                     order_detail_id,

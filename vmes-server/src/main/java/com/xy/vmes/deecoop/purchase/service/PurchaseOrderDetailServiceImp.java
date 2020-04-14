@@ -286,20 +286,23 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
 
-                //qualityFineCount 检验合格数
-                BigDecimal qualityFineCount = (BigDecimal)mapObject.get("qualityFineCount");
-                //arriveCount 签收数
-                BigDecimal arriveCount = (BigDecimal)mapObject.get("arriveCount");
+                //endQualityFineCount (完成检验)检验合格数
+                BigDecimal endQualityFineCount = (BigDecimal)mapObject.get("endQualityFineCount");
 
-                //qualityFineRatio 合格率 := 检验合格数 / 签收数
+                //endArriveCount (完成检验)签收数
+                BigDecimal endArriveCount = (BigDecimal)mapObject.get("endArriveCount");
+
+                //qualityFineRatio 合格率 := (完成检验)检验合格数 / (完成检验)签收数
                 BigDecimal qualityFineRatio = BigDecimal.valueOf(0D);
-                if (qualityFineCount != null && arriveCount != null && arriveCount.doubleValue() != 0) {
-                    qualityFineRatio = BigDecimal.valueOf(qualityFineCount.doubleValue() / arriveCount.doubleValue() * 100);
+
+                if (endQualityFineCount != null && endArriveCount != null && endArriveCount.doubleValue() != 0) {
+                    qualityFineRatio = BigDecimal.valueOf(endQualityFineCount.doubleValue() / endArriveCount.doubleValue() * 100);
                 }
-                //四舍五入到0位小数
-                qualityFineRatio = qualityFineRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                //四舍五入到2位小数
+                qualityFineRatio = qualityFineRatio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 mapObject.put("qualityFineRatio", qualityFineRatio.toString() + " %");
 
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //signFineCount 收货合格数
                 BigDecimal signFineCount = (BigDecimal)mapObject.get("signFineCount");
                 //count 采购数量
@@ -310,9 +313,17 @@ public class PurchaseOrderDetailServiceImp implements PurchaseOrderDetailService
                 if (signFineCount != null && count != null && count.doubleValue() != 0) {
                     signFineRatio = BigDecimal.valueOf(signFineCount.doubleValue() / count.doubleValue() * 100);
                 }
-                //四舍五入到0位小数
-                signFineRatio = signFineRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                //四舍五入到2位小数
+                signFineRatio = signFineRatio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                 mapObject.put("signFineRatio", signFineRatio.toString() + " %");
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //arriveCount 签收数
+                BigDecimal arriveCount = (BigDecimal)mapObject.get("arriveCount");
+
+                //signInCount 检验中: 签收数 - (完成检验)签收数
+                BigDecimal signInCount = BigDecimal.valueOf(arriveCount.doubleValue() - endArriveCount.doubleValue());
+                signInCount = signInCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("signInCount", signInCount.toString());
             }
         }
 
