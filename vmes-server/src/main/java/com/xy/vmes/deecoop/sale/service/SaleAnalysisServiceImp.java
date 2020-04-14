@@ -123,8 +123,8 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                     for(Map salesTrend : salesTrendList){
                         String month = salesTrend.get("month")!=null?(String)salesTrend.get("month"):"";
                         if(month.equals(yearMonth)){
-                            resultMap.put("salesVolume",salesTrend.get("salesVolume"));
-                            resultMap.put("salesNumber",salesTrend.get("salesNumber"));
+                            resultMap.put("salesVolume",salesTrend.get("volume"));
+                            resultMap.put("salesNumber",salesTrend.get("number"));
                         }
                     }
                 }
