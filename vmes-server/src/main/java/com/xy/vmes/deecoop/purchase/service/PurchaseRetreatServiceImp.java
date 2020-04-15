@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.purchase.service;
 
-
 import com.xy.vmes.common.util.*;
 import com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatMapper;
 import com.xy.vmes.entity.*;
@@ -37,6 +36,8 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
 
     @Autowired
     private PurchaseRetreatDetailService purchaseRetreatDetailService;
+    @Autowired
+    private PurchaseSignDetailByRetreatService purchaseSignDetailByRetreatService;
 
     @Autowired
     private WarehouseOutService warehouseOutService;
@@ -471,6 +472,12 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -494,7 +501,17 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        //isNeedSign 是否需要显示(签收单号)
+        String isNeedSign = pd.getString("isNeedSign");
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if ("true".equals(isNeedSign) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String retreatId = (String)mapObject.get("id");
+                //(退货单id) Sql查询:PurchaseSignDetailByRetreatMapper.findPurchaseSignDetailByRetreat
+                String signCode = purchaseSignDetailByRetreatService.findSignCodeByRetreatId(retreatId);
+                mapObject.put("signCode", signCode);
+            }
+        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

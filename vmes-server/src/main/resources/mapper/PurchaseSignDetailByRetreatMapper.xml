@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_purchase_sign_detail 采购签收明细关联采购退货 Mapper.xml
+创建人：陈刚
+创建时间：2020-04-15
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseSignDetailByRetreatMapper">
+    <select id="findPurchaseSignDetailByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            signDtl.parent_id signId,
+            sign.sys_code signCode,
+
+            signDtl.retreat_dtl_id retreatDtlId,
+            retreatDtl.parent_id retreatId,
+            retreat.sys_code retreatCode
+
+        from vmes_purchase_sign_detail signDtl
+            left join vmes_purchase_sign sign on signDtl.parent_id = sign.id
+            left join vmes_purchase_retreat_detail retreatDtl on signDtl.retreat_dtl_id = retreatDtl.id
+            left join vmes_purchase_retreat retreat on retreatDtl.parent_id = retreat.id
+        <where>
+            <if test="retreatDtlId != null and retreatDtlId != ''">
+                and signDtl.retreat_dtl_id = #{retreatDtlId}
+            </if>
+            <if test="retreatId != null and retreatId != ''">
+                and retreatDtl.parent_id = #{retreatId}
+            </if>
+
+            <if test="signCode != null and signCode != ''">
+                and sign.sys_code = #{signCode}
+            </if>
+
+        </where>
+
+    </select>
+
+</mapper>
