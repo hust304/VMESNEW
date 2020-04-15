@@ -107,7 +107,7 @@ public interface PurchaseOrderService {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-03-05
     */
-    List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception;
+    List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -143,11 +143,10 @@ public interface PurchaseOrderService {
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPagePurchaseOrders(PageData pd,Pagination pg) throws Exception;
+    ResultModel listPagePurchaseOrders(PageData pd) throws Exception;
 
     /**
     * 导出
@@ -204,6 +203,8 @@ public interface PurchaseOrderService {
      * @return
      */
     Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
+
+    String findPurchaseOrderCodeByPlanDtlId(String planDtlId, String separator) throws Exception;
 
 }
 

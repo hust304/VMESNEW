@@ -71,8 +71,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2019-03-05
     */
-    List<Map> getDataListPage(PageData pd,Pagination pg);
-
+    List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
     /**
     * 创建人：刘威 自动创建，禁止修改

@@ -152,8 +152,7 @@ public class PurchaseOrderController {
         logger.info("################/purchase/purchaseOrder/listPagePurchaseOrders 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = purchaseOrderService.listPagePurchaseOrders(pd,pg);
+        ResultModel model = purchaseOrderService.listPagePurchaseOrders(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/purchase/purchaseOrder/listPagePurchaseOrders 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

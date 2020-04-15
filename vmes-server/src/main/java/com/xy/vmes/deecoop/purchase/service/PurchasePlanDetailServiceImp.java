@@ -38,6 +38,8 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
 
     @Autowired
     private SaleOrderDetailService orderDetailService;
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
 
     @Autowired
     private ColumnService columnService;
@@ -279,6 +281,12 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -304,6 +312,19 @@ public class PurchasePlanDetailServiceImp implements PurchasePlanDetailService {
                 Map<String, String> valueMap = this.findOrderCodeByList(planDtlChildList);
                 mapObject.put("orderCode", valueMap.get("orderCodes"));
                 mapObject.put("expectDate", valueMap.get("expectDate"));
+            }
+        }
+
+        //isNeedPurchaseOrder:是否需要显示采购订单 true:需要
+        String isNeedPurchaseOrder = pd.getString("isNeedPurchaseOrder");
+        if ("true".equals(isNeedPurchaseOrder) && varList != null && varList.size() > 0) {
+            String separator = pd.getString("separator");
+            for (Map<String, Object> mapObject : varList) {
+                //planDtlId 生产计划明细id
+                String planDtlId = (String)mapObject.get("id");
+                String orderCode = purchaseOrderService.findPurchaseOrderCodeByPlanDtlId(planDtlId, separator);
+                //orderCode = "111<br>222<br>333";
+                mapObject.put("purchaseOrderCode", orderCode);
             }
         }
 

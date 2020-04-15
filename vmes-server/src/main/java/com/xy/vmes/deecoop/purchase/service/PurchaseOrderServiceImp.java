@@ -206,8 +206,17 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     * 创建时间：2019-03-05
     */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        return purchaseOrderMapper.getDataListPage(pd,pg);
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList<>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return purchaseOrderMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return purchaseOrderMapper.getDataListPage(pd,pg);
+        }
+
+        return mapList;
     }
 
     /**
@@ -275,14 +284,13 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
     /**
     *
     * @param pd    查询参数对象PageData
-    * @param pg    分页参数对象Pagination
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPagePurchaseOrders(PageData pd,Pagination pg) throws Exception{
-
+    public ResultModel listPagePurchaseOrders(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
         List<Column> columnList = columnService.findColumnList("PurchaseOrder");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -295,15 +303,23 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
         Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        List<Map> varList = this.getDataListPage(pd,pg);
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.getDataListPage(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }
@@ -331,7 +347,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         }
         pd.put("queryStr", queryStr);
         pg.setSize(100000);
-        List<Map> dataList = this.getDataListPage(pd, pg);
+        List<Map> dataList = this.getDataListPage(pd, null);
 
         //查询数据转换成Excel导出数据
         List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
@@ -1015,6 +1031,42 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
         }
 
         return productByInMap;
+    }
+
+    public String findPurchaseOrderCodeByPlanDtlId(String planDtlId, String separator) throws Exception {
+        if (separator == null || separator.trim().length() == 0) {
+            separator = new String(",");
+        } else if ("br".equals(separator)) {
+            separator = new String("<br>");
+        }
+
+        PageData findMap = new PageData();
+        findMap.put("planDtlId", planDtlId);
+        findMap.put("orderStr", "purchaseOrder.cdate asc");
+        List<Map> varList = this.getDataListPage(findMap, null);
+
+        Map<String, String> codeMap = new LinkedHashMap<>();
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String code = (String)mapObject.get("code");
+                if (code != null && code.trim().length() > 0) {
+                    codeMap.put(code, code);
+                }
+            }
+        }
+
+        StringBuffer codeBuf = new StringBuffer();
+        for (Iterator iterator = codeMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKeyCode = iterator.next().toString().trim();
+            codeBuf.append(mapKeyCode).append(separator);
+        }
+
+        String code = codeBuf.toString().trim();
+        if (code.length() > 0 && code.lastIndexOf(separator) > 0) {
+            code = code.substring(0, code.lastIndexOf(separator));
+        }
+
+        return code;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
