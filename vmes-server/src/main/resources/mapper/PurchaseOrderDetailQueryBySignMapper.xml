@@ -42,12 +42,18 @@
             prodUnitPrice.p2n_is_scale p2nIsScale,
             prodUnitPrice.p2n_decimal_count p2nDecimalCount,
 
+            <!--采购签收明细(签收检验完成)汇总 -->
+            round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
+            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
+            round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+
             <!--采购签收明细-->
             round(ifnull(signDtl.signCount, 0), 2) signCount,
             <!--收货合格数 -->
             round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
             <!--最大允许签收数量: 采购数量 - 收货合格数 -->
             round((ifnull(orderDtl.count, 0) - ifnull(signDtl.sign_fine_count, 0)), 2) maxAarriveCount,
+            round((ifnull(signDtl.signCount, 0) - ifnull(signDetailEnd.arrive_count, 0)), 2) signInCount,
 
             <!--java 类实现(arriveCount) -->
             '' arriveCount,
@@ -65,6 +71,24 @@
             left join vmes_product product on orderDtl.product_id = product.id
             left join vmes_dictionary orderUnit on orderDtl.unit = orderUnit.id
             left join vmes_product_unit prodUnitPrice on (orderDtl.product_id = prodUnitPrice.product_id and orderDtl.unit = prodUnitPrice.unit)
+
+            <!--(采购订单明细id)采购签收明细汇总 vmes_purchase_sign_detail-->
+            left join (
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count,
+                    sum(sign_fine_count) sign_fine_count,
+                    sum(quality_fine_count) quality_fine_count
+                from vmes_purchase_sign_detail
+                <where>
+                    <if test="parentId != null and parentId != ''">
+                        and order_id = #{parentId}
+                    </if>
+                    <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
+                    and state = '2'
+                </where>
+                group by order_detail_id
+            ) signDetailEnd on orderDtl.id = signDetailEnd.order_detail_id
 
             <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
             left join (
@@ -123,6 +147,11 @@
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'purchaseQualityType', '检验方式id(1:全检 2:抽检)', 19, '1', '0', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signFineCount', '收货合格数', 20, '1', '0', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'price', '单价', 21, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'endArriveCount', '(签收完成)签收数', 22, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'endSignFineCount', '(签收完成)收货合格', 23, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'endQualityFineCount', '(签收完成)检验合格数', 24, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'purchaseOrderDetailQueryBySign', 'signInCount', '检验中', 25, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 </mapper>

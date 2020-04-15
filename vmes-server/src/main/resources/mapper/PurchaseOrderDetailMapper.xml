@@ -215,6 +215,7 @@
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'endQualityFineCount', '(签收完成)检验合格数', 41, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'prodInfo', '货品', 42, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'signInCount', '检验中', 43, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'PurchaseOrderDetail', 'retreatCount', '检验退货', 44, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -438,6 +439,7 @@
             round(ifnull(signDetail.sign_fine_count, 0), 2) signFineCount,
             round(ifnull(signDetail.quality_fine_count, 0), 2) qualityFineCount,
             round(ifnull(signDetail.receive_count, 0), 2) receiveCount,
+            round(ifnull(signDetail.retreat_count, 0), 2) retreatCount,
             DATE_FORMAT(signDetail.cdate,'%Y-%m-%d') signDate,
 
             <!--java 类实现(qualityFineRatio,signFineRatio) -->
@@ -481,6 +483,7 @@
                     sum(sign_fine_count) sign_fine_count,
                     sum(quality_fine_count) quality_fine_count,
                     sum(receive_count) receive_count,
+                    sum(retreat_count) retreat_count,
                     max(cdate) cdate
                 from vmes_purchase_sign_detail
                 <where>
