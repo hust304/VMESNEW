@@ -362,6 +362,7 @@
             when bill.type='7' then '扣款单'
             when bill.type='8' then '应收单'
             when bill.type='9' then '退款单'
+            when bill.type='10' then '应付单'
         else null end typeName,
 
         bill.remark

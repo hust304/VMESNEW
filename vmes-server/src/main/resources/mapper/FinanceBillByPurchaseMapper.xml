@@ -35,6 +35,8 @@
     </insert>
 
     <!--(采购-采购应付款-应付款查询) 采购业务财务单汇总 -->
+    <!--type:单据类型 (0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购))-->
+    <!--type:单据类型 采购相关 (1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购))-->
     <select id="findFinanceBillByPurchaseView" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             md5(uuid()) id,
@@ -97,13 +99,13 @@
             <!--本期(发生额,付款) -->
             left join (
                 select a.id customer_id,
-                    <!--本期(发生额:nowPlus:收货账单-(扣款单+退款)) -->
+                    <!--本期(发生额:nowPlus:(收货账单+应付单)-(扣款单+退款)) -->
                     round((ifnull(b.amount,0) - ifnull(c.amount,0)),2) nowPlus,
 
                     <!--本期(付款:nowMinus:) -->
                     round(ifnull(d.amount,0),2) nowMinus
                 from vmes_customer a
-                    <!--本期(收货账单) -->
+                    <!--本期(收货账单+应付单) -->
                     left join (
                         select customer_id,sum(amount) amount
                         from vmes_finance_bill
@@ -114,7 +116,7 @@
                             <if test='period != null and period != ""'>
                                 and period = #{period}
                             </if>
-                            and type = '6' and state = '2'
+                            and type in ('6','10') and state = '2'
                         </where>
                         group by customer_id
                     ) b on a.id = b.customer_id
