@@ -46,6 +46,7 @@ public interface WarehouseOutCreateService {
      * @param cuser            用户id
      * @param companyId        企业id
      * @param outType          出库类型id
+     * @param businessCode    业务单号
      * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -60,6 +61,7 @@ public interface WarehouseOutCreateService {
                                              String cuser,
                                              String companyId,
                                              String outType,
+                                             String businessCode,
                                              Map<String, Map<String, Object>> businessByOutMap) throws Exception;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,6 +98,7 @@ public interface WarehouseOutCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
+     * @param businessCode    业务单号
      * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -110,6 +113,7 @@ public interface WarehouseOutCreateService {
                                              String cuser,
                                              String companyId,
                                              String outType,
+                                             String businessCode,
                                              Map<String, Map<String, Object>> businessByOutMap) throws Exception;
 
     /**

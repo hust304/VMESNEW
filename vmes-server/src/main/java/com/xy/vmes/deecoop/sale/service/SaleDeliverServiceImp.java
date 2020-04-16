@@ -456,6 +456,8 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         List<SaleOrderDetailEntity> orderDtlList = saleDeliverDetailService.mapList2OrderDetailList(mapList, null);
 
         //生成出库单//////////////////////////////////////////////////////////////////////////////////////////////////
+        //发货单编号
+        String deliverCode = this.createDeliverCoder(companyId, "vmes_sale_deliver", "F");
         String customerId = mapList.get(0).get("customerId");
         String customerName = mapList.get(0).get("customerName");
 
@@ -470,6 +472,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     companyId,
                     //9459be975cd94ada8443cdf32f52c2be 销售发货出库:saleOut
                     Common.DICTIONARY_MAP.get("saleOut"),
+                    deliverCode,
                     businessByOutMap);
         } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
@@ -481,6 +484,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     companyId,
                     //9459be975cd94ada8443cdf32f52c2be 销售发货出库:saleOut
                     Common.DICTIONARY_MAP.get("saleOut"),
+                    deliverCode,
                     businessByOutMap);
         }
 
@@ -489,10 +493,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         String deliverId = Conv.createUuid();
         saleDeliver.setId(deliverId);
         saleDeliver.setPriceType(priceType);
-
-        //发货单编号
-        String code = this.createDeliverCoder(companyId, "vmes_sale_deliver", "F");
-        saleDeliver.setDeliverCode(code);
+        saleDeliver.setDeliverCode(deliverCode);
 
         saleDeliver.setCustomerId(customerId);
         saleDeliver.setCompanyId(companyId);

@@ -117,6 +117,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      * @param cuser            用户id
      * @param companyId        企业id
      * @param outType          出库类型id
+     * @param businessCode    业务单号
      * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -131,6 +132,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
                                                     String cuser,
                                                     String companyId,
                                                     String outType,
+                                                    String businessCode,
                                                     Map<String, Map<String, Object>> businessByOutMap) throws Exception {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
@@ -156,6 +158,9 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
         warehouseOut.setWarehouseId(warehouseId);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseOut.setWarehouseAttribute("warehouse");
+        if (businessCode != null && businessCode.trim().length() > 0) {
+            warehouseOut.setBusinessCode(businessCode);
+        }
         warehouseOutService.save(warehouseOut);
 
         List<WarehouseOutDetail> outDtlList = this.businessMap2OutDetailList(businessByOutMap, null);
@@ -264,6 +269,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
+     * @param businessCode    业务单号
      * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -279,6 +285,7 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
                                                    String cuser,
                                                    String companyId,
                                                    String outType,
+                                                   String businessCode,
                                                    Map<String, Map<String, Object>> businessByOutMap) throws Exception {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
@@ -306,6 +313,9 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
         warehouseOut.setWarehouseId(warehouseId);
         //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
         warehouseOut.setWarehouseAttribute("warehouse");
+        if (businessCode != null && businessCode.trim().length() > 0) {
+            warehouseOut.setBusinessCode(businessCode);
+        }
         warehouseOutService.save(warehouseOut);
 
         //2.添加出库单明细
