@@ -160,6 +160,7 @@ public class ProducePlanQualityDetailController {
                     //生产入库 2c4a104aedc046848455f5fa6e3da87c:produceIn:
                     Common.DICTIONARY_MAP.get("produceIn"),
                     null,
+                    planDB.getSysCode(),
                     productByInMap);
 
         } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {

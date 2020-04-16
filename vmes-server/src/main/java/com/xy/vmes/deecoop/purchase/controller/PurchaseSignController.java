@@ -310,7 +310,7 @@ public class PurchaseSignController {
 
         if (notQualityList.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-
+            String businessCode = addSign.getSysCode();
             Map<String, Map<String, Object>> businessByInMap = signDetailService.findBusinessProducMapByIn(notQualityList);
             warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
                     supplierName,
@@ -321,6 +321,7 @@ public class PurchaseSignController {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     null,
+                    businessCode,
                     businessByInMap);
 
             if (businessByInMap != null) {

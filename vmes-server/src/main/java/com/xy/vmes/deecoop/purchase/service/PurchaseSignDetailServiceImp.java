@@ -1015,6 +1015,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     null,
+                    signCode,
                     businessByInMap);
 
             if (businessByInMap != null) {
@@ -1082,6 +1083,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     "让步接收",
+                    signCode,
                     businessByReceiveInMap);
 
             for (Iterator iterator = businessByReceiveInMap.keySet().iterator(); iterator.hasNext();) {
@@ -1403,6 +1405,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     null,
+                    signCode,
                     businessByInMap);
 
             if (businessByInMap != null) {

@@ -634,6 +634,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
                         //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
                         Common.DICTIONARY_MAP.get("saleRetreatIn"),
                         null,
+                        retreatDB.getSysCode(),
                         productByInMap);
 
             } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
