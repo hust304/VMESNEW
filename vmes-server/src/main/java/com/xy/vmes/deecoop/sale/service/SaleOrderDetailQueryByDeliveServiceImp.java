@@ -8,6 +8,7 @@ import com.xy.vmes.deecoop.sale.dao.SaleOrderDetailQueryByDeliverMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleOrderDetailQueryByDeliveService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.PageData;
 import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
@@ -32,6 +33,8 @@ public class SaleOrderDetailQueryByDeliveServiceImp implements SaleOrderDetailQu
     private SaleOrderDetailQueryByDeliverMapper orderDetailQueryByDeliverMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     public List<Map> listOrderDetaiQueryByDeliver(PageData pd) throws Exception{
         return orderDetailQueryByDeliverMapper.listOrderDetaiQueryByDeliver(pd);
@@ -49,6 +52,12 @@ public class SaleOrderDetailQueryByDeliveServiceImp implements SaleOrderDetailQu
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
+        }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
         }
 
         //获取指定栏位字符串-重新调整List<Column>
@@ -75,7 +84,13 @@ public class SaleOrderDetailQueryByDeliveServiceImp implements SaleOrderDetailQu
 
         List<Map> varList = this.listOrderDetaiQueryByDeliver(pd);
         if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
             for (Map<String, Object> objectMap : varList) {
+                //货品信息
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
+                objectMap.put("prodInfo", prodInfo);
+
                 //(计量单位)货品数量///////////////////////////////////////////////////////////////////////////////////////////
                 //allowStockCount (计量单位)可用库存数量: 库存数量 - 货品锁库数量 + (销售订单)货品锁库数量
                 BigDecimal allowStockCount = BigDecimal.valueOf(0D);
