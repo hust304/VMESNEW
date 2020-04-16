@@ -22,6 +22,7 @@ public interface WarehouseOutCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
+     * @param businessCode    业务单号
      * @param productByOutMap 货品出库Map<货品id, 货品Map>
      *
      * 货品出库Map<货品id, 货品Map<String, Object>>
@@ -36,6 +37,7 @@ public interface WarehouseOutCreateService {
                                      String cuser,
                                      String companyId,
                                      String outType,
+                                     String businessCode,
                                      Map<String, Map<String, Object>> productByOutMap) throws Exception;
     /**
      * 创建出库单(复杂版仓库)
@@ -46,7 +48,7 @@ public interface WarehouseOutCreateService {
      * @param cuser            用户id
      * @param companyId        企业id
      * @param outType          出库类型id
-     * @param businessCode    业务单号
+     * @param businessCode     业务单号
      * @param businessByOutMap 业务货品出库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -74,6 +76,7 @@ public interface WarehouseOutCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param outType         出库类型id
+     * @param businessCode    业务单号
      * @param productByOutMap 货品出库Map<货品id, 货品Map>
      *
      * 货品出库Map<货品id, 货品Map<String, Object>>
@@ -88,6 +91,7 @@ public interface WarehouseOutCreateService {
                                     String cuser,
                                     String companyId,
                                     String outType,
+                                    String businessCode,
                                     Map<String, Map<String, Object>> productByOutMap) throws Exception;
     /**
      * 创建出库单(简版仓库)-执行时需要人工干预-系统非自动执行

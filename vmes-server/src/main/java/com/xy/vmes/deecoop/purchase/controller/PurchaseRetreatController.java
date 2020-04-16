@@ -410,24 +410,7 @@ public class PurchaseRetreatController {
             model.putMsg("退货单id为空或空字符串！");
             return model;
         }
-
-//        //退货总额:实际退货金额
-//        BigDecimal realityTotal_big = BigDecimal.valueOf(0D);
-//        String realityTotal = pageData.getString("realityTotal");
-//        if (realityTotal == null || realityTotal.trim().length() == 0) {
-//            model.putCode(Integer.valueOf(1));
-//            model.putMsg("退货总额为空或空字符串！");
-//            return model;
-//        }
-
-//        //实际退货金额 审核界面获得
-//        if (realityTotal != null && realityTotal.trim().length() > 0) {
-//            try {
-//                realityTotal_big = new BigDecimal(realityTotal);
-//            } catch (NumberFormatException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        PurchaseRetreat retreat = purchaseRetreatService.findPurchaseRetreatById(retreatId);
 
         String dtlJsonStr = pageData.getString("dtlJsonStr");
         if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
@@ -504,6 +487,7 @@ public class PurchaseRetreatController {
                     companyId,
                     //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
                     Common.DICTIONARY_MAP.get("purchaseOut"),
+                    retreat.getSysCode(),
                     productByOutMap);
 
             if (productByOutMap != null) {
@@ -526,6 +510,7 @@ public class PurchaseRetreatController {
                     companyId,
                     //4cba5d3815644b26920777512a20474b 采购退货出库:purchaseOut
                     Common.DICTIONARY_MAP.get("purchaseOut"),
+                    retreat.getSysCode(),
                     productByOutMap);
 
             if (productByOutMap != null) {
@@ -598,7 +583,7 @@ public class PurchaseRetreatController {
 
         //3. 创建采购退款单////////////////////////////////////////////////////////////////////////////////////////////
         //获取退货单表对象-根据退货单id查询(vmes_purchase_retreat)
-        PurchaseRetreat retreat = purchaseRetreatService.findPurchaseRetreatById(retreatId);
+        //PurchaseRetreat retreat = purchaseRetreatService.findPurchaseRetreatById(retreatId);
 
         //type:退货类型-(字典表-vmes_dictionary.id)
         //f69839bbf2394846a65894f0da120df9 退货退款:retreatRefund

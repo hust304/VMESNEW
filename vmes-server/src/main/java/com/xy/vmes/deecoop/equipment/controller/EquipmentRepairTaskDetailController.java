@@ -275,6 +275,7 @@ public class EquipmentRepairTaskDetailController {
                             companyId,
                             //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
                             Common.DICTIONARY_MAP.get("repairReceiveOut"),
+                            "",
                             productByOutMap);
 
 
@@ -288,6 +289,7 @@ public class EquipmentRepairTaskDetailController {
                             companyId,
                             //fa51ae2e17a9409d822fc4c9192d652c 维保领料出库:repairReceiveOut
                             Common.DICTIONARY_MAP.get("repairReceiveOut"),
+                            "",
                             productByOutMap);
                 }
 

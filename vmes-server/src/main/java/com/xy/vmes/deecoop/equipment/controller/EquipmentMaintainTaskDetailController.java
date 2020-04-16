@@ -274,6 +274,7 @@ public class EquipmentMaintainTaskDetailController {
                         companyId,
                         //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
                         Common.DICTIONARY_MAP.get("maintainReceiveOut"),
+                        "",
                         productByOutMap);
 
             } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
@@ -286,6 +287,7 @@ public class EquipmentMaintainTaskDetailController {
                         companyId,
                         //8bcbc84893cf46daabbd2522bee482ad 保养领料出库:maintainReceiveOut
                         Common.DICTIONARY_MAP.get("maintainReceiveOut"),
+                        "",
                         productByOutMap);
             }
 
