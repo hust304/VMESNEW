@@ -736,8 +736,21 @@ public class FinanceBillServiceImp implements FinanceBillService {
 
         Map<String,Object> receiveMap = this.getFinanceReceiveGroup(pd);
         if(receiveMap!=null){
-            result.put("preReceiveAmount", receiveMap.get("preReceiveAmount"));
-            result.put("nowReceiveAmount", receiveMap.get("nowReceiveAmount"));
+            BigDecimal preReceiveAmount = BigDecimal.valueOf(0D);
+            if (receiveMap.get("preReceiveAmount") != null) {
+                preReceiveAmount = (BigDecimal)receiveMap.get("preReceiveAmount");
+            }
+            //四舍五入到2位小数
+            preReceiveAmount = preReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            result.put("preReceiveAmount", preReceiveAmount.toString());
+
+            BigDecimal nowReceiveAmount = BigDecimal.valueOf(0D);
+            if (receiveMap.get("nowReceiveAmount") != null) {
+                nowReceiveAmount = (BigDecimal)receiveMap.get("nowReceiveAmount");
+            }
+            //四舍五入到2位小数
+            nowReceiveAmount = nowReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            result.put("nowReceiveAmount", nowReceiveAmount.toString());
         }
 
         result.put("hideTitles",titleMap.get("hideTitles"));
