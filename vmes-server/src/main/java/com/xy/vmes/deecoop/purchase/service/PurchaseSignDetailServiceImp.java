@@ -704,9 +704,6 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             editSignDetail.setState("2");
             signDetailList.add(editSignDetail);
 
-            //qualityCount (实际)检验数量
-            qualityCount = editSignDetail.getQualityCount();
-
             //签收数量 arriveCount
             arriveCount = editSignDetail.getArriveCount();
             //(检验)退货数量 retreatCount
@@ -720,30 +717,16 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             //qualityType 检验方式 (1:全检 2:抽检)
             if ("1".equals(qualityType)) {
                 //1:全检:收货合格数 := 检验数量-退货数
-                BigDecimal tempBig = BigDecimal.valueOf(qualityCount.doubleValue() - retreatCount.doubleValue());
-                if (tempBig.doubleValue() >= 0) {
-                    signFineCount = tempBig;
-                }
+                signFineCount = BigDecimal.valueOf(qualityCount.doubleValue() - retreatCount.doubleValue());
 
                 //1:全检:(实际)检验合格数 := 检验数量 - 不合格数量
-                tempBig = BigDecimal.valueOf(qualityCount.doubleValue() - badCount.doubleValue());
-                if (tempBig.doubleValue() >= 0) {
-                    qualityFineCount = tempBig;
-                }
+                qualityFineCount = BigDecimal.valueOf(qualityCount.doubleValue() - badCount.doubleValue());
             } else if ("2".equals(qualityType) && qualityCount.doubleValue() != 0) {
-                //2:抽检:收货合格数 := (签收数量/检验数量) * (检验数量 - 退货数量)
-                //ratio 签收数量/检验数量
-                BigDecimal ratio = BigDecimal.valueOf(arriveCount.doubleValue() / qualityCount.doubleValue());
-                BigDecimal tempBig = BigDecimal.valueOf(ratio.doubleValue() * (qualityCount.doubleValue() - retreatCount.doubleValue()) );
-                if (tempBig.doubleValue() >= 0) {
-                    signFineCount = tempBig;
-                }
+                //2:抽检:收货合格数 := 签收数量 - 退货数量
+                signFineCount = BigDecimal.valueOf(arriveCount.doubleValue() - retreatCount.doubleValue());
 
-                //2:抽检:(实际)检验合格数 := (签收数量/检验数量) * (检验数量 - 不合格数量)
-                tempBig = BigDecimal.valueOf(ratio.doubleValue() * (qualityCount.doubleValue() - badCount.doubleValue()) );
-                if (tempBig.doubleValue() >= 0) {
-                    qualityFineCount = tempBig;
-                }
+                //2:抽检:(实际)检验合格数 := (签收数量 - 不合格数量)
+                qualityFineCount = BigDecimal.valueOf(arriveCount.doubleValue() - badCount.doubleValue());
             }
             //四舍五入到2位小数
             signFineCount = signFineCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
@@ -936,18 +919,18 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////
-            //qualityCount (实际)检验数量
-            BigDecimal qualityCount = BigDecimal.valueOf(0D);
-            String qualityCountStr = objectMap.get("qualityCount");
-            if (qualityCountStr != null && qualityCountStr.trim().length() > 0) {
+            //签收数量 arriveCount
+            BigDecimal arriveCount = BigDecimal.valueOf(0D);
+            String arriveCountStr = objectMap.get("arriveCount");
+            if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
                 try {
-                    qualityCount = new BigDecimal(qualityCountStr);
+                    arriveCount = new BigDecimal(arriveCountStr);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
             //四舍五入到2位小数
-            qualityCount = qualityCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            arriveCount = arriveCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
             //badCount (检验)不合格数量
             BigDecimal badCount = BigDecimal.valueOf(0D);
@@ -976,8 +959,8 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
             receiveCount = receiveCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
             ////////////////////////////////////////////////////////////////////////////////////////////
-            //正常接收数量 := (实际)检验数量 - (检验)不合格数量
-            BigDecimal inCount = BigDecimal.valueOf(qualityCount.doubleValue() - badCount.doubleValue());
+            //正常接收数量 := 签收数量 - (检验)不合格数量
+            BigDecimal inCount = BigDecimal.valueOf(arriveCount.doubleValue() - badCount.doubleValue());
             //四舍五入到2位小数
             inCount = inCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
