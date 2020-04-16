@@ -261,6 +261,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      * @param companyId       企业id
      * @param inType          入库类型id
      * @param remark_dtl      (入库明细)备注
+     * @param businessCode    业务单号
      * @param businessByInMap 业务货品入库Map<货品id, 货品Map>
      *
      * 业务货品出库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
@@ -277,6 +278,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                                                   String companyId,
                                                   String inType,
                                                   String remark_dtl,
+                                                  String businessCode,
                                                   Map<String, Map<String, Object>> businessByInMap) throws ApplicationException {
         StringBuffer msgStr = new StringBuffer();
         if (deptId == null || deptId.trim().length() == 0) {
@@ -302,6 +304,11 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             warehouseIn.setWarehouseId(warehouseId);
             //warehouseAttribute 仓库属性(warehouse:(简版,复杂版)仓库 spare:备件库)
             warehouseIn.setWarehouseAttribute("warehouse");
+
+            if (businessCode != null && businessCode.trim().length() > 0) {
+                warehouseIn.setBusinessCode(businessCode);
+            }
+
             warehouseInService.save(warehouseIn);
 
             //创建入库单明细

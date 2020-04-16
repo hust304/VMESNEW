@@ -135,7 +135,8 @@ public class ProducePlanQualityDetailController {
             return model;
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ProducePlan planDB = planService.findProducePlanById(planId);
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //1. 添加(vmes_produce_plan_quality_detail:生产计划明细检验报工表)
         List<ProducePlanQualityDetail> qualityDtlList = this.mapList2PlanQualityDetailList(jsonMapList, null);
@@ -173,6 +174,7 @@ public class ProducePlanQualityDetailController {
                     //生产入库 2c4a104aedc046848455f5fa6e3da87c:produceIn:
                     Common.DICTIONARY_MAP.get("produceIn"),
                     null,
+                    planDB.getSysCode(),
                     productByInMap);
         }
 

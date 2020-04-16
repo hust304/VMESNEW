@@ -607,6 +607,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
         String orderId = new String();
         String supplierId = new String();
         String supplierName = new String();
+        String signCode = new String();
 
         List<PurchaseSignDetail> signDetailList = new ArrayList<>();
         for (Map<String, String> objectMap : jsonMapList) {
@@ -762,7 +763,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
 
             //生成采购付款单(vmes_finance_bill)
             //采购签收单号
-            String signCode = objectMap.get("signCode");
+            signCode = objectMap.get("signCode");
             purchaseByFinanceBillService.addFinanceBillByPurchase(editSignDetail.getId(),
                     companyId,
                     supplierId,
@@ -1046,6 +1047,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     null,
+                    signCode,
                     businessByInMap);
 
             if (businessByInMap != null) {
@@ -1110,6 +1112,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     "让步接收",
+                    signCode,
                     businessByReceiveInMap);
 
             for (Iterator iterator = businessByReceiveInMap.keySet().iterator(); iterator.hasNext();) {
@@ -1430,6 +1433,7 @@ public class PurchaseSignDetailServiceImp implements PurchaseSignDetailService {
                     //d78ceba5beef41f5be16f0ceee775399 采购入库:purchaseIn
                     Common.DICTIONARY_MAP.get("purchaseIn"),
                     null,
+                    signCode,
                     businessByInMap);
 
             if (businessByInMap != null) {

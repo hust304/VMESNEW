@@ -599,6 +599,8 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
             model.putMsg("客户id为空或空字符串！");
             return model;
         }
+        SaleWaresRetreat retreatDB = this.findWaresRetreatById(parentId);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         SaleWaresRetreat editRetreat = new SaleWaresRetreat();
         editRetreat.setId(parentId);
@@ -646,6 +648,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
                         //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
                         Common.DICTIONARY_MAP.get("saleRetreatIn"),
                         null,
+                        retreatDB.getSysCode(),
                         productByInMap);
             }
 
@@ -668,7 +671,7 @@ public class SaleWaresRetreatServiceImp implements SaleWaresRetreatService {
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        SaleWaresRetreat retreatDB = this.findWaresRetreatById(parentId);
+        //SaleWaresRetreat retreatDB = this.findWaresRetreatById(parentId);
         String retreatType = retreatDB.getType();
 
         //退货类型(1:退货退款 2:退货换货)
