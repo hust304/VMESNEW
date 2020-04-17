@@ -268,6 +268,7 @@
                 when bill.type='6' then '收货账单'
                 when bill.type='7' then '扣款单'
                 when bill.type='9' then '退款单'
+                when bill.type='10' then '应付单'
                 else null
                 end typeName,
 
@@ -278,7 +279,7 @@
                 end paymentAmount,
 
                 case
-                when bill.type in ('6') then bill.amount
+                when bill.type in ('6','10') then bill.amount
                 when bill.type in ('7','9') then bill.amount * -1
                 else null
                 end occurAmount,
@@ -302,8 +303,8 @@
                 <if test="'supplier' == customerGenre">
                     and customer.genre = '49c0a7ebcb4c4175bd5195837a6a9a13'
                     <!--type:单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))-->
-                    <!--type:单据类型 ( 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购))-->
-                    and bill.type in ('1','6','7','9')
+                    <!--type:单据类型 ( 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购))-->
+                    and bill.type in ('1','6','7','9','10')
                 </if>
                 and bill.state = '2'
             </where>
