@@ -514,8 +514,8 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
     }
 
     /**
-     * 返回货品入库Map
-     * 货品入库Map<货品id, 货品Map<String, Object>>
+     * 返回业务货品入库Map
+     * 货品入库Map<业务id, 货品Map<String, Object>>
      * 货品Map<String, Object>
      *     productId: 货品id
      *     inDtlId:   入库明细id
@@ -529,6 +529,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
         if (detailList == null || detailList.size() == 0) {return productByOutMap;}
 
         for (SaleRetreatDetail dtlObject : detailList) {
+            String id = dtlObject.getId();
             String productId = dtlObject.getProductId();
 
             //productCount:货品数量(计量数量) := inCount 入库数量
@@ -544,7 +545,7 @@ public class SaleRetreatDetailServiceImp implements SaleRetreatDetailService {
             productMap.put("inDtlId", null);
             productMap.put("inCount", productCount);
 
-            productByOutMap.put(productId, productMap);
+            productByOutMap.put(id, productMap);
         }
 
         return productByOutMap;

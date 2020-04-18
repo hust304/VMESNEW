@@ -117,6 +117,8 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 //            return model;
 //        }
 
+        SaleRetreat retreat = saleRetreatService.findSaleRetreatById(parentId);
+
         PageData findMap = new PageData();
         findMap.put("parentId", parentId);
         List<Map> retreatDtlMapList = saleRetreatDetailByEditService.findRetreatDetailByEdit(findMap);
@@ -127,24 +129,28 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
         if (retreatDtlList == null || retreatDtlList.size() == 0) {return model;}
 
         //创建入库单
+        String businessCode = retreat.getSysCode();
         Map<String, Map<String, Object>> productByInMap = saleRetreatDetailService.findProductMapByIn(retreatDtlList);
         if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
             //退库方式:1:生成退库单: (生成复杂版入库单)
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
-            warehouseInCreateService.createWarehouseInByComplex(customerId,
+            warehouseInCreateService.createWarehouseInBusinessByComplex(customerId,
                     customerName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
+
                     companyId,
                     //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
                     Common.DICTIONARY_MAP.get("saleRetreatIn"),
+                    null,
+                    businessCode,
                     productByInMap);
 
         } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
             //退库方式:1:生成退库单: (生成简版入库单)
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
-            warehouseInCreateService.createWarehouseInBySimple(customerId,
+            warehouseInCreateService.createWarehouseInBusinessBySimple(customerId,
                     customerName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -152,6 +158,8 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
                     companyId,
                     //销售退货入库:81907167d5c8498692e6c4f3694c5cfa:saleRetreatIn:
                     Common.DICTIONARY_MAP.get("saleRetreatIn"),
+                    null,
+                    businessCode,
                     productByInMap);
         }
 
@@ -172,9 +180,8 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
             orderSum = orderSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             detailEdit.setOrderSum(orderSum);
 
-            String productId = (String)mapObject.get("productId");
-            if (productByInMap != null && productByInMap.get(productId) != null) {
-                Map<String, Object> producValueMap = productByInMap.get(productId);
+            if (productByInMap != null && productByInMap.get(retreatDtl_id) != null) {
+                Map<String, Object> producValueMap = productByInMap.get(retreatDtl_id);
 
                 //inDtlId:   入库明细id
                 String inDtlId = (String)producValueMap.get("inDtlId");
@@ -218,7 +225,7 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //退货单id parentId 退货单id(parentId) 获取退货单表对象
-        SaleRetreat retreat = saleRetreatService.findSaleRetreatById(parentId);
+        //SaleRetreat retreat = saleRetreatService.findSaleRetreatById(parentId);
 
         //生成付款单
         BigDecimal retreatSum = BigDecimal.valueOf(0D);
