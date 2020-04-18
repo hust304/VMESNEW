@@ -18,6 +18,6 @@ public interface SaleRetreatAuditService {
      */
     ResultModel auditPassSaleRetreat(PageData pageData) throws Exception;
     ResultModel auditDisagreeSaleRetreat(PageData pageData) throws Exception;
-    ResultModel checkRetreatEdit(PageData pageData);
+//    ResultModel checkRetreatEdit(PageData pageData);
 
 }
