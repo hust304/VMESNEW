@@ -43,6 +43,7 @@ public interface SaleRetreatDetailMapper extends BaseMapper<SaleRetreatDetail> {
      * 创建时间：2019-02-25
      */
     List<Map> getDataListPage(PageData pd, Pagination pg);
+    List<Map> getDataListPage(PageData pd);
 
     void updateStateByDetail(PageData pd);
 }

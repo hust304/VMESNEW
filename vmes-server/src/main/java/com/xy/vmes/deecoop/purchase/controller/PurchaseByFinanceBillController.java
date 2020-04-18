@@ -630,7 +630,7 @@ public class PurchaseByFinanceBillController {
         amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         //sysCode 签收单号
-        String sysCode = pageData.getString("amount");
+        String sysCode = pageData.getString("sysCode");
         purchaseByFinanceBillService.addFinanceBillByPurchase(signId,
                 companyId,
                 supplierId,

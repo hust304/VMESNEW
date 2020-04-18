@@ -42,8 +42,7 @@ public class SaleRetreatDetailController {
         logger.info("################/sale/saleRetreatDetail/listPageSaleRetreatDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = saleRetreatDetailService.listPageSaleRetreatDetail(pd, pg);
+        ResultModel model = saleRetreatDetailService.listPageSaleRetreatDetail(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/sale/saleRetreatDetail/listPageSaleRetreatDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

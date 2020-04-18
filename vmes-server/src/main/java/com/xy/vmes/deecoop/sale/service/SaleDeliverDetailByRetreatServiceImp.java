@@ -1,10 +1,14 @@
 package com.xy.vmes.deecoop.sale.service;
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.sale.dao.SaleDeliverDetailByRetreatMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SaleDeliverDetailByRetreatService;
+import com.xy.vmes.service.SystemToolService;
+import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +24,25 @@ public class SaleDeliverDetailByRetreatServiceImp implements SaleDeliverDetailBy
     private SaleDeliverDetailByRetreatMapper saleDeliverDetailByRetreatMapper;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
 
-    public List<Map> findDeliverDetailByRetreat(PageData pageData) throws Exception {
-        return saleDeliverDetailByRetreatMapper.findDeliverDetailByRetreat(pageData);
+    public List<Map> findDeliverDetailByRetreat(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return saleDeliverDetailByRetreatMapper.findDeliverDetailByRetreat(pd);
+        } else if (pg != null) {
+            return saleDeliverDetailByRetreatMapper.findDeliverDetailByRetreat(pd,pg);
+        }
+
+        return mapList;
     }
 
     public ResultModel listPageDeliverDetailByRetreat(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pageData);
 
         List<Column> columnList = columnService.findColumnList("saleDeliverDetailByRetreat");
         if (columnList == null || columnList.size() == 0) {
@@ -35,31 +51,18 @@ public class SaleDeliverDetailByRetreatServiceImp implements SaleDeliverDetailBy
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pageData.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pageData.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pageData.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
-        Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         //获取订单ID参数
         String deliverDtlIds = pageData.getString("deliverDtlIds");
@@ -78,19 +81,29 @@ public class SaleDeliverDetailByRetreatServiceImp implements SaleDeliverDetailBy
             pageData.put("orderStr", orderStr);
         }
 
-        List<Map> varMapList = new ArrayList();
-        List<Map> varList = this.findDeliverDetailByRetreat(pageData);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pageData.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.findDeliverDetailByRetreat(pageData, pg);
+        if(varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pageData.getString("prodColumnKey");
+            for (Map<String, Object> mapObject : varList) {
+                //货品信息
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
             }
         }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
         model.putResult(result);
         return model;
