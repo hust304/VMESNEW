@@ -312,11 +312,9 @@ public class WarehouseInServiceImp implements WarehouseInService {
     }
 
     @Override
-    public ResultModel listPageWarehouseIn(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseIn(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg =  HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("warehouseIn");
         if (columnList == null || columnList.size() == 0) {
@@ -325,12 +323,12 @@ public class WarehouseInServiceImp implements WarehouseInService {
             return model;
         }
 
-        Map result = new HashMap();
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
 //        //type 入库类型
 //        String type = new String();
@@ -354,6 +352,15 @@ public class WarehouseInServiceImp implements WarehouseInService {
             pd.put("orderStr", orderStr);
         }
 
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
         List<Map> varList = this.getDataListPage(pd,pg);
         if (varList != null && varList.size() > 0) {
             for (Map<String, Object> mapObject : varList) {
@@ -370,12 +377,10 @@ public class WarehouseInServiceImp implements WarehouseInService {
             }
         }
 
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
         model.putResult(result);
         return model;
     }

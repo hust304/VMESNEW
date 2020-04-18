@@ -89,6 +89,7 @@
             (replace(uuid(), '-', ''),'saleDeliver','pieceCount','件数',25, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','isShowDeliver','是否显示出库详情',26, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliver','isShowOut','是否显示发货详情',27, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliver','isShowPrice','是否显示结算',28, '1','1','1','0',now(), 'admin'),
 
 
     </insert>

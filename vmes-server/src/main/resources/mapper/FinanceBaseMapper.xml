@@ -355,6 +355,56 @@
 
     <delete id="initialFinanceSale" parameterType="com.yvan.PageData" >
         <if test='currentCompanyId != null and currentCompanyId != ""'>
+            <!--入库单 =========================================================================================-->
+            DELETE FROM vmes_warehouse_in WHERE id in (
+                select parent_id
+                from vmes_warehouse_in_detail
+                where id in  (
+                    select in_detail_id
+                    from vmes_sale_retreat_detail
+                    where parent_id in (
+                        select id
+                        from vmes_sale_retreat
+                        where company_id = #{currentCompanyId}
+                    ) and in_detail_id is not null
+                )
+            );
+
+            DELETE FROM vmes_warehouse_in_detail WHERE id in (
+                select in_detail_id
+                from vmes_sale_retreat_detail
+                where parent_id in (
+                    select id
+                    from vmes_sale_retreat
+                    where company_id = #{currentCompanyId}
+                ) and in_detail_id is not null
+            );
+
+            <!--出库单 =========================================================================================-->
+            DELETE FROM vmes_warehouse_out WHERE id in (
+                select parent_id
+                from vmes_warehouse_out_detail
+                where id in  (
+                    select out_detail_id
+                    from vmes_sale_deliver_detail
+                    where parent_id in (
+                        select id
+                        from vmes_sale_deliver
+                        where company_id = #{currentCompanyId}
+                    ) and out_detail_id is not null
+                )
+            );
+
+            DELETE FROM vmes_warehouse_out_detail WHERE id in (
+                select out_detail_id
+                from vmes_sale_deliver_detail
+                where parent_id in (
+                    select id
+                    from vmes_sale_deliver
+                    where company_id = #{currentCompanyId}
+                ) and out_detail_id is not null
+            );
+
             DELETE FROM vmes_sale_deliver_detail WHERE parent_id in (select id from vmes_sale_deliver where company_id = #{currentCompanyId});
             DELETE FROM vmes_sale_deliver WHERE company_id =  #{currentCompanyId};
             DELETE FROM vmes_sale_invoice_detail WHERE parent_id in (select id from vmes_sale_invoice where company_id =  #{currentCompanyId});

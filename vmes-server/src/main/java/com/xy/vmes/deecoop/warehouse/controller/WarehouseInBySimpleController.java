@@ -55,8 +55,7 @@ public class WarehouseInBySimpleController {
         logger.info("################/warehouse/warehouseInBySimple/listPageWarehouseInBySimple 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseInService.listPageWarehouseIn(pd,pg);
+        ResultModel model = warehouseInService.listPageWarehouseIn(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/warehouse/warehouseInBySimple/listPageWarehouseInBySimple 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

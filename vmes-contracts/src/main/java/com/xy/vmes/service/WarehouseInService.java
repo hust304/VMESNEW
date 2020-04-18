@@ -100,7 +100,7 @@ public interface WarehouseInService {
 
     void updateState(String id) throws Exception;
 
-    ResultModel listPageWarehouseIn(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseIn(PageData pd) throws Exception;
 
     ResultModel addWarehouseIn(PageData pageData) throws Exception;
 

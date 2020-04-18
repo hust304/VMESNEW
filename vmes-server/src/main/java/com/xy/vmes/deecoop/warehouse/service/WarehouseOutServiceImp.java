@@ -2,16 +2,13 @@ package com.xy.vmes.deecoop.warehouse.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
+import com.xy.vmes.service.*;
 import com.yvan.common.util.Common;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.warehouse.dao.WarehouseOutMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.WarehouseOut;
 import com.xy.vmes.entity.WarehouseOutDetail;
-import com.xy.vmes.service.CoderuleService;
-import com.xy.vmes.service.ColumnService;
-import com.xy.vmes.service.WarehouseOutDetailService;
-import com.xy.vmes.service.WarehouseOutService;
 import com.yvan.*;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
@@ -46,6 +43,8 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
 
     @Autowired
     private WarehouseOutDetailService warehouseOutDetailService;
+    @Autowired
+    private WarehouseToolService warehouseToolService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -669,6 +668,21 @@ public class WarehouseOutServiceImp implements WarehouseOutService {
         }
 
         List<Map> varList = this.getDataListPage(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String id = (String)mapObject.get("id");
+                String type =(String)mapObject.get("type");
+
+                //isNeedShowEdit 是否显示编辑按钮(1:显示 0:不显示)
+                String isNeedShowEdit = new String("1");
+                Boolean isExist = warehouseToolService.isExistBusinessByWarehouseOut(id, type);
+                if (isExist != null && isExist.booleanValue()) {
+                    isNeedShowEdit = "0";
+                }
+                mapObject.put("isNeedShowEdit", isNeedShowEdit);
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));

@@ -297,6 +297,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
+    //TODO 2
     public ResultModel listPageSaleDeliver(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -372,6 +373,22 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                     }
                 }
                 ///////////////////////////////////////////////////////
+                //结算(按钮) 是否显示
+                //isShowPrice:结算 1:显示 0:不显示
+                mapObject.put("isShowPrice", "1");
+                List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
+                if (deliverDtlList != null && deliverDtlList.size() > 0) {
+                    boolean isAllNotPrice = true;
+                    for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+                        if (deliverDetail.getSum() == null || deliverDetail.getSum().doubleValue() == 0D) {
+                            isAllNotPrice = false;
+                            break;
+                        }
+                    }
+                    if (isAllNotPrice) {
+                        mapObject.put("isShowPrice", "0");
+                    }
+                }
             }
         }
 
@@ -911,6 +928,7 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         return model;
     }
 
+    //TODO 1
     public ResultModel checkIsAllNotNullDeliverSumByDeliverId(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
