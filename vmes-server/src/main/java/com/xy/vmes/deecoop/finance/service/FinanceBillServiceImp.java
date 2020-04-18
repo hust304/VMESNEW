@@ -700,6 +700,8 @@ public class FinanceBillServiceImp implements FinanceBillService {
     @Override
     public ResultModel getFinanceReceiveView(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
+
         List<Column> columnList = columnService.findColumnList("FinanceReceiveView");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
@@ -724,7 +726,6 @@ public class FinanceBillServiceImp implements FinanceBillService {
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");
-        Pagination pg = HttpUtils.parsePagination(pd);
         if ("false".equals(isNeedPage)) {
             pg = null;
         } else {
@@ -734,24 +735,24 @@ public class FinanceBillServiceImp implements FinanceBillService {
         List<Map> varList = this.getFinanceReceiveView(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
-        Map<String,Object> receiveMap = this.getFinanceReceiveGroup(pd);
-        if(receiveMap!=null){
-            BigDecimal preReceiveAmount = BigDecimal.valueOf(0D);
-            if (receiveMap.get("preReceiveAmount") != null) {
-                preReceiveAmount = (BigDecimal)receiveMap.get("preReceiveAmount");
-            }
-            //四舍五入到2位小数
-            preReceiveAmount = preReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            result.put("preReceiveAmount", preReceiveAmount.toString());
-
-            BigDecimal nowReceiveAmount = BigDecimal.valueOf(0D);
-            if (receiveMap.get("nowReceiveAmount") != null) {
-                nowReceiveAmount = (BigDecimal)receiveMap.get("nowReceiveAmount");
-            }
-            //四舍五入到2位小数
-            nowReceiveAmount = nowReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-            result.put("nowReceiveAmount", nowReceiveAmount.toString());
-        }
+//        Map<String,Object> receiveMap = this.getFinanceReceiveGroup(pd);
+//        if(receiveMap!=null){
+//            BigDecimal preReceiveAmount = BigDecimal.valueOf(0D);
+//            if (receiveMap.get("preReceiveAmount") != null) {
+//                preReceiveAmount = (BigDecimal)receiveMap.get("preReceiveAmount");
+//            }
+//            //四舍五入到2位小数
+//            preReceiveAmount = preReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            result.put("preReceiveAmount", preReceiveAmount.toString());
+//
+//            BigDecimal nowReceiveAmount = BigDecimal.valueOf(0D);
+//            if (receiveMap.get("nowReceiveAmount") != null) {
+//                nowReceiveAmount = (BigDecimal)receiveMap.get("nowReceiveAmount");
+//            }
+//            //四舍五入到2位小数
+//            nowReceiveAmount = nowReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//            result.put("nowReceiveAmount", nowReceiveAmount.toString());
+//        }
 
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));

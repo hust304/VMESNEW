@@ -6,6 +6,7 @@ import com.xy.vmes.entity.FinanceBill;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -14,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -290,6 +295,40 @@ public class FinanceBillController {
         ResultModel model = financeBillService.getFinanceReceiveView(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/finance/financeBill/getFinanceReceiveView 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    @PostMapping("/finance/financeBill/getFinanceReceiveGroup")
+    public ResultModel getFinanceReceiveGroup()  throws Exception {
+        logger.info("################/finance/financeBill/getFinanceReceiveGroup 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pd = HttpUtils.parsePageData();
+
+        Map result = new HashMap();
+        Map<String,Object> receiveMap = financeBillService.getFinanceReceiveGroup(pd);
+        if(receiveMap != null) {
+            BigDecimal preReceiveAmount = BigDecimal.valueOf(0D);
+            if (receiveMap.get("preReceiveAmount") != null) {
+                preReceiveAmount = (BigDecimal)receiveMap.get("preReceiveAmount");
+            }
+            //四舍五入到2位小数
+            preReceiveAmount = preReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            result.put("preReceiveAmount", preReceiveAmount.toString());
+
+            BigDecimal nowReceiveAmount = BigDecimal.valueOf(0D);
+            if (receiveMap.get("nowReceiveAmount") != null) {
+                nowReceiveAmount = (BigDecimal)receiveMap.get("nowReceiveAmount");
+            }
+            //四舍五入到2位小数
+            nowReceiveAmount = nowReceiveAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            result.put("nowReceiveAmount", nowReceiveAmount.toString());
+        }
+
+        model.putResult(result);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/finance/financeBill/getFinanceReceiveGroup 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
