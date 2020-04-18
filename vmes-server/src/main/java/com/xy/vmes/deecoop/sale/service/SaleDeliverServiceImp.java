@@ -297,7 +297,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
-    //TODO 2
     public ResultModel listPageSaleDeliver(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
@@ -928,7 +927,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         return model;
     }
 
-    //TODO 1
     public ResultModel checkIsAllNotNullDeliverSumByDeliverId(PageData pageData) throws Exception {
         ResultModel model = new ResultModel();
 
