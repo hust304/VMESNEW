@@ -34,6 +34,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'assistCraft','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistCraft','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistCraft','sysCode','工艺编号(系统生成)',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistCraft','custCode','工艺编号(用户自定义编号)',3, '1','1','1','0',now(), 'admin'),
@@ -44,7 +45,6 @@
             (replace(uuid(), '-', ''),'assistCraft','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistCraft','remark','备注',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistCraft','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistCraft','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -110,9 +110,11 @@
         isdisable isdisable
         from vmes_assist_craft
         <where>
-
-            <if test='code != null and code != ""'>
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and company_id = #{currentCompanyId}
+            </if>
+            <if test='sysCode != null and sysCode != ""'>
+                and sys_code LIKE CONCAT(CONCAT('%', #{sysCode}),'%')
             </if>
             <if test='name != null and name != ""'>
                 and name LIKE CONCAT(CONCAT('%', #{name}),'%')
