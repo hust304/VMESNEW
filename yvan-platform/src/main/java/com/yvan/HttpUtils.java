@@ -2,6 +2,7 @@ package com.yvan;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.yvan.common.util.Common;
 import com.yvan.platform.HttpParameterParser;
 import com.yvan.platform.RestException;
 
@@ -54,19 +55,39 @@ public class HttpUtils {
      * 从当前请求中获取分页方法和内容
      */
     public static Pagination parsePagination(PageData pd) {
-//        HttpServletRequest request = currentRequest();
-//        HttpParameterParser parser = HttpParameterParser.newInstance(request);
-//        PageData  parser = parsePageData();
-//        PageData parser = new PageData(request);
-        int pageNo = StringUtils.isEmpty(pd.getString("pageNo"))?1:Integer.parseInt(pd.getString("pageNo"));
-        int pageSize = StringUtils.isEmpty(pd.getString("pageSize"))?20:Integer.parseInt(pd.getString("pageSize"));
-//        String orderBy = parser.getString("orderBy");
-        if (pageNo <= 0) {
-            pageNo = 1;
+        //系统默认第一页开始
+        Integer pageNo = Common.SYS_PAGE_FIRST;
+        String pageNoStr = pd.getString("pageNo");
+        if (pageNoStr != null && pageNoStr.trim().length() > 0) {
+            try {
+                if (Integer.valueOf(pageNoStr).intValue() >= 1) {
+                    pageNo = Integer.valueOf(pageNoStr);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
-        if (pageSize <= 0 || pageSize > 500) {
-            pageSize = 20;
+
+        //系统默认每页20行数据 每页行数范围 [1, 500]行
+        Integer pageSize = Common.SYS_PAGE_SIZE;
+        String pageSizeStr = pd.getString("pageSize");
+        if (pageSizeStr != null && pageSizeStr.trim().length() > 0) {
+            try {
+                Integer temp = Integer.valueOf(pageSizeStr);
+                if (1 <= temp && temp <= 500) {
+                    pageSize = temp;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
+
+//        if (pageNo <= 0) {
+//            pageNo = 1;
+//        }
+//        if (pageSize <= 0 || pageSize > 500) {
+//            pageSize = 20;
+//        }
 
         Pagination pagination = new Page(pageNo, pageSize);
         pagination.setOpenSort(false);

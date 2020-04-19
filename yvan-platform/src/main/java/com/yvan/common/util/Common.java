@@ -3,6 +3,12 @@ package com.yvan.common.util;
 import java.util.*;
 
 public class Common {
+    //系统默认分页参数
+    //系统默认每页20行数据
+    public final static Integer SYS_PAGE_SIZE = Integer.valueOf(20);
+    //系统默认起始页: 第一页 开始
+    public final static Integer SYS_PAGE_FIRST = Integer.valueOf(1);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     //系统邮件服务配置
     public final static String SYS_MAIL_SEND = "mail@deecoop.cn";
     //蔡总私人邮箱(662702@qq.com)
