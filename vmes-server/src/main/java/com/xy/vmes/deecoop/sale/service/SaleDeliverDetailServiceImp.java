@@ -1226,7 +1226,7 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         ////////////////////////////////////////////////////////////////////////////////////////////////
         SaleOrderDetail addObject = this.findAddOrderDetail(objectMap, orderDetailDB);
         //修改锁库数量
-        if (orderDetailDB != null && orderDetailDB.getLockCount() != null && orderDetailDB.getLockCount().doubleValue() > 0) {
+        if (addObject != null && orderDetailDB != null && orderDetailDB.getLockCount() != null && orderDetailDB.getLockCount().doubleValue() > 0) {
             addObject.setLockCount(orderDetailDB.getLockCount());
             //是否锁定仓库(0:未锁定 1:已锁定)
             addObject.setIsLockWarehouse("1");
@@ -1323,6 +1323,11 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         //订单明细id
         //String orderDtlId = (String)objectMap.get("orderDetaiId");
         //SaleOrderDetail orderDetailDB = saleOrderDetailService.findSaleOrderDetailById(orderDtlId);
+
+        //sum (后计价)发货金额:结算金额
+        if (objectMap.get("sum") != null && ((BigDecimal)objectMap.get("sum")).doubleValue() != 0) {
+            return null;
+        }
 
         //订单明细订购数量(订单单位) orderDetailCount
         BigDecimal orderDetailCount = BigDecimal.valueOf(0D);
