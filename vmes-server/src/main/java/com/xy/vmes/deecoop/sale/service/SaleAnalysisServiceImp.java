@@ -99,6 +99,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     public ResultModel salesTrendQuery(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Map> result = new ArrayList<>();
+        List<String> yearMonthList =  new ArrayList<>();
         String startDate = pd.getString("startDate");
         String endDate = pd.getString("endDate");
         if(StringUtils.isEmpty(startDate)||StringUtils.isEmpty(endDate)){
@@ -107,10 +108,15 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String startYearMonth_YearOnYear = DateFormat.getStartYearMonth_YearOnYear(currentYearMonth);
             pd.put("startDate",startYearMonth_YearOnYear);
             pd.put("endDate",nextYearMonth);
+        }else{
+
+            yearMonthList = DateFormat.getAllYearMonth(pd.getString("startDate"),pd.getString("endDate"));
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
+            pd.put("endDate",nextYearMonth);
         }
         List<Map> salesTrendList = saleAnalysisMapper.getSalesTrend(pd);
 
-        List<String> yearMonthList = DateFormat.getAllYearMonth(pd.getString("startDate"),pd.getString("endDate"));
+
         if(yearMonthList!=null&&yearMonthList.size()>0){
             for(String yearMonth : yearMonthList){
 
@@ -149,6 +155,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String nextYearMonth = DateFormat.getNextYearMonth(currentYearMonth);
             pd.put("startDate",currentYearMonth);
             pd.put("endDate",nextYearMonth);
+        }else{
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
+            pd.put("endDate",nextYearMonth);
         }
 
         List<Map> salesVolumeByProductList = getSalesVolumeNumberByProduct(pd,"volume");
@@ -167,6 +176,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String currentYearMonth = DateFormat.getCurrentYearMonth();
             String nextYearMonth = DateFormat.getNextYearMonth(currentYearMonth);
             pd.put("startDate",currentYearMonth);
+            pd.put("endDate",nextYearMonth);
+        }else{
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
             pd.put("endDate",nextYearMonth);
         }
 
@@ -187,6 +199,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String nextYearMonth = DateFormat.getNextYearMonth(currentYearMonth);
             pd.put("startDate",currentYearMonth);
             pd.put("endDate",nextYearMonth);
+        }else{
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
+            pd.put("endDate",nextYearMonth);
         }
 
         List<Map> productReturnRateList = getProductReturnRate(pd);
@@ -205,6 +220,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String currentYearMonth = DateFormat.getCurrentYearMonth();
             String nextYearMonth = DateFormat.getNextYearMonth(currentYearMonth);
             pd.put("startDate",currentYearMonth);
+            pd.put("endDate",nextYearMonth);
+        }else{
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
             pd.put("endDate",nextYearMonth);
         }
 
@@ -225,6 +243,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String nextYearMonth = DateFormat.getNextYearMonth(currentYearMonth);
             pd.put("startDate",currentYearMonth);
             pd.put("endDate",nextYearMonth);
+        }else{
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
+            pd.put("endDate",nextYearMonth);
         }
 
         List<Map> salesByEmployeeList = saleAnalysisMapper.getSalesByEmployee(pd);
@@ -238,6 +259,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     public ResultModel salesTrendByEmployeeQuery(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Map> result = new ArrayList<>();
+        List<String> yearMonthList = new ArrayList<>();
         String startDate = pd.getString("startDate");
         String endDate = pd.getString("endDate");
         if(StringUtils.isEmpty(startDate)||StringUtils.isEmpty(endDate)){
@@ -246,9 +268,12 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             String startYearMonth_YearOnYear = DateFormat.getStartYearMonth_YearOnYear(currentYearMonth);
             pd.put("startDate",startYearMonth_YearOnYear);
             pd.put("endDate",nextYearMonth);
+        }else{
+            yearMonthList = DateFormat.getAllYearMonth(pd.getString("startDate"),pd.getString("endDate"));
+            String nextYearMonth = DateFormat.getNextYearMonth(endDate);
+            pd.put("endDate",nextYearMonth);
         }
         List<Map> salesTrendByEmployeeList = saleAnalysisMapper.getSalesTrendByEmployee(pd);
-        List<String> yearMonthList = DateFormat.getAllYearMonth(pd.getString("startDate"),pd.getString("endDate"));
 
 
         if(salesTrendByEmployeeList!=null&&salesTrendByEmployeeList.size()>0) {
@@ -340,6 +365,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
                 for(Map elem : result){
                     BigDecimal endPlus = elem.get("endPlus")!=null?(BigDecimal)elem.get("endPlus"):BigDecimal.ZERO;
                     elem.put("proportion",endPlus.multiply(BigDecimal.valueOf(100)).divide(endPlusTotal,2,BigDecimal.ROUND_HALF_UP));
+                    elem.put("endPlusTotal",endPlusTotal.setScale(2,BigDecimal.ROUND_HALF_UP));
                 }
             }
 
