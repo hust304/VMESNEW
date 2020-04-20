@@ -7,6 +7,7 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.finance.dao.FinanceBillByPurchaseMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.entity.FinanceBill;
+import com.xy.vmes.entity.PageEntity;
 import com.xy.vmes.entity.PurchaseCompanyPeriod;
 import com.xy.vmes.service.*;
 import com.yvan.HttpUtils;
@@ -115,6 +116,7 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
 
     public ResultModel listPageFinanceBillByPurchaseView(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
+        Pagination pg = HttpUtils.parsePagination(pd);
 
         List<Column> columnList = columnService.findColumnList("financeBillByPurchaseView");
         if (columnList == null || columnList.size() == 0) {
@@ -157,21 +159,21 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
             pd.put("forePeriod", periodMap.get("forePeriod"));
         }
 
-        //是否需要分页 true:需要分页 false:不需要分页
-        Map result = new HashMap();
-        String isNeedPage = pd.getString("isNeedPage");
-        Pagination pg = HttpUtils.parsePagination(pd);
-        if ("false".equals(isNeedPage)) {
-            pg = null;
-        } else {
-            result.put("pageData", pg);
+        List<Map> varList = this.findFinanceBillByPurchaseView(pd, null);
+        this.modifyCheckOutFinanceBillByPurchase(varList, queryPeriod);
+        List<PageEntity> pageEntityList = findPageEntityList(varList);
+        if (pageEntityList != null && pageEntityList.size() > 0) {
+            pg.setTotal(pageEntityList.size());
+
+            //降序排列
+            this.orderDescByCount(pageEntityList);
         }
 
-        List<Map> varList = this.findFinanceBillByPurchaseView(pd, pg);
-        this.modifyCheckOutFinanceBillByPurchase(varList, queryPeriod);
+        List<Map> pageList = this.findPageMapList(pageEntityList, pg);
+        List<Map> varMapList = ColumnUtil.getVarMapList(pageList, titleMap);
 
-        List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
-
+        Map result = new HashMap();
+        result.put("pageData", pg);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
@@ -358,15 +360,21 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
 
             //endPlus 当前应付 期末值(正数)
             //endMinus 当前预付 期末值(负数)
+
+            BigDecimal endPlus = BigDecimal.valueOf(0D);
+            BigDecimal endMinus = BigDecimal.valueOf(0D);
+
             if (endValue.doubleValue() >= 0) {
-                mapData.put("endPlus", endValue);
-                mapData.put("endMinus", "0.00");
+                endPlus = endValue;
             } else if (endValue.doubleValue() < 0) {
-                BigDecimal endMinus = BigDecimal.valueOf(endValue.doubleValue() * -1);
-                endMinus = endMinus.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                mapData.put("endMinus", endMinus);
-                mapData.put("endPlus", "0.00");
+                endMinus = BigDecimal.valueOf(endValue.doubleValue() * -1);
             }
+
+            endPlus = endPlus.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            mapData.put("endPlus", endPlus);
+
+            endMinus = endMinus.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            mapData.put("endMinus", endMinus);
 
             //period 期间
             mapData.put("period", period);
@@ -431,6 +439,62 @@ public class PurchaseByFinanceBillServiceImp implements PurchaseByFinanceBillSer
         addObject.setPeriod(period);
 
         financeBillService.save(addObject);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    private List<PageEntity> findPageEntityList(List<Map> queryList) {
+        List<PageEntity> pageEntityList = new ArrayList<>();
+
+        if (queryList != null && queryList.size() > 0) {
+            for (Map<String, Object> mapData : queryList) {
+                PageEntity tempObject = new PageEntity();
+                tempObject.setJsonMap(mapData);
+
+
+                //endPlus 当前应付
+                BigDecimal endPlus = BigDecimal.valueOf(0D);
+                if (mapData.get("endPlus") != null) {
+                    endPlus = (BigDecimal)mapData.get("endPlus");
+                }
+                tempObject.setCount(endPlus);
+
+                pageEntityList.add(tempObject);
+            }
+        }
+
+        return pageEntityList;
+    }
+    private List<Map> findPageMapList(List<PageEntity> pageEntityList, Pagination pg) {
+        List<Map> pageMapList = new ArrayList<>();
+        if (pageEntityList == null || pageEntityList.size() == 0) {return pageMapList;}
+
+        int current = pg.getCurrent();
+        int size = pg.getSize();
+        int maxIndex = pageEntityList.size() - 1;
+
+        int startIndex = (current - 1) * size;
+        int lastIndex = current * size - 1;
+
+        for (int i = startIndex; i <= lastIndex; i++) {
+            if (i <= maxIndex) {
+                PageEntity object = pageEntityList.get(i);
+                pageMapList.add(object.getJsonMap());
+            }
+        }
+
+        return pageMapList;
+    }
+
+
+    //重写排序方法: 按照(PageEntity.count)降序排序
+    private void orderDescByCount(List<PageEntity> objectList) {
+        Collections.sort(objectList, new Comparator<Object>() {
+            public int compare(Object arg0, Object arg1) {
+                PageEntity object_0 = (PageEntity)arg0;
+                PageEntity object_1 = (PageEntity)arg1;
+                return object_1.getCount().compareTo(object_0.getCount());
+            }
+        });
     }
 
 }
