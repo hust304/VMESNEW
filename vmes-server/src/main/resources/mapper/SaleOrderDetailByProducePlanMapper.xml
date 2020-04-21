@@ -152,6 +152,10 @@
                 group by order_detai_id
             ) deliverDtl on orderDtl.id = deliverDtl.order_detai_id
         <where>
+            <if test="notInOrderDtlIds != null and notInOrderDtlIds != ''" >
+                and orderDtl.id not in (${notInOrderDtlIds})
+            </if>
+
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
             </if>

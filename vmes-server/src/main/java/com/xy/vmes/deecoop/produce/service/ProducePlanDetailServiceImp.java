@@ -15,6 +15,7 @@ import com.xy.vmes.entity.Column;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -491,8 +492,8 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                 String fineRatioStr = new String("0.00");
                 if (fineBadSum.doubleValue() != 0) {
                     BigDecimal fineRatio = BigDecimal.valueOf(fineCount.doubleValue() / fineBadSum.doubleValue() * 100);
-                    //四舍五入到0位小数
-                    fineRatio = fineRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                    //四舍五入到2位小数
+                    fineRatio = fineRatio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                     fineRatioStr = fineRatio.toString();
                 }
                 mapObject.put("fineRatio", fineRatioStr + " %");
@@ -504,7 +505,7 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
                 if (count.doubleValue() != 0) {
                     BigDecimal endRatio = BigDecimal.valueOf(fineCount.doubleValue() / count.doubleValue() * 100);
                     //四舍五入到0位小数
-                    endRatio = endRatio.setScale(0, BigDecimal.ROUND_HALF_UP);
+                    endRatio = endRatio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
                     endRatioStr = endRatio.toString();
                 }
                 mapObject.put("endRatio", endRatioStr + " %");
