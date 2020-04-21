@@ -237,10 +237,10 @@
         round(ifnull(purchaseOrder.total, 0),2) total,<!-- 合计金额 -->
         round(ifnull(purchaseOrder.discount, 0),2) discount,<!-- 折扣金额 -->
         round(ifnull(purchaseOrder.amount, 0),2) amount,<!-- 采购金额 -->
-        round(ifnull(purchaseOrder.receipt_amount, 0),2) receiptAmount,<!-- 收票金额 -->
-        case when ifnull(purchaseOrder.receipt_amount, 0)=0 then '0'<!-- 收票状态：未收票 -->
-        <![CDATA[when ifnull(purchaseOrder.receipt_amount, 0)>0 and ifnull(purchaseOrder.receipt_amount, 0)<ifnull(purchaseOrder.amount, 0) then '1']]><!-- 收票状态：部分收票 -->
-        <![CDATA[when ifnull(purchaseOrder.receipt_amount, 0)>=ifnull(purchaseOrder.amount, 0) then '2']]><!-- 收票状态：已收票 -->
+        round(sum(ifnull(receipt.amount, 0)),2) receiptAmount,<!-- 收票金额 -->
+        case when sum(ifnull(receipt.amount, 0))=0 then '0'<!-- 收票状态：未收票 -->
+        <![CDATA[when sum(ifnull(receipt.amount, 0))>0 and sum(ifnull(receipt.amount, 0))<ifnull(purchaseOrder.amount, 0) then '1']]><!-- 收票状态：部分收票 -->
+        <![CDATA[when sum(ifnull(receipt.amount, 0))>=ifnull(purchaseOrder.amount, 0) then '2']]><!-- 收票状态：已收票 -->
         else null end receiptState,
         purchaseOrder.type type,<!-- 采购订单类型-(字典表-vmes_dictionary.id) -->
         purchaseOrder.state state,<!-- 状态(0:待提交 1:待审核 2:采购中 3:已完成 -1:已取消) -->
@@ -296,6 +296,7 @@
         left join vmes_user apply on apply.id = purchaseOrder.apply_id
         left join vmes_department dept on dept.id = purchaseOrder.dept_id
         left join vmes_customer supplier on supplier.id = purchaseOrder.supplier_id
+        left join vmes_purchase_receipt receipt on receipt.purchase_id = purchaseOrder.id
         <where>
             <!--queryStr 自定义sql查询语句-->
             <if test="queryStr != null and queryStr != ''" >
@@ -320,6 +321,7 @@
                 and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
             </if>
         </where>
+        group by  purchaseOrder.id
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
@@ -340,7 +342,7 @@
         left join vmes_user apply on apply.id = purchaseOrder.apply_id
         left join vmes_department dept on dept.id = purchaseOrder.dept_id
         left join vmes_customer supplier on supplier.id = purchaseOrder.supplier_id
-
+        left join vmes_purchase_receipt receipt on receipt.purchase_id = purchaseOrder.id
         <where>
             <if test="id != null and id != ''">
                 and purchaseOrder.id = #{id}
@@ -376,6 +378,7 @@
                 and ${queryStr}
             </if>
         </where>
+        group by  purchaseOrder.id
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>

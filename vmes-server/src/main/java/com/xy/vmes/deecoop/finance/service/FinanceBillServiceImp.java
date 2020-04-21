@@ -731,7 +731,7 @@ public class FinanceBillServiceImp implements FinanceBillService {
         } else {
             result.put("pageData", pg);
         }
-        pd.put("orderStr"," case when nowPlus-nowMinus+beginPlus-beginMinus>0 then concat('b',round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2)) when nowPlus-nowMinus+beginPlus-beginMinus<0 then concat('a',round(ifnull(-(nowPlus-nowMinus+beginPlus-beginMinus),0),2)) else 0.00 end desc ");
+        pd.put("orderStr"," case when nowPlus-nowMinus+beginPlus-beginMinus=0 then null else nowPlus-nowMinus+beginPlus-beginMinus end desc ");
 
         List<Map> varList = this.getFinanceReceiveView(pd,pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);

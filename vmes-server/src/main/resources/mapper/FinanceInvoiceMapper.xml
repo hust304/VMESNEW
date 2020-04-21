@@ -293,7 +293,7 @@
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select financeInvoice.id ,financeInvoice.code,customer.name,customerInvoice.company_name companyName,customerInvoice.invoice_number invoiceNumber,
         financeInvoice.type,case when financeInvoice.type='2' then '增值税普通发票' when financeInvoice.type='3' then '增值税专用发票' else null end typeName ,
-        customerInvoice.bank_code bankCode,customerInvoice.bank_name bankName,customerInvoice.address,
+        customerInvoice.bank_code bankCode,customerInvoice.bank_name bankName,customerInvoice.address,financeInvoice.invoice_code invoiceCode,
         customerInvoice.phone, customerInvoice.mobile,cuser.user_name userName,DATE_FORMAT(financeInvoice.cdate,'%Y-%m-%d %T') cdate,
         round(ifnull(financeInvoice.amount,0),2) amount,financeInvoice.state,customerInvoice.remark
         from vmes_finance_invoice financeInvoice

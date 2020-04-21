@@ -248,6 +248,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
             pd.put("endDate",nextYearMonth);
         }
 
+        pd.put("orderStr"," sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)) desc");
         List<Map> salesByEmployeeList = saleAnalysisMapper.getSalesByEmployee(pd);
 
         model.putResult(salesByEmployeeList);
@@ -377,6 +378,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
 
 
     private List<Map> getSalesVolumeByCustomer(PageData pd) {
+        pd.put("orderStr"," sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)) desc");
         List<Map> salesVolumeByCustomerList = saleAnalysisMapper.getSalesVolumeByCustomer(pd);
         BigDecimal volumeTotal = BigDecimal.ZERO;
         if(salesVolumeByCustomerList!=null&&salesVolumeByCustomerList.size()>0){
@@ -399,6 +401,7 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     }
 
     private List<Map> getProductReturnRate(PageData pd) {
+        pd.put("orderStr"," sum(ifnull(retreatDetail.order_count,0)) desc");
         List<Map> productReturnRateList = saleAnalysisMapper.getProductReturnRate(pd);
         BigDecimal numberTotal = BigDecimal.ZERO;
         if(productReturnRateList!=null&&productReturnRateList.size()>0){
@@ -423,6 +426,13 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     }
 
     private List<Map> getSalesVolumeNumberByProduct(PageData pd, String type) {
+
+        if("volume".equals(type)){
+            pd.put("orderStr","sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)) desc");
+        }else{
+            pd.put("orderStr"," sum(ifnull(saleOrderDetail.order_count,0)) desc");
+        }
+
         List<Map> salesVolumeNumberByProductList = saleAnalysisMapper.getSalesVolumeNumberByProduct(pd);
         BigDecimal volumeTotal = BigDecimal.ZERO;
         BigDecimal numberTotal = BigDecimal.ZERO;

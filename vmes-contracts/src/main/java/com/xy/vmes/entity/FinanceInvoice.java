@@ -61,9 +61,17 @@ public class FinanceInvoice implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//发票号码
+	@TableField("invoice_code")
+	private String invoiceCode;
 
 
-
+	public String getInvoiceCode() {
+		return invoiceCode;
+	}
+	public void setInvoiceCode(String invoiceCode) {
+		this.invoiceCode = invoiceCode;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}
