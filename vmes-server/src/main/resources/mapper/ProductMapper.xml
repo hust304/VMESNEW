@@ -395,14 +395,6 @@
             left join vmes_department dept on dept.id = cuser.dept_id
 
         <where>
-
-            <if test='dataType != null and dataType == "0"'>
-                and cuser.id = #{currentUserId}
-            </if>
-            <if test='dataType != null and dataType == "1"'>
-                and dept.id_${deptLayer} = #{deptRId}
-            </if>
-
             <!-- 过滤出库存产品 -->
             <if test="'true' == isNeedWarehouseProduct">
                 and prod.id in (
@@ -433,6 +425,10 @@
             <if test="notInProductIds != null and notInProductIds != ''">
                 and prod.id not in (${notInProductIds})
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and prod.company_id=#{currentCompanyId}
+            </if>
+
             <if test="sourceCode != null and sourceCode != ''" >
                 and prod.source_code LIKE CONCAT('%',CONCAT(#{sourceCode}),'%')
             </if>
@@ -441,6 +437,14 @@
             </if>
             <if test="name != null and name != ''">
                 and prod.name LIKE CONCAT('%',CONCAT(#{name}),'%')
+            </if>
+            <!--productValue (货品名称,货品编码) 查询-->
+            <if test="productValue != null and productValue != ''">
+                and (
+                prod.source_code like CONCAT('%',CONCAT(#{productValue}),'%')
+                or prod.code like CONCAT('%',CONCAT(#{productValue}),'%')
+                or prod.name like CONCAT('%',CONCAT(#{productValue},'%'))
+                )
             </if>
 
             <if test="genreName != null and genreName != ''">
@@ -459,13 +463,16 @@
             <if test="unitName != null and unitName != ''">
                 and unit.name LIKE CONCAT('%',CONCAT(#{unitName}),'%')
             </if>
-            <if test="currentCompanyId != null and currentCompanyId != ''" >
-                and prod.company_id=#{currentCompanyId}
-            </if>
             <if test="spec != null and spec != ''" >
                 and prod.spec LIKE CONCAT('%',CONCAT(#{spec}),'%')
             </if>
 
+            <if test='dataType != null and dataType == "0"'>
+                and cuser.id = #{currentUserId}
+            </if>
+            <if test='dataType != null and dataType == "1"'>
+                and dept.id_${deptLayer} = #{deptRId}
+            </if>
 
             <!--stockCountQuery 库存数量查询-->
             <!--stockCountQuery:stockCountGreaterThanZero 库存数量大于零-->

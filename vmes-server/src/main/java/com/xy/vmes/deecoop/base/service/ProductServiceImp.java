@@ -507,23 +507,7 @@ public class ProductServiceImp implements ProductService {
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
-
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
         //是否需要分页 true:需要分页 false:不需要分页
         Map result = new HashMap();
@@ -534,8 +518,6 @@ public class ProductServiceImp implements ProductService {
             result.put("pageData", pg);
         }
 
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
 
         String orderStr = pd.getString("orderStr");
         if (orderStr != null && orderStr.trim().length() > 0) {
@@ -579,7 +561,6 @@ public class ProductServiceImp implements ProductService {
         String isNeedCustomerPrice = pd.getString("isNeedCustomerPrice");
         String customerId = pd.getString("customerId");
 
-        List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd, pg);
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //设定指定(是否需要四舍五入, 小数位数)
@@ -636,67 +617,53 @@ public class ProductServiceImp implements ProductService {
                 }
                 productStockCount = StringUtil.scaleDecimal(productStockCount, n2pIsScale, n2pDecimalCount);
                 mapObject.put("productStockCount", productStockCount.toString());
+
+                //customerPrice 货品客户价格
+                BigDecimal customerPrice = (BigDecimal)mapObject.get("customerPrice");
+                if ("true".equals(isNeedCustomerPrice) && customerPrice != null && customerPrice.doubleValue() > 0) {
+                    mapObject.put("price", customerPrice);
+                }
             }
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //当前查询页数据-获取货品id字符串(','逗号分隔的字符串)
-        String ids = this.findIdsByPageMapList(varList);
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            queryStr = "'" + ids.replace(",", "','") + "'";
-        }
+        //isNeedProductProperty 是否需要货品属性子表 true: 需要 (is null 或 false)不需要
+        //只要当 (基础-产品物料) 模块主页面时 isNeedProductProperty:= 'true'
+        String isNeedProductProperty = pd.getString("isNeedProductProperty");
+        if ("true".equals(isNeedProductProperty)) {
+            //当前查询页数据-获取货品id字符串(','逗号分隔的字符串)
+            String ids = this.findIdsByPageMapList(varList);
+            String queryStr = "";
+            if (ids != null && ids.trim().length() > 0) {
+                queryStr = "'" + ids.replace(",", "','") + "'";
+            }
 
-        //当前查询页数据-货品id查询(货品属性表)
-        PageData findMap = new PageData();
-        findMap.put("queryProdIdsStr", queryStr);
-        findMap.put("isdisable", "1");
-        findMap.put("orderStr", "prod_id,cdate");
-        findMap.put("mapSize", Integer.valueOf(findMap.size()));
-        List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyList(findMap);
-        Map<String, String> mapObject = productPropertyService.findProdPropertyJsonByProductPropertyList(productPropertyList);
+            //当前查询页数据-货品id查询(货品属性表)
+            PageData findMap = new PageData();
+            findMap.put("queryProdIdsStr", queryStr);
+            findMap.put("isdisable", "1");
+            findMap.put("orderStr", "prod_id,cdate");
+            findMap.put("mapSize", Integer.valueOf(findMap.size()));
+            List<ProductProperty> productPropertyList = productPropertyService.findProductPropertyList(findMap);
+            Map<String, String> productPropertyMap = productPropertyService.findProdPropertyJsonByProductPropertyList(productPropertyList);
 
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                //price 货品价格
-                //BigDecimal price = (BigDecimal)map.get("price");
+            if (varList != null && varList.size() > 0) {
+                for (Map<String, Object> mapObject : varList) {
+                    String prodId = (String)mapObject.get("id");
 
-                //customerPrice 货品客户价格
-                BigDecimal customerPrice = (BigDecimal)map.get("customerPrice");
-                if ("true".equals(isNeedCustomerPrice) && customerPrice != null && customerPrice.doubleValue() > 0) {
-                    map.put("price", customerPrice);
-                }
-
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    String mapKey = entry.getKey();
-                    Object mapValue = map.get(mapKey);
-                    //获取产品物料-自定义属性
-                    if ("prodPropertyJsonStr".equals(mapKey)) {
-                        String prodId = (String)map.get("id");
-                        String jsonString = "";
-                        if (mapObject.get(prodId) != null) {
-                            jsonString = mapObject.get(prodId).trim();
-                            varMap.put(mapKey, jsonString);
-                        }
-                    } else if ("prodProperty".equals(mapKey)) {
-                        String prodId = (String)map.get("id");
-                        if (mapObject.get(prodId) != null) {
-                            String showString = mapObject.get(prodId+"_show").trim();
-                            varMap.put(mapKey, showString);
-                        }
-                    } else {
-                        varMap.put(mapKey, mapValue != null ? mapValue.toString() : "");
+                    String prodPropertyJsonStr = new String();
+                    if (productPropertyMap.get(prodId) != null) {
+                        prodPropertyJsonStr = productPropertyMap.get(prodId).trim();
                     }
-
+                    mapObject.put("prodPropertyJsonStr", prodPropertyJsonStr);
                 }
-                varMapList.add(varMap);
             }
         }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;
