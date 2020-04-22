@@ -1303,8 +1303,8 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
         if (editObject.getOrderCount() != null && editObject.getOrderCount().doubleValue() != 0D) {
             productPrice = BigDecimal.valueOf(sum.doubleValue() / editObject.getOrderCount().doubleValue());
         }
-        //四舍五入到2位小数
-        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        //四舍五入到4位小数
+        productPrice = productPrice.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         editObject.setProductPrice(productPrice);
 
         return editObject;

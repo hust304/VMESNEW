@@ -246,8 +246,8 @@
             detail.isdisable isdisable,
 
             CASE
-                WHEN detail.sum = 0 THEN '未结算'
-                WHEN detail.sum > 0 THEN '已结算'
+                WHEN detail.sum = 0 THEN '未核价'
+                WHEN detail.sum > 0 THEN '已核价'
             ELSE null
             END sumStateName,
 

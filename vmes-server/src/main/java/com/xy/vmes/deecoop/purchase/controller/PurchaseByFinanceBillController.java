@@ -407,6 +407,12 @@ public class PurchaseByFinanceBillController {
             amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             addFinanceBill.setAmount(amount);
 
+            String remark = new String();
+            if (mapObject.get("remark") != null) {
+                remark = mapObject.get("remark").trim();
+            }
+            addFinanceBill.setRemark(remark);
+
             String customerId = mapObject.get("id");
             addFinanceBill.setCustomerId(customerId);
 
