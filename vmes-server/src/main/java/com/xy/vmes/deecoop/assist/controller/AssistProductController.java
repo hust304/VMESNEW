@@ -279,6 +279,49 @@ public class AssistProductController {
         return model;
     }
 
+    /**
+     * 修改外协件(禁用)状态
+     *
+     * @author 陈刚
+     * @date 2020-04-19
+     */
+    @PostMapping("/assist/assistProduct/updateDisableAssistProduct")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateDisableAssistProduct() throws Exception {
+        logger.info("################/assist/assistProduct/updateDisableAssistProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        //是否启用(0:已禁用 1:启用)
+        String isdisable = pageData.getString("isdisable");
+
+        //1. 非空判断
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "工艺名称id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        AssistProduct editProduct = new AssistProduct();
+        editProduct.setId(id);
+        editProduct.setIsdisable(isdisable);
+        assistProductService.update(editProduct);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistProduct/updateDisableAssistProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

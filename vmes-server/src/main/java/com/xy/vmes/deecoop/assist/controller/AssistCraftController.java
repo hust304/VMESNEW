@@ -96,6 +96,8 @@ public class AssistCraftController {
         addCraft.setSysCode(sysCode);
 
         assistCraftService.save(addCraft);
+
+        model.set("Craft", addCraft);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistCraft/addAssistCraft 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -173,6 +175,49 @@ public class AssistCraftController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistCraft/updateAssistCraft 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改外协工艺名称(禁用)状态
+     *
+     * @author 陈刚
+     * @date 2020-04-19
+     */
+    @PostMapping("/assist/assistCraft/updateDisableAssistCraft")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateDisableAssistCraft() throws Exception {
+        logger.info("################/assist/assistCraft/updateDisableAssistCraft 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String id = pageData.getString("id");
+        //是否启用(0:已禁用 1:启用)
+        String isdisable = pageData.getString("isdisable");
+
+        //1. 非空判断
+        String msgStr = new String();
+        if (id == null || id.trim().length() == 0) {
+            msgStr = msgStr + "工艺名称id为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (isdisable == null || isdisable.trim().length() == 0) {
+            msgStr = msgStr + "isdisable为空或空字符串！" + Common.SYS_ENDLINE_DEFAULT;
+        }
+        if (msgStr.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
+        AssistCraft editCraft = new AssistCraft();
+        editCraft.setId(id);
+        editCraft.setIsdisable(isdisable);
+        assistCraftService.update(editCraft);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistCraft/updateDisableAssistCraft 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
