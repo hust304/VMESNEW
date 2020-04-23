@@ -132,7 +132,7 @@
                 and assistProd.company_id = #{currentCompanyId}
             </if>
             <if test="assistProductName != null and assistProductName != ''" >
-                and assistProd.product_name = #{assistProductName}
+                and assistProd.product_name like CONCAT('%',CONCAT(#{assistProductName}),'%')
             </if>
 
             <!--productValue (货品名称,货品编码) 查询-->

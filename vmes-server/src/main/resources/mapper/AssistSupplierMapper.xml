@@ -34,6 +34,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'assistSupplier','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSupplier','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSupplier','supplierId','供应商id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSupplier','assistProductId','外协件id',3, '1','1','1','0',now(), 'admin'),
@@ -45,7 +46,15 @@
             (replace(uuid(), '-', ''),'assistSupplier','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSupplier','remark','备注',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSupplier','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistSupplier','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''),'assistSupplier','productId','外协货品id(系统货品表id)',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSupplier','assistProductName','外协件',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSupplier', 'productUnit', '单位id', 14, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSupplier', 'productUnitName', '单位', 15, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistSupplier', 'craftCode', '工艺编号', 16, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSupplier', 'craftName', '工艺名称', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSupplier','supplierName','供应商',18, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
@@ -83,6 +92,15 @@
                 </choose>
             </if>
 
+            <if test="supplierId != null and supplierId != ''" >
+                and supplier_id = #{supplierId}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and company_id = #{currentCompanyId}
+            </if>
+            <if test="assistProductId != null and assistProductId != ''" >
+                and assist_product_id = #{assistProductId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
@@ -97,22 +115,64 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        supplier_id supplierId,
-        assist_product_id assistProductId,
-        price price,
+            assistSupplier.id id,
+            assistSupplier.company_id companyId,
+            assistSupplier.supplier_id supplierId,
+            assistSupplier.assist_product_id assistProductId,
+            round(ifnull(assistSupplier.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
 
-        loss_ratio lossRatio,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+            round(ifnull(assistSupplier.loss_ratio, 0),2) lossRatio,
+            assistSupplier.cuser cuser,
+            assistSupplier.cdate cdate,
+            assistSupplier.uuser uuser,
+            assistSupplier.udate udate,
 
-        remark remark,
-        isdisable isdisable
-        from vmes_assist_supplier
+            assistSupplier.remark remark,
+            assistSupplier.isdisable isdisable,
+
+            <!--外协件-->
+            assistProd.product_id,
+            assistProd.product_name assistProductName,
+            prodUnit.unit productUnit,
+            prodUnitName.name productUnitName,
+            <!--外协工艺名称-->
+            craft.sys_code craftCode,
+            craft.name craftName,
+
+            supplier.name supplierName
+
+        from vmes_assist_supplier assistSupplier
+            left join vmes_customer supplier on assistSupplier.supplier_id = supplier.id
+            left join vmes_assist_product assistProd on assistSupplier.assist_product_id = assistProd.id
+
+            left join vmes_assist_craft craft on assistProd.craft_id = craft.id
+            left join vmes_product product on assistProd.product_id = product.id
+            left join vmes_product_unit prodUnit on assistProd.product_id = prodUnit.product_id  and prodUnit.type = 1
+            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
         <where>
+            <if test="supplierId != null and supplierId != ''" >
+                and assistSupplier.supplier_id = #{supplierId}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and assistSupplier.company_id = #{currentCompanyId}
+            </if>
+            <if test="assistProductId != null and assistProductId != ''" >
+                and assistSupplier.assist_product_id = #{assistProductId}
+            </if>
+
+            <if test="assistProductName != null and assistProductName != ''" >
+                and assistProd.product_name like CONCAT('%',CONCAT(#{assistProductName}),'%')
+            </if>
+            <if test="craftCode != null and craftCode != ''" >
+                and craft.sys_code LIKE CONCAT('%',CONCAT(#{craftCode}),'%')
+            </if>
+            <if test="craftName != null and craftName != ''" >
+                and craft.name LIKE CONCAT('%',CONCAT(#{craftName}),'%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                and supplier.name LIKE CONCAT(CONCAT('%', #{supplierName}),'%')
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
