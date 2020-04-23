@@ -115,7 +115,7 @@ public class AssistSupplierController {
 
         //判断(供应商,外协件)--表(vmes_assist_supplier:外协供应商) 是否存在
         if (assistSupplierService.isExistAssistSupplier(null, companyID, supplierId, assistProductId)) {
-            String msgTemp = "供应商:{0} 外协件:{1} 在系统中已经存在，请重新选择！";
+            String msgTemp = "(供应商：{0} 外协件：{1}) 在系统中已经存在，请重新选择！";
             String msgStr = MessageFormat.format(msgTemp,
                     supplierName,
                     assistProductName);
@@ -239,7 +239,7 @@ public class AssistSupplierController {
 
         String companyID = pageData.getString("currentCompanyId");
         if (assistSupplierService.isExistAssistSupplier(id, companyID, supplierId, assistProductId)) {
-            String msgTemp = "供应商:{0} 外协件:{1} 在系统中已经存在，请重新选择！";
+            String msgTemp = "(供应商：{0} 外协件：{1}) 在系统中已经存在，请重新选择！";
             String msgStr = MessageFormat.format(msgTemp,
                     supplierName,
                     assistProductName);

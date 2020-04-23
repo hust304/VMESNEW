@@ -109,7 +109,7 @@ public class AssistProductController {
 
         //判断(外协件货品,工艺名称)--表(vmes_assist_product:外协件) 是否存在
         if (assistProductService.isExistAssistProduct(null, companyID, assistProductId, craftId)) {
-            String msgTemp = "外协件货品:{0} 工艺名称:{1} 在系统中已经存在，请重新选择！";
+            String msgTemp = "(外协件货品：{0} 工艺名称：{1}) 在系统中已经存在，请重新选择！";
             String msgStr = MessageFormat.format(msgTemp,
                     assistProductInfo,
                     craftName);
@@ -224,7 +224,7 @@ public class AssistProductController {
 
         //判断(外协件货品,工艺名称)--表(vmes_assist_product:外协件) 是否存在
         if (assistProductService.isExistAssistProduct(parentId, companyID, assistProductId, craftId)) {
-            String msgTemp = "外协件货品:{0} 工艺名称:{1} 在系统中已经存在，请重新选择！";
+            String msgTemp = "(外协件货品：{0} 工艺名称：{1}) 在系统中已经存在，请重新选择！";
             String msgStr = MessageFormat.format(msgTemp,
                     assistProductInfo,
                     craftName);
