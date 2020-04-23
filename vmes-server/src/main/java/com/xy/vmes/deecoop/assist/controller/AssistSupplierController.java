@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 
 /**
 * 说明：vmes_assist_supplier:外协供应商Controller
@@ -69,6 +70,7 @@ public class AssistSupplierController {
         }
 
         //supplierId:供应商ID
+        String supplierName = pageData.getString("supplierName");
         String supplierId = pageData.getString("supplierId");
         if (supplierId == null || supplierId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -77,6 +79,7 @@ public class AssistSupplierController {
         }
 
         //assistProductId:外协件ID
+        String assistProductName = pageData.getString("assistProductName");
         String assistProductId = pageData.getString("assistProductId");
         if (assistProductId == null || assistProductId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -109,6 +112,18 @@ public class AssistSupplierController {
         }
         //四舍五入到2位小数
         lossRatio = lossRatio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        //判断(供应商,外协件)--表(vmes_assist_supplier:外协供应商) 是否存在
+        if (assistSupplierService.isExistAssistSupplier(null, companyID, supplierId, assistProductId)) {
+            String msgTemp = "供应商:{0} 外协件:{1} 在系统中已经存在，请重新选择！";
+            String msgStr = MessageFormat.format(msgTemp,
+                    supplierName,
+                    assistProductName);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         AssistSupplier addSupplier = new AssistSupplier();
         addSupplier.setCuser(cuser);
@@ -179,6 +194,7 @@ public class AssistSupplierController {
         }
 
         //supplierId:供应商ID
+        String supplierName = pageData.getString("supplierName");
         String supplierId = pageData.getString("supplierId");
         if (supplierId == null || supplierId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -187,6 +203,7 @@ public class AssistSupplierController {
         }
 
         //assistProductId:外协件ID
+        String assistProductName = pageData.getString("assistProductName");
         String assistProductId = pageData.getString("assistProductId");
         if (assistProductId == null || assistProductId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -219,6 +236,18 @@ public class AssistSupplierController {
         }
         //四舍五入到2位小数
         lossRatio = lossRatio.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        String companyID = pageData.getString("currentCompanyId");
+        if (assistSupplierService.isExistAssistSupplier(id, companyID, supplierId, assistProductId)) {
+            String msgTemp = "供应商:{0} 外协件:{1} 在系统中已经存在，请重新选择！";
+            String msgStr = MessageFormat.format(msgTemp,
+                    supplierName,
+                    assistProductName);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
 
         AssistSupplier editSupplier = new AssistSupplier();
         editSupplier.setId(id);

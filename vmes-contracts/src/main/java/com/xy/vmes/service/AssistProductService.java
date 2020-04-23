@@ -96,6 +96,16 @@ public interface AssistProductService {
     AssistProduct findAssistProduct(PageData object) throws Exception;
     AssistProduct findAssistProductById(String id) throws Exception;
     List<AssistProduct> findAssistProductList(PageData object) throws Exception;
+
+    /**
+     * 判断(外协件货品,工艺名称)--表(vmes_assist_product:外协件) 是否存在
+     * @param id
+     * @param companyId  企业id
+     * @param productId  外协件货品id
+     * @param craftId    工艺名称id
+     * @return
+     */
+    boolean isExistAssistProduct(String id, String companyId, String productId, String craftId) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

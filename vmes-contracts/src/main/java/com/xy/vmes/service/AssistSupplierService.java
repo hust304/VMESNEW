@@ -96,6 +96,16 @@ public interface AssistSupplierService {
     AssistSupplier findAssistSupplier(PageData object) throws Exception;
     AssistSupplier findAssistSupplierById(String id) throws Exception;
     List<AssistSupplier> findAssistSupplierList(PageData object) throws Exception;
+
+    /**
+     * 判断(供应商,外协件)--表(vmes_assist_supplier:外协供应商) 是否存在
+     * @param id
+     * @param companyId       企业id
+     * @param supplierId      供应商id
+     * @param assistProductId 外协件id
+     * @return
+     */
+    boolean isExistAssistSupplier(String id, String companyId, String supplierId, String assistProductId) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

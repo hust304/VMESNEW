@@ -186,6 +186,32 @@ public class AssistSupplierServiceImp implements AssistSupplierService {
         return this.findDataList(object, null);
     }
 
+    /**
+     * 判断(供应商,外协件)--表(vmes_assist_supplier:外协供应商) 是否存在
+     * @param id
+     * @param companyId       企业id
+     * @param supplierId      供应商id
+     * @param assistProductId 外协件id
+     * @return
+     */
+    public boolean isExistAssistSupplier(String id, String companyId, String supplierId, String assistProductId) throws Exception {
+        PageData findMap = new PageData();
+        if (id != null && id.trim().length() > 0) {
+            findMap.put("id", id);
+            findMap.put("isSelfExist", "true");
+        }
+        findMap.put("companyId", companyId);
+        findMap.put("supplierId", supplierId);
+        findMap.put("assistProductId", assistProductId);
+
+        List<AssistSupplier> objetList = this.findAssistSupplierList(findMap);
+        if (objetList != null && objetList.size() > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

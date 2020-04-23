@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
 * 说明：vmes_assist_product:外协件Controller
@@ -80,7 +80,12 @@ public class AssistProductController {
             model.putMsg("外协件为必填项不可为空！");
             return model;
         }
+        String assistProductInfo = new String();
+        if (pageData.getString("assistProductInfo") != null) {
+            assistProductInfo = pageData.getString("assistProductInfo").trim();
+        }
 
+        String craftName = pageData.getString("craftName");
         String craftId = pageData.getString("craftId");
         if (craftId == null || craftId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -102,16 +107,23 @@ public class AssistProductController {
             return model;
         }
 
+        //判断(外协件货品,工艺名称)--表(vmes_assist_product:外协件) 是否存在
+        if (assistProductService.isExistAssistProduct(null, companyID, assistProductId, craftId)) {
+            String msgTemp = "外协件货品:{0} 工艺名称:{1} 在系统中已经存在，请重新选择！";
+            String msgStr = MessageFormat.format(msgTemp,
+                    assistProductInfo,
+                    craftName);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         //1. 添加外协件
         AssistProduct addProduct = new AssistProduct();
         addProduct.setCuser(cuser);
         addProduct.setCompanyId(companyID);
         addProduct.setProductId(assistProductId);
-
-        String assistProductInfo = new String();
-        if (pageData.getString("assistProductInfo") != null) {
-            assistProductInfo = pageData.getString("assistProductInfo").trim();
-        }
         addProduct.setProductName(assistProductInfo);
 
         addProduct.setCraftId(craftId);
@@ -169,11 +181,17 @@ public class AssistProductController {
         PageData pageData = HttpUtils.parsePageData();
 
         //String cuser = pageData.getString("cuser");
+        String companyID = pageData.getString("currentCompanyId");
         String parentId = pageData.getString("id");
         if (parentId == null || parentId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("外协件id为空或空字符串！");
             return model;
+        }
+
+        String assistProductInfo = new String();
+        if (pageData.getString("assistProductInfo") != null) {
+            assistProductInfo = pageData.getString("assistProductInfo").trim();
         }
         String assistProductId = pageData.getString("assistProductId");
         if (assistProductId == null || assistProductId.trim().length() == 0) {
@@ -182,6 +200,7 @@ public class AssistProductController {
             return model;
         }
 
+        String craftName = pageData.getString("craftName");
         String craftId = pageData.getString("craftId");
         if (craftId == null || craftId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -203,15 +222,23 @@ public class AssistProductController {
             return model;
         }
 
+        //判断(外协件货品,工艺名称)--表(vmes_assist_product:外协件) 是否存在
+        if (assistProductService.isExistAssistProduct(parentId, companyID, assistProductId, craftId)) {
+            String msgTemp = "外协件货品:{0} 工艺名称:{1} 在系统中已经存在，请重新选择！";
+            String msgStr = MessageFormat.format(msgTemp,
+                    assistProductInfo,
+                    craftName);
+
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(msgStr);
+            return model;
+        }
+
         //1. 修改外协件
         AssistProduct editProduct = new AssistProduct();
         editProduct.setId(parentId);
 
         editProduct.setProductId(assistProductId);
-        String assistProductInfo = new String();
-        if (pageData.getString("assistProductInfo") != null) {
-            assistProductInfo = pageData.getString("assistProductInfo").trim();
-        }
         editProduct.setProductName(assistProductInfo);
         editProduct.setCraftId(craftId);
         assistProductService.update(editProduct);

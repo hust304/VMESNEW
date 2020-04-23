@@ -88,6 +88,15 @@
                     </otherwise>
                 </choose>
             </if>
+            <if test="companyId != null and companyId != ''" >
+                and company_id = #{companyId}
+            </if>
+            <if test="productId != null and productId != ''" >
+                and product_id = #{productId}
+            </if>
+            <if test="craftId != null and craftId != ''" >
+                and craft_id = #{craftId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
