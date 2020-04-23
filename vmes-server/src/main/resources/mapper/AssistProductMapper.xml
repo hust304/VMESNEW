@@ -38,26 +38,20 @@
             (replace(uuid(), '-', ''),'assistProduct','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistProduct','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistProduct','productId','外协货品id(系统货品表id)',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','craftId','工艺名称id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','cuser','创建用户id',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','cdate','创建时间',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','uuser','修改用户id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','udate','修改时间',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','remark','备注',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','isdisable','是否启用(0:已禁用 1:启用)',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','productName','外协件',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','craftId','工艺名称id',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','remark','备注',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistProduct', 'productCode', '货品编码', 11, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productName', '货品名称', 12, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productSpec', '规格型号', 13, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productGenre', '货品属性id', 14, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productGenreName', '货品属性', 15, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productType', '货品类型id', 16, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productProperty', '自定义属性', 17, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productUnit', '单位id', 18, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productUnitName', '单位', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProduct', 'productUnit', '单位id', 11, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProduct', 'productUnitName', '单位', 12, '1', '1', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistProduct', 'craftCode', '工艺编号', 20, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'craftName', '工艺名称', 21, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProduct', 'craftCode', '工艺编号', 13, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProduct', 'craftName', '工艺名称', 14, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -68,12 +62,15 @@
         id id,
         company_id companyId,
         product_id productId,
+        product_name productName,
         craft_id craftId,
+
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
+
         isdisable isdisable
         from vmes_assist_product
         <where>
@@ -109,26 +106,15 @@
             assistProd.id id,
             assistProd.company_id companyId,
             assistProd.product_id productId,
+            assistProd.product_name productName,
             assistProd.craft_id craftId,
+
             assistProd.cuser cuser,
             assistProd.cdate cdate,
             assistProd.uuser uuser,
             assistProd.udate udate,
             assistProd.remark remark,
             assistProd.isdisable isdisable,
-
-            <!--货品表-->
-            product.code sysProductCode,
-            product.source_code custProductCode,
-            CASE
-            WHEN product.source_code is null THEN product.code
-            WHEN product.source_code is not null THEN product.source_code
-            ELSE null
-            END productCode,
-            product.name productName,
-            product.spec productSpec,
-            product.genre productGenre,
-            product.property productProperty,
 
             prodUnit.unit productUnit,
             prodUnitName.name productUnitName,
@@ -145,6 +131,9 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and assistProd.company_id = #{currentCompanyId}
             </if>
+            <if test="assistProductName != null and assistProductName != ''" >
+                and assistProd.product_name = #{assistProductName}
+            </if>
 
             <!--productValue (货品名称,货品编码) 查询-->
             <if test="productValue != null and productValue != ''">
@@ -157,6 +146,7 @@
             <if test="productSpec != null and productSpec != ''" >
                 and product.spec LIKE CONCAT('%',CONCAT(#{productSpec}),'%')
             </if>
+
 
             <if test="craftCode != null and craftCode != ''" >
                 and craft.sys_code LIKE CONCAT('%',CONCAT(#{craftCode}),'%')

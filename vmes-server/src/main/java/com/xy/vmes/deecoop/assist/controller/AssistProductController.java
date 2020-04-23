@@ -107,6 +107,13 @@ public class AssistProductController {
         addProduct.setCuser(cuser);
         addProduct.setCompanyId(companyID);
         addProduct.setProductId(assistProductId);
+
+        String assistProductInfo = new String();
+        if (pageData.getString("assistProductInfo") != null) {
+            assistProductInfo = pageData.getString("assistProductInfo").trim();
+        }
+        addProduct.setProductName(assistProductInfo);
+
         addProduct.setCraftId(craftId);
         assistProductService.save(addProduct);
 
@@ -201,6 +208,11 @@ public class AssistProductController {
         editProduct.setId(parentId);
 
         editProduct.setProductId(assistProductId);
+        String assistProductInfo = new String();
+        if (pageData.getString("assistProductInfo") != null) {
+            assistProductInfo = pageData.getString("assistProductInfo").trim();
+        }
+        editProduct.setProductName(assistProductInfo);
         editProduct.setCraftId(craftId);
         assistProductService.update(editProduct);
 
