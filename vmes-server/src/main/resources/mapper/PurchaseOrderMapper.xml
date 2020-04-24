@@ -329,8 +329,43 @@
 
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+
+
+
         select
-        <include refid="Field1"></include>
+        companyId,applyId,applyName,deptId,deptName,supplierId,
+        <![CDATA[case when sum(receiptAmount)=0 then '0'
+        when sum(receiptAmount)>0 and sum(receiptAmount)<ifnull(amount, 0) then '1'
+        when sum(receiptAmount)>=ifnull(amount, 0) then '2'
+        else null end receiptState]]>,
+        supplierName,code,total,discount,amount,sum(receiptAmount) receiptAmount,
+        type,state,cuser,cdate,uuser,udate,remark,isdisable,id
+        from
+        (
+        select
+        distinct
+        purchaseOrder.company_id companyId,
+        purchaseOrder.apply_id applyId,
+        apply.user_name applyName,
+        purchaseOrder.dept_id deptId,
+        dept.name deptName,
+        purchaseOrder.supplier_id supplierId,
+        supplier.name supplierName,
+        purchaseOrder.code code,
+        round(ifnull(purchaseOrder.total, 0),2) total,
+        round(ifnull(purchaseOrder.discount, 0),2) discount,
+        round(ifnull(purchaseOrder.amount, 0),2) amount,
+        round(ifnull(receipt.amount, 0),2) receiptAmount,
+        purchaseOrder.type type,
+        purchaseOrder.state state,
+        purchaseOrder.cuser cuser,
+        DATE_FORMAT(purchaseOrder.cdate,'%Y-%m-%d') cdate,
+        purchaseOrder.uuser uuser,
+        purchaseOrder.udate udate,
+        purchaseOrder.remark remark,
+        purchaseOrder.isdisable isdisable,
+        purchaseOrder.id id
+
         from
         vmes_purchase_order purchaseOrder
         left join vmes_purchase_order_detail detail on detail.parent_id = purchaseOrder.id
@@ -378,10 +413,14 @@
                 and ${queryStr}
             </if>
         </where>
-        group by  purchaseOrder.id
+
+
+        )tab
+        group by tab.id
         <if test="orderStr != null and orderStr != ''" >
             order by ${orderStr}
         </if>
+
     </select>
 
     <!--按(企业id,供应商id)汇总 vmes_purchase_order-->
