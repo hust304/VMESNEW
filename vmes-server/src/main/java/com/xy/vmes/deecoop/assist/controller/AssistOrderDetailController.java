@@ -1,0 +1,46 @@
+package com.xy.vmes.deecoop.assist.controller;
+
+import com.xy.vmes.service.AssistOrderDetailService;
+
+import com.yvan.HttpUtils;
+import com.yvan.PageData;
+import com.yvan.springmvc.ResultModel;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+/**
+* 说明：vmes_assist_order_detail:外协订单明细Controller
+* @author 陈刚 自动生成
+* @date 2020-04-24
+*/
+@RestController
+@Slf4j
+public class AssistOrderDetailController {
+    private Logger logger = LoggerFactory.getLogger(AssistOrderDetailController.class);
+
+    @Autowired
+    private AssistOrderDetailService assistOrderDetailService;
+
+
+    /**
+    * @author 陈刚 自动创建，可以修改
+    * @date 2020-04-24
+    */
+    @PostMapping("/assist/assistOrderDetail/listPageAssistOrderDetail")
+    public ResultModel listPageAssistOrderDetail() throws Exception {
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetail 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistOrderDetailService.listPageAssistOrderDetail(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+}
+
+
+
