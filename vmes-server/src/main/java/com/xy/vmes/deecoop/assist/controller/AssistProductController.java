@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.assist.controller;
 
 import com.xy.vmes.entity.AssistProduct;
 import com.xy.vmes.entity.AssistProductDetail;
+import com.xy.vmes.service.AssistProductBySupplierService;
 import com.xy.vmes.service.AssistProductDetailService;
 import com.xy.vmes.service.AssistProductService;
 
@@ -37,6 +38,8 @@ public class AssistProductController {
     private AssistProductService assistProductService;
     @Autowired
     private AssistProductDetailService assistProductDetailService;
+    @Autowired
+    private AssistProductBySupplierService assistProductBySupplierService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -52,6 +55,18 @@ public class AssistProductController {
         logger.info("################/assist/assistProduct/listPageAssistProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    @PostMapping("/assist/assistProduct/listPageAssistProductBySupplier")
+    public ResultModel listPageAssistProductBySupplier() throws Exception {
+        logger.info("################/assist/assistProduct/listPageAssistProductBySupplier 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistProductBySupplierService.listPageAssistProductBySupplier(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistProduct/listPageAssistProductBySupplier 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     /**
      * 新增外协件
      * @author 陈刚

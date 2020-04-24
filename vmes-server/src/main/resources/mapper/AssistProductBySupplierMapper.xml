@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_product:外协件关联查询 vmes_assist_supplier:外协供应商  Mapper.xml
+创建人：陈刚 自动创建
+创建时间：2020-04-19
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistProductBySupplierMapper">
+    <insert id="assistProductBySupplier" >
+        delete from vmes_column where model_code = 'assistProductBySupplier';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'assistProductBySupplier','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','assistProductId','外协件id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','companyId','企业id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','productId','外协货品id(系统货品表id)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','assistProductName','外协件',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','craftId','工艺名称id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProductBySupplier', 'productUnit', '单位id', 6, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProductBySupplier', 'productUnitName', '单位', 7, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProductBySupplier', 'craftCode', '工艺编号', 8, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProductBySupplier', 'craftName', '工艺名称', 9, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','price','单价',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProductBySupplier','lossRatio','损耗率',11, '1','1','1','0',now(), 'admin'),
+    </insert>
+
+    <select id="listAssistProductBySupplier" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            assistProd.id assistProductId,
+            assistProd.company_id companyId,
+            assistProd.product_id productId,
+            assistProd.product_name assistProductName,
+            assistProd.craft_id craftId,
+
+            prodUnit.unit productUnit,
+            prodUnitName.name productUnitName,
+
+            <!--外协工艺名称-->
+            craft.sys_code craftCode,
+            craft.name craftName,
+            <!--外协供应商-->
+            round(ifnull(supplier.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
+            round(ifnull(supplier.loss_ratio, 0),2) lossRatio
+
+        from vmes_assist_product assistProd
+            left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
+            left join vmes_product_unit prodUnit on assistProd.product_id = prodUnit.product_id  and prodUnit.type = 1
+            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+            left join (
+                select
+                    assist_product_id,
+                    price,
+                    loss_ratio
+                from vmes_assist_supplier
+                <where>
+                    <if test="supplierId != null and supplierId != ''" >
+                        and supplier_id = #{supplierId}
+                    </if>
+                    <if test="companyId != null and companyId != ''" >
+                        and company_id = #{companyId}
+                    </if>
+                    <!--是否启用(0:已禁用 1:启用)-->
+                    and isdisable = '1'
+                </where>
+            ) supplier on assistProd.id = supplier.assist_product_id
+        <where>
+            <if test="companyId != null and companyId != ''" >
+                and assistProd.company_id = #{companyId}
+            </if>
+            and assistProd.isdisable = '1'
+        </where>
+    </select>
+
+</mapper>
