@@ -257,7 +257,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        DATE_FORMAT(receipt.cdate,'%Y-%m-%d') cdate,receipt.amount,receipt.cuser,vmesuser.user_name cuserName
+        DATE_FORMAT(receipt.cdate,'%Y-%m-%d') cdate,round(ifnull(receipt.amount,0),2) amount,receipt.cuser,vmesuser.user_name cuserName
         from
         vmes_purchase_receipt receipt
         left join vmes_user vmesuser on vmesuser.id = receipt.cuser
