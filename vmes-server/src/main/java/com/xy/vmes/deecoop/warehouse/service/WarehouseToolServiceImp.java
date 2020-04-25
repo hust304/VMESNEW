@@ -28,6 +28,8 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
     private SaleRetreatDetailOnInService saleRetreatService;
     @Autowired
     private PurchaseSignDetailOnInService purchaseSignService;
+    @Autowired
+    private PurchaseRetreatDetailOnInService purchaseRetreatDetailService;
 
     @Autowired
     private SaleDeliverDtlOnOutDtlService saleDeliverService;
@@ -202,6 +204,15 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
             findMap.put("receiveInParentId", parentId);
             //SQL查询语句: PurchaseSignDetailOnInMapper.findPurchaseSignDetailOnInDetail
             mapList = purchaseSignService.findPurchaseSignDetailOnInDetail(findMap, null);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //4.采购退货单-退货换货
+            findMap = new PageData();
+            findMap.put("inParentId", parentId);
+            //SQL查询语句: PurchaseRetreatDetailOnInMapper.findPurchaseRetreatDetailOnInDetail
+            mapList = purchaseRetreatDetailService.findPurchaseRetreatDetailOnInDetail(findMap, null);
             if (mapList != null && mapList.size() > 0) {
                 return Boolean.TRUE;
             }

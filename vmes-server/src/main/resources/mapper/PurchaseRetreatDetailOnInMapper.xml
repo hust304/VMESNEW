@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：采购退货明细关联入库明细 Mapper.xml
+创建人：陈刚
+创建时间：2019-08-28
+ -->
+<mapper namespace="com.xy.vmes.deecoop.purchase.dao.PurchaseRetreatDetailOnInMapper">
+    <select id="findPurchaseRetreatDetailOnInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            retreatDetail.id id,
+            retreatDetail.parent_id parentId,
+            retreatDetail.order_detail_id orderDetailId,
+            retreatDetail.out_detail_id outDetailId,
+            retreatDetail.product_id productId,
+
+            retreatDetail.amount amount,
+            retreatDetail.unit unit,
+            retreatDetail.count count,
+            retreatDetail.state state,
+            retreatDetail.cuser cuser,
+
+            retreatDetail.cdate cdate,
+            retreatDetail.uuser uuser,
+            retreatDetail.udate udate,
+            retreatDetail.remark remark,
+            retreatDetail.isdisable isdisable,
+            retreatDetail.in_detail_id inDetailId
+        from vmes_purchase_retreat_detail retreatDetail
+
+        <where>
+            <!--入库单id-->
+            <if test="inParentId != null and inParentId != ''" >
+                and retreatDetail.in_detail_id in (
+                    select id from vmes_warehouse_in_detail
+                    where parent_id = #{inParentId}
+                )
+            </if>
+
+        </where>
+
+    </select>
+</mapper>

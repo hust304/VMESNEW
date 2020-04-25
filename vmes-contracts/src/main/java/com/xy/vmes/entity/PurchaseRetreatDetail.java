@@ -63,6 +63,9 @@ public class PurchaseRetreatDetail implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	//入库明细ID-退货换货
+	@TableField("in_detail_id")
+	private String inDetailId;
 
 	public void setId(String id) {
 		this.id = id;
@@ -154,7 +157,12 @@ public class PurchaseRetreatDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getInDetailId() {
+		return inDetailId;
+	}
+	public void setInDetailId(String inDetailId) {
+		this.inDetailId = inDetailId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

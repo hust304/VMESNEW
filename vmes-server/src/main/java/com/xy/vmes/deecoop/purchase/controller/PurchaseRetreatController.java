@@ -528,6 +528,8 @@ public class PurchaseRetreatController {
         //type:退货类型-(字典表-vmes_dictionary.id)
         //f69839bbf2394846a65894f0da120df9 退货退款:retreatRefund
         //c90c2081328c427e8d65014d98335601 退货换货:retreatChange
+
+        Map<String, Map<String, Object>> businessProdInMapByEditDetail = new HashMap<String, Map<String, Object>>();
         if (Common.DICTIONARY_MAP.get("retreatChange").equals(retreat.getType()) && jsonMapList.size() > 0) {
             Map<String, Map<String, Object>> productByInMap = purchaseRetreatService.findProductMapByIn(jsonMapList);
 
@@ -546,6 +548,14 @@ public class PurchaseRetreatController {
                         retreat.getSysCode(),
                         productByInMap);
 
+                if (productByInMap != null) {
+                    for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = productByInMap.get(mapKey);
+                        businessProdInMapByEditDetail.put(mapKey, mapValue);
+                    }
+                }
+
             } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
                 //退库方式:1:生成退库单: (生成简版入库单)
                 //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
@@ -560,6 +570,14 @@ public class PurchaseRetreatController {
                         "采购退货换货",
                         retreat.getSysCode(),
                         productByInMap);
+
+                if (productByInMap != null) {
+                    for (Iterator iterator = productByInMap.keySet().iterator(); iterator.hasNext();) {
+                        String mapKey = (String) iterator.next();
+                        Map<String, Object> mapValue = productByInMap.get(mapKey);
+                        businessProdInMapByEditDetail.put(mapKey, mapValue);
+                    }
+                }
             }
         }
 
@@ -602,6 +620,11 @@ public class PurchaseRetreatController {
             if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(businessId) != null) {
                 Map<String, Object> productOutMap = businessProdOutMapByEditDetail.get(businessId);
                 detailEdit.setOutDetailId((String)productOutMap.get("outDtlId"));
+            }
+
+            if (businessProdInMapByEditDetail != null && businessProdInMapByEditDetail.get(businessId) != null) {
+                Map<String, Object> productOutMap = businessProdInMapByEditDetail.get(businessId);
+                detailEdit.setInDetailId((String)productOutMap.get("inDtlId"));
             }
 
             //退货单明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
