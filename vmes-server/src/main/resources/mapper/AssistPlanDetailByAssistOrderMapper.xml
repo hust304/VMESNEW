@@ -18,6 +18,7 @@
             planDtl.state state,
             planDtl.isdisable isdisable,
 
+            assistProd.product_name assistProductName,
             prodUnit.unit productUnit,
             prodUnitName.name productUnitName,
 
@@ -31,7 +32,7 @@
         from vmes_assist_plan_detail planDtl
             left join vmes_assist_product assistProd on planDtl.assist_product_id = assistProd.id and assistProd.isdisable = '1'
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
-            left join vmes_product_unit prodUnit on planDtl.product_id = prodUnit.product_id and prodUnit.type = 1
+            left join vmes_product_unit prodUnit on assistProd.product_id = prodUnit.product_id and prodUnit.type = 1
             left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
             left join (
                 select

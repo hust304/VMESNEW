@@ -34,23 +34,29 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
-            (replace(uuid(), '-', ''),'assistOrderDetail','parentId','外协订单id',1, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','planDetailId','计划明细id',2, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','assistProductId','外协件id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','orderUnit','单位id(单据单位)',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','orderCount','订单订购数量',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','lossRatio','损耗率',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','price','单价',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','amount','金额',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','expectDate','约定交期(yyyy-MM-dd)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','state','状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','remark','备注',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetail','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'assistOrderDetail','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','parentId','外协订单id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','planDetailId','计划明细id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','assistProductId','外协件id',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','orderUnit','单位id(单据单位)',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','orderCount','订单订购数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','lossRatio','损耗率',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','price','单价',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','amount','金额',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','expectDate','约定交期(yyyy-MM-dd)',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','state','状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','remark','备注',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistOrderDetail','assistProductName','外协件',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','orderUnitName','单位',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','craftCode','工艺编号',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','craftName','工艺名称',20, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','planCode','计划编号',21, '1','1','1','0',now(), 'admin'),
     </insert>
 
 
@@ -109,38 +115,52 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        id id,
-        parent_id parentId,
-        plan_detail_id planDetailId,
-        assist_product_id assistProductId,
-        order_unit orderUnit,
+        detail.id id,
+        detail.parent_id parentId,
+        detail.plan_detail_id planDetailId,
+        detail.assist_product_id assistProductId,
+        detail.order_unit orderUnit,
 
-        order_count orderCount,
-        loss_ratio lossRatio,
-        price price,
-        amount amount,
-        expect_date expectDate,
+        detail.order_count orderCount,
+        detail.loss_ratio lossRatio,
+        detail.price price,
+        detail.amount amount,
+        detail.expect_date expectDate,
 
-        state state,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+        detail.state state,
+        detail.cuser cuser,
+        detail.cdate cdate,
+        detail.uuser uuser,
+        detail.udate udate,
 
-        remark remark,
-        isdisable isdisable,
-        from vmes_assist_order_detail
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        assistProd.product_name assistProductName,
+        orderUnitName.name orderUnitName,
+        <!--外协工艺名称-->
+        craft.sys_code craftCode,
+        craft.name craftName,
+        plan.sys_code planCode
+
+        from vmes_assist_order_detail detail
+            left join vmes_assist_product assistProd on detail.assist_product_id = assistProd.id and assistProd.isdisable = '1'
+            left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
+            left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and detail.order_unit = orderUnit.unit)
+            left join vmes_dictionary orderUnitName on detail.order_unit = orderUnitName.id
+
+            left join vmes_assist_plan_detail planDtl on detail.plan_detail_id = planDtl.id
+            left join vmes_assist_plan plan on planDtl.parent_id = plan.id
         <where>
+            <if test='parentId != null and parentId != ""' >
+                and detail.parent_id = #{parentId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
             </if>
-            <if test='code != null and code != ""'>
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test='name != null and name != ""'>
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
+
         </where>
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}

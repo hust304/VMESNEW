@@ -28,12 +28,13 @@
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
     <insert id="insertColumn" >
-        delete from vmes_column where model_code = 'assistOrder' ;
+        delete from vmes_column where model_code = 'assistOrder';
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'assistOrder','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrder','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrder','supplierId','供应商id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrder','makeId','制单人id',3, '1','1','1','0',now(), 'admin'),
@@ -50,7 +51,12 @@
             (replace(uuid(), '-', ''),'assistOrder','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrder','remark','备注',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrder','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrder','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''), 'assistOrder', 'stateName', '状态', 17, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''),'assistOrder','supplierName','供应商',18, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrder', 'makeUserName', '制单人', 19, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrder', 'auditUserName', '审核人', 20, '1', '1', '1', '0', '2018-12-5 17:01:51', 'admin'),
+
     </insert>
 
 
@@ -108,37 +114,67 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        supplier_id supplierId,
-        make_id makeId,
-        audit_id auditId,
+            assistOrder.id id,
+            assistOrder.company_id companyId,
+            assistOrder.supplier_id supplierId,
+            assistOrder.make_id makeId,
+            assistOrder.audit_id auditId,
 
-        sys_code sysCode,
-        cust_code custCode,
-        order_date orderDate,
-        expect_date expectDate,
-        amount amount,
+            assistOrder.sys_code sysCode,
+            assistOrder.cust_code custCode,
+            DATE_FORMAT(assistOrder.order_date,'%Y-%m-%d') orderDate,
+            DATE_FORMAT(assistOrder.expect_date,'%Y-%m-%d') expectDate,
+            round(ifnull(assistOrder.amount, 0),2) amount,
 
-        state state,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
+            assistOrder.state state,
+            assistOrder.cuser cuser,
+            assistOrder.cdate cdate,
+            assistOrder.uuser uuser,
+            assistOrder.udate udate,
 
-        remark remark,
-        isdisable isdisable
-        from vmes_assist_order
+            assistOrder.remark remark,
+            assistOrder.isdisable isdisable,
+
+            CASE
+                WHEN assistOrder.state = '0' THEN '待提交'
+                WHEN assistOrder.state = '1' THEN '待审核'
+                WHEN assistOrder.state = '2' THEN '待发货'
+                WHEN assistOrder.state = '3' THEN '外协中'
+                WHEN assistOrder.state = '4' THEN '已完成'
+                WHEN assistOrder.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+
+            supplier.name supplierName,
+            makeUser.user_name makeUserName,
+            auditUser.user_name auditUserName
+
+        from vmes_assist_order assistOrder
+            left join vmes_customer supplier on assistOrder.supplier_id = supplier.id
+            left join vmes_user makeUser on assistOrder.make_id = makeUser.id
+            left join vmes_user auditUser on assistOrder.audit_id = auditUser.id
         <where>
+            <if test="id != null and id != ''">
+                and assistOrder.id = #{id}
+            </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and assistOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="state != null and state != ''">
+                and assistOrder.state = #{state}
+            </if>
+            <if test="sysCode != null and sysCode != ''" >
+                and assistOrder.sys_code = #{sysCode}
+            </if>
+
+            <if test="supplierName != null and supplierName != ''">
+                and supplier.name LIKE CONCAT(CONCAT('%', #{supplierName}),'%')
+            </if>
+
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
-            </if>
-            <if test='code != null and code != ""'>
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test='name != null and name != ""'>
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
         </where>
         <if test='orderStr != null and orderStr != ""' >
