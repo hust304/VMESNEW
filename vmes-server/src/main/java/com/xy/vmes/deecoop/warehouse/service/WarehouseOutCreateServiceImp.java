@@ -242,25 +242,25 @@ public class WarehouseOutCreateServiceImp implements WarehouseOutCreateService {
         List<WarehouseOutDetail> outDtlList = this.productMap2OutDetailList(productByOutMap, null);
         warehouseOutDetailService.addWarehouseOutDetailBySimple(warehouseOut, outDtlList);
 
-        //3.添加出库单派单表
-        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(outDtlList);
-
-        //4.添加出库单执行表
-        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
-        for (WarehouseOutDetail outDetail : outDtlList) {
-            String productId = outDetail.getProductId();
-            BigDecimal count = outDetail.getCount();
-
-            //按(货品id,企业id) 查询(vmes_warehouse_product)
-            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
-                    companyId,
-                    null,
-                    count);
-            if (outMapList != null && outMapList.size() > 0) {
-                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
-            }
-        }
-        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
+//        //3.添加出库单派单表
+//        warehouseOutExecutorService.addWarehouseOutExecutorBySimple(outDtlList);
+//
+//        //4.添加出库单执行表
+//        List<WarehouseOutExecute> executeList = new ArrayList<WarehouseOutExecute>();
+//        for (WarehouseOutDetail outDetail : outDtlList) {
+//            String productId = outDetail.getProductId();
+//            BigDecimal count = outDetail.getCount();
+//
+//            //按(货品id,企业id) 查询(vmes_warehouse_product)
+//            List<Map<String, Object>> outMapList = warehouseProductToolService.findWarehouseProductOutMapList(productId,
+//                    companyId,
+//                    null,
+//                    count);
+//            if (outMapList != null && outMapList.size() > 0) {
+//                executeList = warehouseOutExecuteService.outMapList2ExecuteList(outDetail, outMapList, executeList);
+//            }
+//        }
+//        warehouseOutExecuteService.addWarehouseOutExecuteBySimple(executeList);
 
         for (WarehouseOutDetail detail : outDtlList) {
             String productId = detail.getProductId();

@@ -867,7 +867,7 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
     //////////////////////////////////////////////////////////////////////////////////
     /**
      * 返回货品出库Map
-     * 货品出库Map<货品id, 货品Map<String, Object>>
+     * 货品出库Map<业务id, 货品Map<String, Object>>
      * 货品Map<String, Object>
      *     productId: 货品id
      *     outDtlId:   出库明细id
@@ -911,12 +911,15 @@ public class PurchaseRetreatServiceImp implements PurchaseRetreatService {
                 e.printStackTrace();
             }
 
+            //退货单明细id
+            String businessId = mapObject.get("id");
+
             Map<String, Object> productMap = new HashMap<String, Object>();
             productMap.put("productId", productId);
             productMap.put("outDtlId", null);
             productMap.put("outCount", prodCount);
 
-            productByOutMap.put(productId, productMap);
+            productByOutMap.put(businessId, productMap);
         }
 
         return productByOutMap;

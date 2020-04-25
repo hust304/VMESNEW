@@ -467,7 +467,7 @@ public class PurchaseRetreatController {
 //            }
 //        }
 
-        // 货品入库Map<货品id, 货品Map<String, Object>>
+        // 货品入库Map<业务id, 货品Map<String, Object>>
         // 货品Map<String, Object>
         //     productId: 货品id
         //     outDtlId:   出库明细id
@@ -479,7 +479,7 @@ public class PurchaseRetreatController {
             //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
 
             Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
-            warehouseOutCreateService.createWarehouseOutByComplex(supplierId,
+            warehouseOutCreateService.createWarehouseOutBusinessByComplex(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -502,7 +502,7 @@ public class PurchaseRetreatController {
             //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
 
             Map<String, Map<String, Object>> productByOutMap = purchaseRetreatService.findProductMapByOut(jsonMapList);
-            warehouseOutCreateService.createWarehouseOutBySimple(supplierId,
+            warehouseOutCreateService.createWarehouseOutBusinessBySimple(supplierId,
                     supplierName,
                     //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
@@ -553,9 +553,12 @@ public class PurchaseRetreatController {
             detailEdit.setId(retreatDtl_id);
 
             //(关联)出库单明细
-            String productId = jsonObject.get("productId");
-            if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(productId) != null) {
-                Map<String, Object> productOutMap = businessProdOutMapByEditDetail.get(productId);
+            //String productId = jsonObject.get("productId");
+
+            //退货单明细id
+            String businessId = jsonObject.get("id");
+            if (businessProdOutMapByEditDetail != null && businessProdOutMapByEditDetail.get(businessId) != null) {
+                Map<String, Object> productOutMap = businessProdOutMapByEditDetail.get(businessId);
                 detailEdit.setOutDetailId((String)productOutMap.get("outDtlId"));
             }
 
