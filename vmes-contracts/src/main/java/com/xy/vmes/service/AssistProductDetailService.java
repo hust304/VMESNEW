@@ -4,6 +4,8 @@ import com.xy.vmes.entity.AssistProductDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +100,15 @@ public interface AssistProductDetailService {
 
     List<AssistProductDetail> findAssistProductDetailList(PageData object) throws Exception;
     List<AssistProductDetail> findAssistProductDetailListByParentId(String parentId) throws Exception;
+
+    /**
+     * 表(vmes_assist_product_detail:外协件原材料)对象 转换为目标类对象
+     *
+     * @param assistProductDtl 表(vmes_assist_product_detail:外协件原材料)对象
+     * @param targetClazz      目标类
+     * @return
+     */
+    Object assistProductDetail2Target(AssistProductDetail assistProductDtl, Class<?> targetClazz) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

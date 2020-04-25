@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistProductDetailMapper;
+import com.xy.vmes.entity.AssistOrderDetailChild;
 import com.xy.vmes.entity.AssistProductDetail;
 import com.xy.vmes.service.AssistProductDetailService;
 
@@ -9,12 +10,18 @@ import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SystemToolService;
+import com.yvan.ClassUtils;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -201,6 +208,37 @@ public class AssistProductDetailServiceImp implements AssistProductDetailService
         return this.findAssistProductDetailList(findMap);
     }
 
+    /**
+     * 表(vmes_assist_product_detail:外协件原材料)对象 转换为目标类对象
+     *
+     * @param assistProductDtl 表(vmes_assist_product_detail:外协件原材料)对象
+     * @param targetClazz      目标类
+     * @return
+     */
+    public Object assistProductDetail2Target(AssistProductDetail assistProductDtl, Class<?> targetClazz) throws Exception {
+        if (assistProductDtl == null) {
+            return ClassUtils.instanceObject(targetClazz);
+        }
+
+        Object targetObject = ClassUtils.instanceObject(targetClazz);
+        Map<Method, Field> methodFieldMap = ClassUtils.paraserSet(targetClazz);
+        for (Iterator iterator = methodFieldMap.keySet().iterator(); iterator.hasNext();) {
+            //目标类
+            Method mapkey_targetMethod = (Method)iterator.next();
+            Field target_field = methodFieldMap.get(mapkey_targetMethod);
+
+            String target_fieldName = target_field.getName();
+            if ("productId".equals(target_fieldName)) {
+                mapkey_targetMethod.invoke(targetObject, assistProductDtl.getParentId());
+            } else if ("unitId".equals(target_fieldName)) {
+                mapkey_targetMethod.invoke(targetObject, assistProductDtl.getUnitId());
+            } else if ("ratio".equals(target_fieldName)) {
+                mapkey_targetMethod.invoke(targetObject, assistProductDtl.getRatio());
+            }
+        }
+
+        return targetObject;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -267,6 +305,20 @@ public class AssistProductDetailServiceImp implements AssistProductDetailService
         result.put("varList",varMapList);
         model.putResult(result);
         return model;
+    }
+
+    public static void main(String[] args) throws Exception {
+        AssistProductDetailService service = new AssistProductDetailServiceImp();
+
+        AssistProductDetail assistProductDtl = new AssistProductDetail();
+        assistProductDtl.setParentId("ParentId");
+        assistProductDtl.setUnitId("UnitId");
+        assistProductDtl.setRatio(BigDecimal.valueOf(2.23D));
+
+        Object object = service.assistProductDetail2Target(assistProductDtl, AssistOrderDetailChild.class);
+        AssistOrderDetailChild aaaa = (AssistOrderDetailChild)object;
+
+        System.out.print("*****************");
     }
 
 }
