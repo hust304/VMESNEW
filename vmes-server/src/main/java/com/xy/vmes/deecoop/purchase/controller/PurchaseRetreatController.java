@@ -623,8 +623,8 @@ public class PurchaseRetreatController {
             }
 
             if (businessProdInMapByEditDetail != null && businessProdInMapByEditDetail.get(businessId) != null) {
-                Map<String, Object> productOutMap = businessProdInMapByEditDetail.get(businessId);
-                detailEdit.setInDetailId((String)productOutMap.get("inDtlId"));
+                Map<String, Object> productInMap = businessProdInMapByEditDetail.get(businessId);
+                detailEdit.setInDetailId((String)productInMap.get("inDtlId"));
             }
 
             //退货单明细状态(1:待审核 2:待退货 3:已完成 -1:已取消)
