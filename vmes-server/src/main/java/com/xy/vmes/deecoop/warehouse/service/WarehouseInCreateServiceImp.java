@@ -119,7 +119,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
-     * @param remark_dtl      (入库明细)备注
+     * @param remark         (入库)备注
      * @param businessCode    业务单号
      * @param businessByInMap 业务货品入库Map<货品id, 货品Map>
      *
@@ -135,7 +135,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                                                    String cuser,
                                                    String companyId,
                                                    String inType,
-                                                   String remark_dtl,
+                                                   String remark,
                                                    String businessCode,
                                                    Map<String, Map<String, Object>> businessByInMap) throws ApplicationException {
         StringBuffer msgStr = new StringBuffer();
@@ -165,14 +165,17 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             if (businessCode != null && businessCode.trim().length() > 0) {
                 warehouseIn.setBusinessCode(businessCode);
             }
+            if (remark != null && remark.trim().length() > 0) {
+                warehouseIn.setRemark(remark.trim());
+            }
             warehouseInService.save(warehouseIn);
 
             //创建入库单明细
             List<WarehouseInDetail> inDtlList = this.businessMap2InDetailList(businessByInMap, null);
             if (inDtlList != null && inDtlList.size() > 0) {
                 for (WarehouseInDetail detailObj : inDtlList) {
-                    if (remark_dtl != null && remark_dtl.trim().length() > 0) {
-                        detailObj.setRemark(remark_dtl.trim());
+                    if (remark != null && remark.trim().length() > 0) {
+                        detailObj.setRemark(remark.trim());
                     }
                 }
             }
@@ -265,7 +268,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
-     * @param remark_dtl      (入库明细)备注
+     * @param remark         (入库)备注
      * @param businessCode    业务单号
      * @param businessByInMap 业务货品入库Map<货品id, 货品Map>
      *
@@ -282,7 +285,7 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
                                                   String cuser,
                                                   String companyId,
                                                   String inType,
-                                                  String remark_dtl,
+                                                  String remark,
                                                   String businessCode,
                                                   Map<String, Map<String, Object>> businessByInMap) throws ApplicationException {
         StringBuffer msgStr = new StringBuffer();
@@ -313,6 +316,9 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             if (businessCode != null && businessCode.trim().length() > 0) {
                 warehouseIn.setBusinessCode(businessCode);
             }
+            if (remark != null && remark.trim().length() > 0) {
+                warehouseIn.setRemark(remark.trim());
+            }
 
             warehouseInService.save(warehouseIn);
 
@@ -320,8 +326,8 @@ public class WarehouseInCreateServiceImp implements WarehouseInCreateService {
             List<WarehouseInDetail> inDtlList = this.businessMap2InDetailList(businessByInMap, null);
             if (inDtlList != null && inDtlList.size() > 0) {
                 for (WarehouseInDetail detailObj : inDtlList) {
-                    if (remark_dtl != null && remark_dtl.trim().length() > 0) {
-                        detailObj.setRemark(remark_dtl.trim());
+                    if (remark != null && remark.trim().length() > 0) {
+                        detailObj.setRemark(remark.trim());
                     }
                 }
             }

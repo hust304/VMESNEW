@@ -179,6 +179,20 @@ public interface PurchaseRetreatService {
      */
     Map<String, Map<String, Object>> findProductMapByOut(List<Map<String, String>> jsonMapList);
 
+    /**
+     * 返回货品入库Map
+     * 货品出库Map<业务id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param jsonMapList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductMapByIn(List<Map<String, String>> jsonMapList);
+
+
 }
 
 

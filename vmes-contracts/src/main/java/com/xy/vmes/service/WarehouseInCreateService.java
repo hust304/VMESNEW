@@ -46,7 +46,7 @@ public interface WarehouseInCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
-     * @param remark_dtl      (入库明细)备注
+     * @param remark         (入库)备注
      * @param businessCode    业务单号
      * @param businessByInMap 业务货品入库Map<货品id, 货品Map>
      *
@@ -62,7 +62,7 @@ public interface WarehouseInCreateService {
                                             String cuser,
                                             String companyId,
                                             String inType,
-                                            String remark_dtl,
+                                            String remark,
                                             String businessCode,
                                             Map<String, Map<String, Object>> businessByInMap) throws ApplicationException;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ public interface WarehouseInCreateService {
      * @param cuser           用户id
      * @param companyId       企业id
      * @param inType          入库类型id
-     * @param remark_dtl      (入库明细)备注
+     * @param remark         (入库)备注
      * @param businessCode    业务单号
      * @param businessByInMap 业务货品入库Map<货品id, 货品Map>
      *
@@ -117,7 +117,7 @@ public interface WarehouseInCreateService {
                                            String cuser,
                                            String companyId,
                                            String inType,
-                                           String remark_dtl,
+                                           String remark,
                                            String businessCode,
                                            Map<String, Map<String, Object>> businessByInMap) throws ApplicationException;
 

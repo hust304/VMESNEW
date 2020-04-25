@@ -36,6 +36,8 @@ public class PurchaseRetreatController {
 
     @Autowired
     private WarehouseOutCreateService warehouseOutCreateService;
+    @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
 
     @Autowired
     private PurchaseByFinanceBillService purchaseByFinanceBillService;
@@ -521,6 +523,46 @@ public class PurchaseRetreatController {
                 }
             }
         }
+
+        //退货换货 推送入库单////////////////////////////////////////////////////////////////////////////////////////////////
+        //type:退货类型-(字典表-vmes_dictionary.id)
+        //f69839bbf2394846a65894f0da120df9 退货退款:retreatRefund
+        //c90c2081328c427e8d65014d98335601 退货换货:retreatChange
+        if (Common.DICTIONARY_MAP.get("retreatChange").equals(retreat.getType()) && jsonMapList.size() > 0) {
+            Map<String, Map<String, Object>> productByInMap = purchaseRetreatService.findProductMapByIn(jsonMapList);
+
+            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                //退库方式:1:生成退库单: (生成复杂版入库单)
+                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                warehouseInCreateService.createWarehouseInBusinessByComplex(supplierId,
+                        supplierName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyId,
+                        //采购入库 d78ceba5beef41f5be16f0ceee775399:purchaseIn
+                        Common.DICTIONARY_MAP.get("purchaseIn"),
+                        "采购退货换货",
+                        retreat.getSysCode(),
+                        productByInMap);
+
+            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                //退库方式:1:生成退库单: (生成简版入库单)
+                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                warehouseInCreateService.createWarehouseInBusinessBySimple(supplierId,
+                        supplierName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyId,
+                        //采购入库 d78ceba5beef41f5be16f0ceee775399:purchaseIn
+                        Common.DICTIONARY_MAP.get("purchaseIn"),
+                        "采购退货换货",
+                        retreat.getSysCode(),
+                        productByInMap);
+            }
+        }
+
 
 //        //备件库////////////////////////////////////////////////////////////////////////////////////////////////
 //        if (spareList.size() > 0) {
