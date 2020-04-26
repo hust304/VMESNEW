@@ -122,13 +122,13 @@ public class AssistOrderController {
         BigDecimal amount = orderDtlService.findTotalAmount(orderDtlList);
         addOrder.setAmount(amount);
 
-//        //外协订单编号
-//        String code = coderuleService.createCoderCdateOnShortYearByDate(
-//                companyID,
-//                "vmes_assist_order",
-//                "O",
-//                Common.CODE_RULE_LENGTH_3);
-//        addOrder.setSysCode(code);
+        //外协订单编号
+        String code = coderuleService.createCoderCdateOnShortYearByDate(
+                companyID,
+                "vmes_assist_order",
+                "O",
+                Common.CODE_RULE_LENGTH_3);
+        addOrder.setSysCode(code);
 
         //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
         addOrder.setState("0");
@@ -138,7 +138,7 @@ public class AssistOrderController {
             addOrder.setState("1");
         }
 
-        //orderService.save(addOrder);
+        orderService.save(addOrder);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //2. 遍历外协订单明细表-获取全部外协件id
         StringBuffer assistProductIds = new StringBuffer();
@@ -188,7 +188,7 @@ public class AssistOrderController {
                 addDetail.setParentId(addOrder.getId());
                 addDetail.setCuser(addOrder.getCuser());
                 addDetail.setState(addOrder.getState());
-                //orderDtlService.save(addDetail);
+                orderDtlService.save(addDetail);
 
                 //外协件数量(订单订购数量) orderCount
                 BigDecimal orderCount = BigDecimal.valueOf(0D);
