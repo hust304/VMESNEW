@@ -99,6 +99,7 @@ public class AssistProductController {
         if (pageData.getString("assistProductInfo") != null) {
             assistProductInfo = pageData.getString("assistProductInfo").trim();
         }
+        String assistProductUnitId = pageData.getString("unitId");
 
         String craftName = pageData.getString("craftName");
         String craftId = pageData.getString("craftId");
@@ -140,6 +141,7 @@ public class AssistProductController {
         addProduct.setCompanyId(companyID);
         addProduct.setProductId(assistProductId);
         addProduct.setProductName(assistProductInfo);
+        addProduct.setUnitId(assistProductUnitId);
 
         addProduct.setCraftId(craftId);
         assistProductService.save(addProduct);
@@ -204,6 +206,7 @@ public class AssistProductController {
             return model;
         }
 
+        String assistProductUnitId = pageData.getString("unitId");
         String assistProductInfo = new String();
         if (pageData.getString("assistProductInfo") != null) {
             assistProductInfo = pageData.getString("assistProductInfo").trim();
@@ -255,6 +258,7 @@ public class AssistProductController {
 
         editProduct.setProductId(assistProductId);
         editProduct.setProductName(assistProductInfo);
+        editProduct.setUnitId(assistProductUnitId);
         editProduct.setCraftId(craftId);
         assistProductService.update(editProduct);
 

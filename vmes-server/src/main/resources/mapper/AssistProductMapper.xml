@@ -40,16 +40,15 @@
             (replace(uuid(), '-', ''),'assistProduct','productId','外协货品id(系统货品表id)',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistProduct','productName','外协件',3, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistProduct','craftId','工艺名称id',4, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','cuser','创建用户id',5, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','cdate','创建时间',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','uuser','修改用户id',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','udate','修改时间',8, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','remark','备注',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistProduct','isdisable','是否启用(0:已禁用 1:启用)',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct', 'unitId', '单位id', 5, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','cuser','创建用户id',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','cdate','创建时间',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','uuser','修改用户id',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','udate','修改时间',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','remark','备注',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistProduct','isdisable','是否启用(0:已禁用 1:启用)',11, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistProduct', 'productUnit', '单位id', 11, '1', '0', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProduct', 'productUnitName', '单位', 12, '1', '1', '1', '0', now(), 'admin'),
-
+            (replace(uuid(), '-', ''), 'assistProduct', 'unitName', '单位', 12, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'assistProduct', 'craftCode', '工艺编号', 13, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'assistProduct', 'craftName', '工艺名称', 14, '1', '1', '1', '0', now(), 'admin'),
 
@@ -64,8 +63,8 @@
         product_id productId,
         product_name productName,
         craft_id craftId,
-        unit_id unitId,
 
+        unit_id unitId,
         cuser cuser,
         cdate cdate,
         uuser uuser,
@@ -119,23 +118,21 @@
             assistProd.product_name productName,
             assistProd.craft_id craftId,
 
+            unit_id unitId,
             assistProd.cuser cuser,
             assistProd.cdate cdate,
             assistProd.uuser uuser,
             assistProd.udate udate,
+
             assistProd.remark remark,
             assistProd.isdisable isdisable,
 
-            prodUnit.unit productUnit,
-            prodUnitName.name productUnitName,
-
+            prodUnitName.name unitName,
             craft.sys_code craftCode,
             craft.name craftName
         from vmes_assist_product assistProd
-            left join vmes_product product on assistProd.product_id = product.id
-            left join vmes_product_unit prodUnit on assistProd.product_id = prodUnit.product_id  and prodUnit.type = 1
-            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
-
+            left join vmes_product_unit prodUnit on (assistProd.product_id = prodUnit.product_id and assistProd.unit_id = prodUnit.unit)
+            left join vmes_dictionary prodUnitName on assistProd.unit_id = prodUnitName.id
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
@@ -144,19 +141,6 @@
             <if test="assistProductName != null and assistProductName != ''" >
                 and assistProd.product_name like CONCAT('%',CONCAT(#{assistProductName}),'%')
             </if>
-
-            <!--productValue (货品名称,货品编码) 查询-->
-            <if test="productValue != null and productValue != ''">
-                and (
-                product.source_code like CONCAT('%',CONCAT(#{productValue}),'%')
-                or product.code like CONCAT('%',CONCAT(#{productValue}),'%')
-                or product.name like CONCAT('%',CONCAT(#{productValue},'%'))
-                )
-            </if>
-            <if test="productSpec != null and productSpec != ''" >
-                and product.spec LIKE CONCAT('%',CONCAT(#{productSpec}),'%')
-            </if>
-
 
             <if test="craftCode != null and craftCode != ''" >
                 and craft.sys_code LIKE CONCAT('%',CONCAT(#{craftCode}),'%')
