@@ -64,13 +64,14 @@
         product_id productId,
         product_name productName,
         craft_id craftId,
+        unit_id unitId,
 
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
-        remark remark,
 
+        remark remark,
         isdisable isdisable
         from vmes_assist_product
         <where>

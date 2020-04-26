@@ -29,6 +29,9 @@ public class AssistProduct implements Serializable {
 	//工艺名称id
 	@TableField("craft_id")
 	private String craftId;
+	//单位id
+	@TableField("unit_id")
+	private String unitId;
 
 	//创建用户id
 	@TableField("cuser")
@@ -42,10 +45,10 @@ public class AssistProduct implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -116,6 +119,12 @@ public class AssistProduct implements Serializable {
 	}
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+	public String getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(String unitId) {
+		this.unitId = unitId;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
