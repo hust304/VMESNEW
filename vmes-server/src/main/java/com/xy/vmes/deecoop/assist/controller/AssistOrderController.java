@@ -113,6 +113,7 @@ public class AssistOrderController {
         addOrder.setCompanyId(companyID);
         addOrder.setOrderDate(new Date());
 
+        addOrder.setSupplierId(supplierId);
         addOrder.setMakeId(cuser);
         if (makeId != null && makeId.trim().length() > 0) {
             addOrder.setMakeId(makeId.trim());
@@ -207,7 +208,6 @@ public class AssistOrderController {
                             orderDetailChild.setOrderId(addDetail.getParentId());
                             orderDetailChild.setOrderDtlId(addDetail.getId());
                             orderDetailChild.setCuser(addDetail.getCuser());
-                            detailChildList.add(orderDetailChild);
 
                             //用料比例 ratio
                             BigDecimal ratio = BigDecimal.valueOf(0D);

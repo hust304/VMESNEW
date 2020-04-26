@@ -71,6 +71,13 @@
             <if test="companyId != null and companyId != ''" >
                 and assistProd.company_id = #{companyId}
             </if>
+            <if test="assistProductName != null and assistProductName != ''" >
+                and assistProd.product_name like CONCAT('%',CONCAT(#{assistProductName}),'%')
+            </if>
+            <if test="craftName != null and craftName != ''" >
+                and craft.name LIKE CONCAT('%',CONCAT(#{craftName}),'%')
+            </if>
+
             and assistProd.isdisable = '1'
         </where>
     </select>
