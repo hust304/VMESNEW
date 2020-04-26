@@ -118,7 +118,7 @@
             assistProd.product_name productName,
             assistProd.craft_id craftId,
 
-            unit_id unitId,
+            assistProd.unit_id unitId,
             assistProd.cuser cuser,
             assistProd.cdate cdate,
             assistProd.uuser uuser,

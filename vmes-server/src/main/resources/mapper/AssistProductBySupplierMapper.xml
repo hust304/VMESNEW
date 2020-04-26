@@ -36,9 +36,8 @@
             assistProd.product_name assistProductName,
             assistProd.craft_id craftId,
 
-            prodUnit.unit productUnit,
+            assistProd.unit_id productUnit,
             prodUnitName.name productUnitName,
-
             <!--外协工艺名称-->
             craft.sys_code craftCode,
             craft.name craftName,
@@ -48,8 +47,8 @@
 
         from vmes_assist_product assistProd
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
-            left join vmes_product_unit prodUnit on assistProd.product_id = prodUnit.product_id  and prodUnit.type = 1
-            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+            left join vmes_product_unit prodUnit on (assistProd.product_id = prodUnit.product_id and assistProd.unit_id = prodUnit.unit)
+            left join vmes_dictionary prodUnitName on assistProd.unit_id = prodUnitName.id
             left join (
                 select
                     assist_product_id,
