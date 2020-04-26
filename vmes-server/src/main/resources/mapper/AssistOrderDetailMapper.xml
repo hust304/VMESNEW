@@ -59,6 +59,17 @@
         (replace(uuid(), '-', ''),'assistOrderDetail','planCode','计划编号',21, '1','1','1','0',now(), 'admin'),
     </insert>
 
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_assist_order_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentIds != null and parentIds != ''" >
+                and parent_id in (${parentIds})
+            </if>
+        </where>
+    </update>
+
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.AssistOrderDetail">

@@ -200,6 +200,21 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         return this.findAssistOrderDetailList(findMap);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", parentIds);
+
+        assistOrderDetailMapper.updateStateByDetail(pageData);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
     *
@@ -249,95 +264,6 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         model.putResult(result);
         return model;
     }
-
-    /**
-    * 导出
-    * @param pd    查询参数对象PageData
-    * @throws Exception
-    */
-    public void exportExcelAssistOrderDetails(PageData pd) throws Exception{
-
-        List<Column> columnList = columnService.findColumnList("assistOrderDetail");
-        if (columnList == null || columnList.size() == 0) {
-            throw new RestException("1","数据库没有生成TabCol，请联系管理员！");
-        }
-        //获取指定栏位字符串-重新调整List<Column>
-        String fieldCode = pd.getString("fieldCode");
-        if (fieldCode != null && fieldCode.trim().length() > 0) {
-            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
-        }
-
-        //根据查询条件获取业务数据List
-        String ids = pd.getString("ids");
-        String queryStr = "";
-        if (ids != null && ids.trim().length() > 0) {
-            ids = StringUtil.stringTrimSpace(ids);
-            ids = "'" + ids.replace(",", "','") + "'";
-            queryStr = "id in (" + ids + ")";
-        }
-        pd.put("queryStr", queryStr);
-        List<Map> dataList = this.getDataListPage(pd, null);
-
-        //查询数据转换成Excel导出数据
-        List<LinkedHashMap<String, String>> dataMapList = ColumnUtil.modifyDataList(columnList, dataList);
-        HttpServletResponse response = HttpUtils.currentResponse();
-
-        //查询数据-Excel文件导出
-        String fileName = pd.getString("fileName");
-        if (fileName == null || fileName.trim().length() == 0) {
-            fileName = "ExcelAssistOrderDetail";
-        }
-
-        //导出文件名-中文转码
-        fileName = new String(fileName.getBytes("utf-8"),"ISO-8859-1");
-        ExcelUtil.excelExportByDataList(response, fileName, dataMapList);
-    }
-
-
-    /**
-    * 导入
-    * @return      返回对象ResultModel
-    * @throws Exception
-    */
-    public ResultModel importExcelAssistOrderDetails(MultipartFile file) throws Exception{
-        ResultModel model = new ResultModel();
-        if (file == null) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("请上传Excel文件！");
-            return model;
-        }
-
-        // 验证文件是否合法
-        // 获取上传的文件名(文件名.后缀)
-        String fileName = file.getOriginalFilename();
-        if (fileName == null
-        || !(fileName.matches("^.+\\.(?i)(xlsx)$")
-        || fileName.matches("^.+\\.(?i)(xls)$"))
-        ) {
-            String failMesg = "不是excel格式文件,请重新选择！";
-            model.putCode(Integer.valueOf(1));
-            model.putMsg(failMesg);
-            return model;
-        }
-
-        // 判断文件的类型，是2003还是2007
-        boolean isExcel2003 = true;
-        if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            isExcel2003 = false;
-        }
-
-        List<List<String>> dataLst = ExcelUtil.readExcel(file.getInputStream(), isExcel2003);
-        List<LinkedHashMap<String, String>> dataMapLst = ExcelUtil.reflectMapList(dataLst);
-
-        //1. Excel文件数据dataMapLst -->(转换) ExcelEntity (属性为导入模板字段)
-        //2. Excel导入字段(非空,数据有效性验证[数字类型,字典表(大小)类是否匹配])
-        //3. Excel导入字段-名称唯一性判断-在Excel文件中
-        //4. Excel导入字段-名称唯一性判断-在业务表中判断
-        //5. List<ExcelEntity> --> (转换) List<业务表DB>对象
-        //6. 遍历List<业务表DB> 对业务表添加或修改
-        return model;
-    }
-
 
 }
 
