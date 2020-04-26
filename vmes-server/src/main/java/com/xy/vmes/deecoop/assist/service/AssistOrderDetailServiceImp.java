@@ -12,11 +12,14 @@ import com.xy.vmes.service.ColumnService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 import org.springframework.web.multipart.MultipartFile;
@@ -198,6 +201,57 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         findMap.put("parentId", parentId);
 
         return this.findAssistOrderDetailList(findMap);
+    }
+
+    public List<AssistOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<AssistOrderDetail> objectList) {
+        if (objectList == null) {objectList = new ArrayList();}
+        if (mapList == null || mapList.size() == 0) {return objectList;}
+
+        for (Map<String, String> mapObject : mapList) {
+            AssistOrderDetail detail = (AssistOrderDetail)HttpUtils.pageData2Entity(mapObject, new AssistOrderDetail());
+
+            //订购数量(计价数量)
+            BigDecimal orderCount = BigDecimal.valueOf(0D);
+            if (detail.getOrderCount() != null) {
+                orderCount = detail.getOrderCount();
+            }
+            //四舍五入到2位小数
+            orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //price:单价
+            BigDecimal price = BigDecimal.valueOf(0D);
+            if (detail.getPrice() != null) {
+                price = detail.getPrice();
+            }
+            //四舍五入到4位小数
+            price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            //amount:金额 (货品金额:=订购数量 * 货品单价)
+            BigDecimal amount = BigDecimal.valueOf(orderCount.doubleValue() * price.doubleValue());
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setAmount(amount);
+
+            objectList.add(detail);
+        }
+
+        return objectList;
+    }
+
+    public BigDecimal findTotalAmount(List<AssistOrderDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        BigDecimal totalAmount = BigDecimal.valueOf(0D);
+        for (AssistOrderDetail detail : objectList) {
+
+            //amount:金额
+            if (detail.getAmount() != null) {
+                totalAmount = BigDecimal.valueOf(totalAmount.doubleValue() + detail.getAmount().doubleValue());
+            }
+        }
+
+        //四舍五入到2位小数
+        return totalAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {

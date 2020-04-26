@@ -94,6 +94,9 @@
             <if test='parentId != null and parentId != ""' >
                 and parent_id = #{parentId}
             </if>
+            <if test='inParentIds != null and inParentIds != ""' >
+                and parent_id in (${inParentIds})
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>

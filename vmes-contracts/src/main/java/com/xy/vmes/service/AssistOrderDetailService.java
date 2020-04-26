@@ -4,6 +4,8 @@ import com.xy.vmes.entity.AssistOrderDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +100,9 @@ public interface AssistOrderDetailService {
 
     List<AssistOrderDetail> findAssistOrderDetailList(PageData object) throws Exception;
     List<AssistOrderDetail> findAssistOrderDetailListByParentId(String parentId) throws Exception;
+
+    List<AssistOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<AssistOrderDetail> objectList);
+    BigDecimal findTotalAmount(List<AssistOrderDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 
