@@ -196,7 +196,7 @@
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','paymentAmount','付款金额',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','occurAmount','本期发生',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','queryType','查询类型',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','cdate','创建日期',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'financeBillDetailByPurchase','cdate','时间',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'financeBillDetailByPurchase','remark','备注',12, '1','1','1','0',now(), 'admin'),
     </insert>
     <select id="findFinanceBillDetailByPurchase" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -219,7 +219,7 @@
         from (
             select
                 md5(uuid()) id,
-                DATE_FORMAT(history.cdate,'%Y-%m-%d') cdate,
+                DATE_FORMAT(history.cdate,'%Y-%m-%d %H:%i') cdate,
                 history.cdate queryDate,
                 '' code,
                 history.company_id companyId,
@@ -256,7 +256,7 @@
 
             select
                 md5(uuid()) id,
-                DATE_FORMAT(bill.cdate,'%Y-%m-%d') cdate,
+                DATE_FORMAT(bill.cdate,'%Y-%m-%d %H:%i') cdate,
                 bill.cdate queryDate,
                 bill.code,
                 bill.company_id companyId,

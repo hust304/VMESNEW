@@ -66,6 +66,9 @@ public class PurchaseRetreatDetail implements Serializable {
 	//入库明细ID-退货换货
 	@TableField("in_detail_id")
 	private String inDetailId;
+	//单价
+	@TableField("price")
+	private BigDecimal price;
 
 	public void setId(String id) {
 		this.id = id;
@@ -162,6 +165,12 @@ public class PurchaseRetreatDetail implements Serializable {
 	}
 	public void setInDetailId(String inDetailId) {
 		this.inDetailId = inDetailId;
+	}
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

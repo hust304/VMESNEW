@@ -449,7 +449,7 @@
         select cdate,period,code,round(ifnull(receiveAmount,0),2) receiveAmount,round(ifnull(occurAmount,0),2) occurAmount,typeName,remark from
         (
         select
-        DATE_FORMAT(bill.cdate,'%Y-%m-%d %T') cdate,
+        DATE_FORMAT(bill.cdate,'%Y-%m-%d %H:%i') cdate,
         bill.code,
         bill.period,
         case when bill.type in ('0') then bill.amount else null end receiveAmount ,
@@ -496,7 +496,7 @@
         union all
 
         select
-        STR_TO_DATE(CONCAT(${period},'01'),'%Y%m%d %T') cdate,
+        DATE_FORMAT(STR_TO_DATE(CONCAT(202004,'01'),'%Y%m%d'),'%Y-%m-%d %H:%i') cdate,
         '' code,
         ${period} period,
         case when (select t.end_plus from vmes_finance_history t where t.customer_id = customer.id and t.isdisable = '1' and t.period = DATE_FORMAT(DATE_ADD(CONCAT(#{period},'01'), interval -1 MONTH),'%Y%m')  order by t.period desc LIMIT 1) > 0

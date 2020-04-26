@@ -501,6 +501,31 @@
                 ) and receive_inDtl_id is not null
             );
 
+            <!--采购退货-(退货换货)入库 -->
+            DELETE FROM vmes_warehouse_in WHERE id in (
+                select parent_id
+                from vmes_warehouse_in_detail
+                where id in  (
+                    select in_detail_id
+                    from vmes_purchase_retreat_detail
+                    where parent_id in (
+                        select id
+                        from vmes_purchase_retreat
+                        where company_id = #{currentCompanyId}
+                    )
+                )
+            );
+
+            DELETE FROM vmes_warehouse_in_detail WHERE id in (
+                select in_detail_id
+                from vmes_purchase_retreat_detail
+                where parent_id in (
+                    select id
+                    from vmes_purchase_retreat
+                    where company_id = #{currentCompanyId}
+                )
+            );
+
             <!--=========================================================================================-->
             <!--vmes_purchase_quality_detail:采购质检项明细-->
             DELETE FROM vmes_purchase_quality_detail WHERE sign_detail_id in (

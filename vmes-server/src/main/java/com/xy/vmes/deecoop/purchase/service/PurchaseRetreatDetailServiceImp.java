@@ -225,8 +225,8 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
             PurchaseRetreatDetail detail = (PurchaseRetreatDetail) HttpUtils.pageData2Entity(mapObject, new PurchaseRetreatDetail());
 
             //单价 price
-            String price_str = mapObject.get("price");
             BigDecimal price = BigDecimal.valueOf(0D);
+            String price_str = mapObject.get("price");
             if (price_str != null && price_str.trim().length() > 0) {
                 try {
                     price = new BigDecimal(price_str);
@@ -234,6 +234,9 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
                     e.printStackTrace();
                 }
             }
+            //四舍五入到4位小数
+            price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setPrice(price);
 
             //退货金额 := 退货数量(count) * 单价(price)
             BigDecimal amount = BigDecimal.valueOf(detail.getCount().doubleValue() * price.doubleValue());
@@ -493,31 +496,6 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
             for (Map<String, Object> mapObject : varList) {
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
                 mapObject.put("prodInfo", prodInfo);
-
-                //获取货品单价
-                //amount 退货金额
-                BigDecimal amount = BigDecimal.valueOf(0D);
-                if (mapObject.get("amount") != null) {
-                    amount = (BigDecimal)mapObject.get("amount");
-                }
-
-                //count 退货数量
-                BigDecimal count = BigDecimal.valueOf(0D);
-                if (mapObject.get("count") != null) {
-                    count = (BigDecimal)mapObject.get("count");
-                }
-
-                //price 单价:= 退货金额 / count
-                BigDecimal price = BigDecimal.valueOf(0D);
-                String priceStr = new String("0.0000");
-                if (0D != count.doubleValue() ) {
-                    price = BigDecimal.valueOf(amount.doubleValue() / count.doubleValue());
-                }
-                //四舍五入到4位小数
-                price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                priceStr = price.toString();
-
-                mapObject.put("price", priceStr);
             }
         }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList, titleMap);
@@ -530,6 +508,4 @@ public class PurchaseRetreatDetailServiceImp implements PurchaseRetreatDetailSer
     }
 
 }
-
-
 

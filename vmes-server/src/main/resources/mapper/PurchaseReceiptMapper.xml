@@ -255,19 +255,22 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        DATE_FORMAT(receipt.cdate,'%Y-%m-%d') cdate,round(ifnull(receipt.amount,0),2) amount,receipt.cuser,vmesuser.user_name cuserName
+        DATE_FORMAT(receipt.cdate,'%Y-%m-%d %H:%i') cdate,
+        round(ifnull(receipt.amount,0),2) amount,
+        receipt.cuser,
+        vmesuser.user_name cuserName
         from
         vmes_purchase_receipt receipt
         left join vmes_user vmesuser on vmesuser.id = receipt.cuser
         <where>
+            <if test='purchaseId != null and purchaseId != ""'>
+                and receipt.purchase_id = #{purchaseId}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
-            </if>
-            <if test='purchaseId != null and purchaseId != ""'>
-                and receipt.purchase_id = #{purchaseId}
             </if>
 
         </where>
