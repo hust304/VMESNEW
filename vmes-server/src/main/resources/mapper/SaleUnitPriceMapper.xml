@@ -152,6 +152,7 @@
             (replace(uuid(), '-', ''),'SaleUnitPrice','custProdPrice','客户单价',10, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleUnitPrice','remark','备注',11, '1','0','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'SaleUnitPrice','prodPrice','标准单价',12, '1','0','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'SaleUnitPrice','productProperty','自定义属性',13, '1','0','1','0',now(), 'admin'),
 
 
 
@@ -171,6 +172,8 @@
         (replace(uuid(), '-', ''),'CustomerUnitPrice','productPrice','标准价',5, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'CustomerUnitPrice','customerPrice','专属价',6, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'CustomerUnitPrice','id','id',0, '1','0','1','0',now(), 'admin')
+
+
     </insert>
 
     <insert id="insertColumn2" >
@@ -369,6 +372,7 @@
             product.spec spec,
             product.genre genre,
             genre.name genreName,
+            product.property productProperty,
 
             unit.name unitName,
             prodUnit.type unitType,
