@@ -1042,7 +1042,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
 
         PageData findMap = new PageData();
         findMap.put("planDtlId", planDtlId);
-        findMap.put("orderStr", "purchaseOrder.cdate asc");
+        findMap.put("orderStr", "tab.cdate asc");
         List<Map> varList = this.getDataListPage(findMap, null);
 
         Map<String, String> codeMap = new LinkedHashMap<>();
