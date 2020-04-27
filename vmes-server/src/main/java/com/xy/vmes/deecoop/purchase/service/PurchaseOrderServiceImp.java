@@ -810,12 +810,13 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService {
                 String planDetailId = purchaseOrderDetail.getPlanId();
                 if(!StringUtils.isEmpty(planDetailId)){
                     PurchasePlanDetail purchasePlanDetail = purchasePlanDetailService.selectById(planDetailId);
-                    //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                    purchasePlanDetail.setState("3");
-                    purchasePlanDetailService.update(purchasePlanDetail);
-                    purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                    if (purchasePlanDetail != null) {
+                        //(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        purchasePlanDetail.setState("3");
+                        purchasePlanDetailService.update(purchasePlanDetail);
+                        purchasePlanService.updateState(purchasePlanDetail.getParentId());
+                    }
                 }
-
             }
         }
         return model;
