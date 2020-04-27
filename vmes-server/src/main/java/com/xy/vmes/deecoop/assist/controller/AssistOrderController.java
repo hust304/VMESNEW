@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.assist.controller;
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.AssistOrder;
 import com.xy.vmes.entity.AssistOrderDetail;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -270,6 +270,7 @@ public class AssistOrderController {
         editOrder.setId(parentId);
         //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
         editOrder.setState("1");
+        editOrder.setRemark("");
         orderService.update(editOrder);
 
         Long endTime = System.currentTimeMillis();
@@ -634,6 +635,22 @@ public class AssistOrderController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String cuser = pageData.getString("cuser");
+        //外协订单id
+        String orderId = pageData.getString("id");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协订单id为空或空字符串！");
+            return model;
+        }
+
+        AssistOrder editOrder = new AssistOrder();
+        editOrder.setId(orderId);
+        //state:订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        editOrder.setState("2");
+        editOrder.setAuditId(cuser);
+        orderService.update(editOrder);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrder/auditPassAssistOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -654,11 +671,38 @@ public class AssistOrderController {
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
 
+        String cuser = pageData.getString("cuser");
+        //外协订单id
+        String orderId = pageData.getString("id");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协订单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退回原因为空或空字符串，退回原因为必填不可为空！");
+            return model;
+        }
+
+        AssistOrder editOrder = new AssistOrder();
+        editOrder.setId(orderId);
+
+        String msgTemp = "审核退回:{0}";
+        String remarkStr = MessageFormat.format(msgTemp, remark);
+        editOrder.setRemark(remarkStr);
+
+        //state:订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        editOrder.setState("0");
+        //审核人ID
+        editOrder.setAuditId(cuser);
+        orderService.update(editOrder);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrder/auditDisagreeAssistOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 }
-
-
 
