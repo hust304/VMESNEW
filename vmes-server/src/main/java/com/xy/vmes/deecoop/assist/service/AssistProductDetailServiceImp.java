@@ -229,7 +229,7 @@ public class AssistProductDetailServiceImp implements AssistProductDetailService
 
             String target_fieldName = target_field.getName();
             if ("productId".equals(target_fieldName)) {
-                mapkey_targetMethod.invoke(targetObject, assistProductDtl.getParentId());
+                mapkey_targetMethod.invoke(targetObject, assistProductDtl.getProductId());
             } else if ("unitId".equals(target_fieldName)) {
                 mapkey_targetMethod.invoke(targetObject, assistProductDtl.getUnitId());
             } else if ("ratio".equals(target_fieldName)) {

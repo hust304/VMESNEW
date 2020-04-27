@@ -229,7 +229,7 @@ public class AssistOrderController {
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //3. 添加外协订单明细子表
+        //4. 添加外协订单明细子表
         if (detailChildList != null && detailChildList.size() > 0) {
             for (AssistOrderDetailChild orderDetailChild : detailChildList) {
                 orderDetailChildService.save(orderDetailChild);
@@ -441,6 +441,177 @@ public class AssistOrderController {
 
         ResultModel model = new ResultModel();
         PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        String makeId = pageData.getString("makeId");
+
+        //外协订单id
+        String orderId = pageData.getString("id");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协订单id为空或空字符串！");
+            return model;
+        }
+        //供应商ID
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+        String companyID = pageData.getString("currentCompanyId");
+        if (companyID == null || companyID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String dtlJsonStr = pageData.getString("dtlJsonStr");
+        if (dtlJsonStr == null || dtlJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("请至少添加选择一条货品数据！");
+            return model;
+        }
+
+        List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(dtlJsonStr);
+        if (mapList == null || mapList.size() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("订单明细Json字符串-转换成List错误！");
+            return model;
+        }
+
+        List<AssistOrderDetail> orderDtlList = orderDtlService.mapList2DetailList(mapList, null);
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //1. 修改外协订单表
+        AssistOrder editOrder = new AssistOrder();
+        editOrder.setId(orderId);
+
+        editOrder.setSupplierId(supplierId);
+        editOrder.setMakeId(cuser);
+        if (makeId != null && makeId.trim().length() > 0) {
+            editOrder.setMakeId(makeId.trim());
+        }
+
+        //amount:金额(外协订单)
+        BigDecimal amount = orderDtlService.findTotalAmount(orderDtlList);
+        editOrder.setAmount(amount);
+
+        //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        editOrder.setState("0");
+        //isAutoCommit true:自动提交 false:手动提交
+        String isAutoCommit = pageData.getString("isAutoCommit");
+        if (isAutoCommit != null && "true".equals(isAutoCommit.trim())) {
+            editOrder.setState("1");
+        }
+
+        orderService.update(editOrder);
+
+        //外协订单明细采用先删除后添加方式
+        //删除外协订单明细表
+        Map columnMap = new HashMap();
+        columnMap.put("parent_id", orderId);
+        orderDtlService.deleteByColumnMap(columnMap);
+
+        //删除外协订单明细子表
+        columnMap = new HashMap();
+        columnMap.put("order_id", orderId);
+        orderDetailChildService.deleteByColumnMap(columnMap);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //2. 遍历外协订单明细表-获取全部外协件id
+        StringBuffer assistProductIds = new StringBuffer();
+        if (orderDtlList != null && orderDtlList.size() > 0) {
+            for (AssistOrderDetail addDetail : orderDtlList) {
+                String assistProductId = addDetail.getAssistProductId();
+                if (assistProductId != null && assistProductId.trim().length() > 0) {
+                    assistProductIds.append(assistProductId.trim()).append(",");
+                }
+            }
+        }
+
+        //获取全部外协件原材料集合
+        Map<String, List<AssistProductDetail>> assistProductMap = new LinkedHashMap<>();
+        if (assistProductIds != null && assistProductIds.toString().trim().length() > 0) {
+            String assistProductIds_sql = assistProductIds.toString().trim();
+            assistProductIds_sql = StringUtil.stringTrimSpace(assistProductIds_sql);
+            assistProductIds_sql = "'" + assistProductIds_sql.replace(",", "','") + "'";
+
+            PageData findMap = new PageData();
+            findMap.put("inParentIds", assistProductIds_sql);
+            findMap.put("orderStr", "parentId asc,cdate asc");
+            List<AssistProductDetail> assistProductDtlList = assistProductDetailService.findAssistProductDetailList(findMap);
+
+            if (assistProductDtlList != null && assistProductDtlList.size() > 0) {
+                for (AssistProductDetail productDetail : assistProductDtlList) {
+                    //外协件id parentId
+                    String parentId = productDetail.getParentId();
+                    if (assistProductMap.get(parentId) == null) {
+                        List<AssistProductDetail> tempList = new ArrayList<>();
+                        tempList.add(productDetail);
+                        assistProductMap.put(parentId, tempList);
+                    } else if (assistProductMap.get(parentId) != null) {
+                        List<AssistProductDetail> tempList = assistProductMap.get(parentId);
+                        tempList.add(productDetail);
+                        assistProductMap.put(parentId, tempList);
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //3. 添加外协订单明细表
+        List<AssistOrderDetailChild> detailChildList = new ArrayList<>();
+        if (orderDtlList != null && orderDtlList.size() > 0) {
+            for (AssistOrderDetail addDetail : orderDtlList) {
+                addDetail.setParentId(editOrder.getId());
+                addDetail.setCuser(cuser);
+                addDetail.setState(editOrder.getState());
+                orderDtlService.save(addDetail);
+
+                //外协件数量(订单订购数量) orderCount
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (addDetail.getOrderCount() != null) {
+                    orderCount = addDetail.getOrderCount();
+                }
+
+                //外协件id assistProductId
+                String assistProductId = addDetail.getAssistProductId();
+                List<AssistProductDetail> productList = assistProductMap.get(assistProductId);
+                if (productList != null && productList.size() > 0) {
+                    for (AssistProductDetail productDetail : productList) {
+                        Object object = assistProductDetailService.assistProductDetail2Target(productDetail, AssistOrderDetailChild.class);
+                        if (object != null) {
+                            AssistOrderDetailChild orderDetailChild = (AssistOrderDetailChild)object;
+                            orderDetailChild.setOrderId(addDetail.getParentId());
+                            orderDetailChild.setOrderDtlId(addDetail.getId());
+                            orderDetailChild.setCuser(addDetail.getCuser());
+
+                            //用料比例 ratio
+                            BigDecimal ratio = BigDecimal.valueOf(0D);
+                            if (orderDetailChild.getRatio() != null) {
+                                ratio = orderDetailChild.getRatio();
+                            }
+
+                            //count 原材料数量(单据单位) = 外协件数量(订单订购数量) * 用料比例
+                            BigDecimal count = BigDecimal.valueOf(orderCount.doubleValue() * ratio.doubleValue());
+                            //四舍五入到2位小数
+                            count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                            orderDetailChild.setCount(count);
+
+                            detailChildList.add(orderDetailChild);
+                        }
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //4. 添加外协订单明细子表
+        if (detailChildList != null && detailChildList.size() > 0) {
+            for (AssistOrderDetailChild orderDetailChild : detailChildList) {
+                orderDetailChildService.save(orderDetailChild);
+            }
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrder/updateAssistOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
