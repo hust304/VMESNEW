@@ -49,6 +49,18 @@
             (replace(uuid(), '-', ''),'assistOrderDetailChild','id','id',0, '1','1','1','0',now(), 'admin')
     </insert>
 
+
+    <insert id="insertAssistOrderDetailChild" parameterType="com.yvan.PageData" useGeneratedKeys="true" keyProperty="id">
+        insert into vmes_assist_order_detail_child(id,order_id,order_dtl_id,product_id,unit_id,ratio,count,remark,cuser,cdate,uuser,udate)
+        select replace(tab.id, '-', ''),orde_id,order_dtl_id,product_id,unit_id,ratio,ratio*count count,remark,cuser,cdate,uuser,udate from (
+        select
+        uuid() id,
+        #{orderId} orde_id,#{orderDtlId} order_dtl_id,product_id,unit_id,ratio,#{orderCount} count,remark,
+        #{cuser} cuser,now() cdate,#{uuser} uuser,now() udate
+        from vmes_assist_product_detail where parent_id = #{assistProductId} group by id
+        )tab
+    </insert>
+
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.AssistOrderDetailChild">
         select

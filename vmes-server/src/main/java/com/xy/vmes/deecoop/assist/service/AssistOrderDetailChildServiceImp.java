@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildMapper;
+import com.xy.vmes.entity.AssistOrderDetail;
 import com.xy.vmes.entity.AssistOrderDetailChild;
 import com.xy.vmes.service.AssistOrderDetailChildService;
 
@@ -236,6 +237,17 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
         return model;
     }
 
+    @Override
+    public void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception {
+        PageData pd = new PageData();
+        pd.put("assistProductId",assistOrderDetail.getAssistProductId());
+        pd.put("orderCount",assistOrderDetail.getOrderCount());
+        pd.put("orderDtlId",assistOrderDetail.getId());
+        pd.put("orderId",assistOrderDetail.getParentId());
+        pd.put("cuser",assistOrderDetail.getCuser());
+        pd.put("uuser",assistOrderDetail.getCuser());
+        assistOrderDetailChildMapper.insertAssistOrderDetailChild(pd);
+    }
 }
 
 
