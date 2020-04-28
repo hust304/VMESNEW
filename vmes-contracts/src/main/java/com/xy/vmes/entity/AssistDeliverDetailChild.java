@@ -31,6 +31,9 @@ public class AssistDeliverDetailChild implements Serializable {
 	@TableField("in_dtl_id")
 	private String inDtlId;
 
+	//订单明细子表id
+	@TableField("orderDtl_child_id")
+	private String orderDtlChildId;
 	//原材料id(系统货品表id)
 	@TableField("product_id")
 	private String productId;
@@ -43,10 +46,10 @@ public class AssistDeliverDetailChild implements Serializable {
 	//原材料数量(单据单位)
 	@TableField("count")
 	private BigDecimal count;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -59,6 +62,7 @@ public class AssistDeliverDetailChild implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -154,7 +158,12 @@ public class AssistDeliverDetailChild implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getOrderDtlChildId() {
+		return orderDtlChildId;
+	}
+	public void setOrderDtlChildId(String orderDtlChildId) {
+		this.orderDtlChildId = orderDtlChildId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

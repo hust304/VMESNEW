@@ -62,16 +62,18 @@
         out_dtl_id outDtlId,
         in_dtl_id inDtlId,
 
+        orderDtl_child_id orderDtlChildId,
         product_id productId,
         unit_id unitId,
         ratio ratio,
         count count,
-        cuser cuser,
 
+        cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
         remark remark,
+
         isdisable isdisable
         from vmes_assist_deliver_detail_child
         <where>

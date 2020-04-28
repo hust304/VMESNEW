@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistOrderDetailChildByAssistDeliverService;
 import com.xy.vmes.service.AssistOrderDetailChildService;
 
 import com.yvan.HttpUtils;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 
 /**
 * 说明：vmes_assist_order_detail_child:外协订单明细子表Controller
@@ -23,7 +23,8 @@ public class AssistOrderDetailChildController {
     private Logger logger = LoggerFactory.getLogger(AssistOrderDetailChildController.class);
     @Autowired
     private AssistOrderDetailChildService assistOrderDetailChildService;
-
+    @Autowired
+    private AssistOrderDetailChildByAssistDeliverService assistOrderDetailChildByDeliverService;
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2020-04-24
@@ -36,6 +37,18 @@ public class AssistOrderDetailChildController {
         ResultModel model = assistOrderDetailChildService.listPageAssistOrderDetailChild(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChild 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //外协-发货管理-生成发货单 (订单明细中-生成发货单)
+    @PostMapping("/assist/assistOrderDetailChild/listPageAssistOrderDetailChildByDeliver")
+    public ResultModel listPageAssistOrderDetailChildByDeliver() throws Exception {
+        logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildByDeliver 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistOrderDetailChildByDeliverService.listPageAssistOrderDetailChildByDeliver(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildByDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

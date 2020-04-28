@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_order_detail_child:外协订单明细子表 Mapper.xml
+外协-发货管理-生成发货单 (订单明细中-生成发货单)
+
+创建人：陈刚 自动创建
+创建时间：2020-04-24
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildByAssistDeliverMapper">
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'assistOrderDetailChildByDeliver' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','orderDtlChildId','id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','productId','原材料id(系统货品表id)',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','unitId','单位id',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','ratio','用料比例',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','count','应发数量',5, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productCode', '货品编码', 6, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productName', '货品名称', 7, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productSpec', '规格型号', 8, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productGenre', '货品属性id', 9, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productGenreName', '货品属性', 10, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productType', '货品类型id', 11, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'productProperty', '自定义属性', 12, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailChildByDeliver', 'unitName', '单位', 13, '1', '1', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','deliverCount','已发数量',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailChildByDeliver','maxDeliverCount','最大发货',15, '1','1','1','0',now(), 'admin'),
+
+    </insert>
+
+    <select id="findAssistOrderDetailChildByDeliver" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            detailChild.id orderDtlChildId,
+            detailChild.order_id orderId,
+            detailChild.order_dtl_id orderDtlId,
+            detailChild.product_id productId,
+            detailChild.unit_id unitId,
+
+            round(detailChild.ratio, 2) ratio,
+            round(detailChild.count, 2) count,
+            detailChild.cuser cuser,
+            detailChild.cdate cdate,
+            detailChild.uuser uuser,
+
+            detailChild.udate udate,
+            detailChild.remark remark,
+            detailChild.isdisable isdisable,
+
+            <!--货品表(原材料信息)-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            unitName.name unitName,
+
+            <!--发货明细子表(发货明细原材料)-->
+            round(ifnull(deliver.deliverCount, 0),2) deliverCount,
+            <!--maxDeliverCount:最大允许发货数量: -->
+            round((round(detailChild.count, 2) - round(ifnull(deliver.deliverCount, 0),2)),2) maxDeliverCount
+
+        from vmes_assist_order_detail_child detailChild
+            left join vmes_product product on detailChild.product_id = product.id
+            left join vmes_dictionary unitName on detailChild.unit_id = unitName.id
+
+            <!--按(原材料)-对(vmes_assist_deliver_detail_child:发货单明细子表(发货明细原材料))汇总-->
+            left join (
+                select
+                    deliverDtl.order_detail_id,
+                    deliverDtlChild.orderDtl_child_id,
+                    sum(count) deliverCount
+                from vmes_assist_deliver_detail deliverDtl
+                    left join vmes_assist_deliver_detail_child deliverDtlChild on deliverDtl.id = deliverDtlChild.deliver_dtl_id
+                <where>
+                    <if test='orderDtlId != null and orderDtlId != ""' >
+                        and deliverDtl.order_detail_id = #{orderDtlId}
+                    </if>
+                    <!--state:状态(0:待发货 1:已发货 -1:已取消)-->
+                    <![CDATA[and deliverDtl.state <> -1]]>
+               </where>
+               group by deliverDtl.order_detail_id, deliverDtlChild.orderDtl_child_id
+           ) deliver on detailChild.order_dtl_id = deliver.order_detail_id and detailChild.id = deliver.orderDtl_child_id
+       <where>
+           <if test='orderDtlId != null and orderDtlId != ""' >
+               and detailChild.order_dtl_id = #{orderDtlId}
+           </if>
+       </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+   </select>
+</mapper>

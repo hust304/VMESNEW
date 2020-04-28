@@ -21,16 +21,19 @@ public class AssistDeliver implements Serializable {
 	//企业id
 	@TableField("company_id")
 	private String companyId;
+	//外协订单id
+	@TableField("order_id")
+	private String orderId;
 	//供应商id
 	@TableField("supplier_id")
 	private String supplierId;
 	//经办人id
 	@TableField("make_id")
 	private String makeId;
+
 	//外协发货单号(系统生成)
 	@TableField("sys_code")
 	private String sysCode;
-
 	//外协发货单号(用户自定义单号)
 	@TableField("cust_code")
 	private String custCode;
@@ -43,10 +46,10 @@ public class AssistDeliver implements Serializable {
 	//发货完成时间
 	@TableField("deliver_date")
 	private Date deliverDate;
+
 	//发货状态(0:待发货 1:已发货 -1:已取消)
 	@TableField("state")
 	private String state;
-
 	//物流公司
 	@TableField("waybill_company")
 	private String waybillCompany;
@@ -59,10 +62,10 @@ public class AssistDeliver implements Serializable {
 	//手机号
 	@TableField("supplier_mobile")
 	private String supplierMobile;
+
 	//联系人
 	@TableField("supplier_name")
 	private String supplierName;
-
 	//收货地址
 	@TableField("supplier_address")
 	private String supplierAddress;
@@ -75,10 +78,10 @@ public class AssistDeliver implements Serializable {
 	//修改用户id
 	@TableField("uuser")
 	private String uuser;
+
 	//修改时间
 	@TableField("udate")
 	private Date udate;
-
 	//备注
 	@TableField("remark")
 	private String remark;
@@ -219,7 +222,12 @@ public class AssistDeliver implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

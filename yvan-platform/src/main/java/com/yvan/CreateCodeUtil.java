@@ -15,8 +15,8 @@ public class CreateCodeUtil {
         PageData pd = new PageData();
         //模块编码
         String modelCode = "FinanceBill";
-        String objectName = "FinanceBill";//类名
-        String tableName = "vmes_finance_bill";//表名
+        String objectName = "AAA";//类名
+        String tableName = "vmes_assist_deliver";//表名
         String title = "vmes_finance_bill:应收/应付单";
         String author = "刘威";
         String rootName = "deecoop";
