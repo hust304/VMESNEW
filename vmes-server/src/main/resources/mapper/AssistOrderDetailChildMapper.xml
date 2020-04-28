@@ -51,13 +51,23 @@
 
 
     <insert id="insertAssistOrderDetailChild" parameterType="com.yvan.PageData" useGeneratedKeys="true" keyProperty="id">
-        insert into vmes_assist_order_detail_child(id,order_id,order_dtl_id,product_id,unit_id,ratio,count,remark,cuser,cdate,uuser,udate)
-        select replace(tab.id, '-', ''),orde_id,order_dtl_id,product_id,unit_id,ratio,ratio*count count,remark,cuser,cdate,uuser,udate from (
+        insert into vmes_assist_order_detail_child (
+            id,order_id,order_dtl_id,product_id,unit_id,
+            ratio,count,remark,cuser,cdate,uuser,udate
+        )
         select
-        uuid() id,
-        #{orderId} orde_id,#{orderDtlId} order_dtl_id,product_id,unit_id,ratio,#{orderCount} count,remark,
-        #{cuser} cuser,now() cdate,#{uuser} uuser,now() udate
-        from vmes_assist_product_detail where parent_id = #{assistProductId} group by id
+            replace(tab.id, '-', ''),orde_id,order_dtl_id,product_id,unit_id,
+            round(ifnull(ratio, 0),2) ratio,
+            round((round(ifnull(ratio, 0),2) * round(ifnull(count, 0),2)), 2) count,
+            remark,cuser,cdate,uuser,udate
+        from (
+            select
+                uuid() id,#{orderId} orde_id,#{orderDtlId} order_dtl_id,product_id,unit_id,
+                ratio,#{orderCount} count,
+                remark,#{cuser} cuser,now() cdate,#{uuser} uuser,now() udate
+            from vmes_assist_product_detail
+            where parent_id = #{assistProductId}
+            group by id
         )tab
     </insert>
 
