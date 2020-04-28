@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.entity.AssistOrderDetail;
 import com.xy.vmes.entity.AssistOrderDetailChild;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
@@ -105,6 +106,8 @@ public interface AssistOrderDetailChildService {
     * @throws Exception
     */
     ResultModel listPageAssistOrderDetailChild(PageData pd) throws Exception;
+
+    void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception;
 
 }
 

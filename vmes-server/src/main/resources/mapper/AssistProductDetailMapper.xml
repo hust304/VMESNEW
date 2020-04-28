@@ -54,7 +54,7 @@
             (replace(uuid(), '-', ''), 'assistProductDetail', 'productGenreName', '货品属性', 15, '1', '1', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'assistProductDetail', 'productType', '货品类型id', 16, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'assistProductDetail', 'productProperty', '自定义属性', 17, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistProductDetail', 'unitName', '单位', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistProductDetail', 'unitName', '单位', 19, '1', '1', '1', '0', now(), 'admin')
     </insert>
 
 
