@@ -390,19 +390,28 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 }
 
                 ///////////////////////////////////////////////////////
-                BigDecimal pieceCountSum = BigDecimal.valueOf(0D);
-                if (deliverDtlList != null && deliverDtlList.size() > 0) {
-                    for (SaleDeliverDetail deliverDetail : deliverDtlList) {
-                        BigDecimal pieceCount = BigDecimal.valueOf(0D);
-                        if (deliverDetail.getPieceCount() != null) {
-                            pieceCount = deliverDetail.getPieceCount();
-                        }
-                        pieceCountSum = BigDecimal.valueOf(pieceCountSum.doubleValue() + pieceCount.doubleValue());
-                    }
+                BigDecimal pieceCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("pieceCount") != null) {
+                    pieceCount = (BigDecimal)mapObject.get("pieceCount");
                 }
+
+                if (pieceCount.doubleValue() == 0) {
+                    BigDecimal pieceCountSum = BigDecimal.valueOf(0D);
+                    if (deliverDtlList != null && deliverDtlList.size() > 0) {
+                        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+                            BigDecimal pieceCountDtl = BigDecimal.valueOf(0D);
+                            if (deliverDetail.getPieceCount() != null) {
+                                pieceCountDtl = deliverDetail.getPieceCount();
+                            }
+                            pieceCountSum = BigDecimal.valueOf(pieceCountSum.doubleValue() + pieceCountDtl.doubleValue());
+                        }
+                    }
+                    pieceCount = pieceCountSum;
+                }
+
                 //四舍五入到2位小数
-                pieceCountSum = pieceCountSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                mapObject.put("pieceCount", pieceCountSum);
+                pieceCount = pieceCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("pieceCount", pieceCount);
             }
         }
 
