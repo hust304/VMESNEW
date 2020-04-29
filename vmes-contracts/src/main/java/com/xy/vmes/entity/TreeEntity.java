@@ -56,6 +56,7 @@ public class TreeEntity implements Cloneable {
     private BigDecimal splitCount;
 
     //产品信息
+    private String prodInfo;
     private String code;
     private String spec;
     private String genre;
@@ -87,6 +88,15 @@ public class TreeEntity implements Cloneable {
 
     //(必须)当前节点子节点
     private List<TreeEntity> children = new ArrayList<TreeEntity>();
+
+
+    public String getProdInfo() {
+        return prodInfo;
+    }
+
+    public void setProdInfo(String prodInfo) {
+        this.prodInfo = prodInfo;
+    }
 
     public BigDecimal getSetCount() {
         return setCount;
