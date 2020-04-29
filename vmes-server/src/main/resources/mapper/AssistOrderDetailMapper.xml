@@ -61,6 +61,7 @@
 
         (replace(uuid(), '-', ''),'assistOrderDetail','orderCode','订单编号',23, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'assistOrderDetail','supplierName','供应商',24, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','supplierId','供应商id',24, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -169,6 +170,7 @@
 
         <!--外协订单-->
         assistOrder.sys_code orderCode,
+        assistOrder.supplier_id supplierId,
         supplier.name supplierName,
 
         plan.sys_code planCode
