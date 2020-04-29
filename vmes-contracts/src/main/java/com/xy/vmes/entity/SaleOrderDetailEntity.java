@@ -82,6 +82,9 @@ public class SaleOrderDetailEntity {
     //当前库存数量
     private BigDecimal stockCount;
 
+    //件数 pieceCount
+    private BigDecimal pieceCount;
+
     public void setId(String id) {
         this.id = id;
     }
@@ -289,5 +292,13 @@ public class SaleOrderDetailEntity {
 
     public void setVersionLockCount(Integer versionLockCount) {
         this.versionLockCount = versionLockCount;
+    }
+
+    public BigDecimal getPieceCount() {
+        return pieceCount;
+    }
+
+    public void setPieceCount(BigDecimal pieceCount) {
+        this.pieceCount = pieceCount;
     }
 }
