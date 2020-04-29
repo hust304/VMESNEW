@@ -62,6 +62,7 @@
             (replace(uuid(), '-', ''),'assistDeliverDetail','assistProductUnitName','单位',22, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','craftCode','工艺编号',23, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','craftName','工艺名称',24, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','supplierId','供应商id',25, '1','1','1','0',now(), 'admin'),
 
     </insert>
 
@@ -150,6 +151,7 @@
             <!--发货单-->
             assistOrder.sys_code orderCode,
             deliver.sys_code deliverCode,
+            deliver.supplier_id supplierId,
             supplier.name supplier,
 
             <!--外协件信息-->
