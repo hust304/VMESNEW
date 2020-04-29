@@ -35,6 +35,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'assistDeliverDetailChild','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','deliverId','外协发货单id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','deliverDtlId','外协发货明细id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','outDtlId','出库单明细id',3, '1','1','1','0',now(), 'admin'),
@@ -42,14 +43,22 @@
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','productId','原材料id(系统货品表id)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','unitId','单位id',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','ratio','用料比例',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetailChild','count','原材料数量(单据单位)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetailChild','count','发货数量',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','cuser','创建用户id',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','cdate','创建时间',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','uuser','修改用户id',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','udate','修改时间',12, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','remark','备注',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetailChild','isdisable','是否启用(0:已禁用 1:启用)',14, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetailChild','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productCode', '货品编码', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productName', '货品名称', 16, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productSpec', '规格型号', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productGenre', '货品属性id', 18, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productGenreName', '货品属性', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productType', '货品类型id', 20, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'productProperty', '自定义属性', 21, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetailChild', 'unitName', '单位', 22, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
 
@@ -103,37 +112,55 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        id id,
-        deliver_id deliverId,
-        deliver_dtl_id deliverDtlId,
-        out_dtl_id outDtlId,
-        in_dtl_id inDtlId,
+        detailChild.id id,
+        detailChild.deliver_id deliverId,
+        detailChild.deliver_dtl_id deliverDtlId,
+        detailChild.out_dtl_id outDtlId,
+        detailChild.in_dtl_id inDtlId,
 
-        product_id productId,
-        unit_id unitId,
-        ratio ratio,
-        count count,
-        cuser cuser,
+        detailChild.orderDtl_child_id orderDtlChildId,
+        detailChild.product_id productId,
+        detailChild.unit_id unitId,
+        round(detailChild.ratio, 2) ratio,
+        round(detailChild.count, 2) count,
 
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_assist_deliver_detail_child
+        detailChild.cuser cuser,
+        detailChild.cdate cdate,
+        detailChild.uuser uuser,
+        detailChild.udate udate,
+        detailChild.remark remark,
+        detailChild.isdisable isdisable,
+
+        <!--货品表(原材料信息)-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.genre productGenre,
+        product.property productProperty,
+        unitName.name unitName
+
+        from vmes_assist_deliver_detail_child detailChild
+            left join vmes_product product on detailChild.product_id = product.id
+            left join vmes_dictionary unitName on detailChild.unit_id = unitName.id
+
         <where>
+            <if test="deliverDtlId != null and deliverDtlId != ''" >
+                and detailChild.deliver_dtl_id = #{deliverDtlId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
             </if>
-            <if test='code != null and code != ""'>
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test='name != null and name != ""'>
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
+
         </where>
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
