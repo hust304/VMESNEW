@@ -168,7 +168,8 @@
             remark remark,
             isdisable isdisable,
 
-            in_detail_id inDetailId
+            in_detail_id inDetailId,
+            piece_count pieceCount
 
         from vmes_sale_deliver_detail
         <where>

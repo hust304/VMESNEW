@@ -83,6 +83,9 @@ public class SaleDeliverDetail implements Serializable {
 	//入库单明细id
 	@TableField("in_detail_id")
 	private String inDetailId;
+	//件数
+	@TableField("piece_count")
+	BigDecimal pieceCount;
 
 
 	public void setId(String id) {
@@ -211,7 +214,13 @@ public class SaleDeliverDetail implements Serializable {
 	public void setInDetailId(String inDetailId) {
 		this.inDetailId = inDetailId;
 	}
-	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+	public BigDecimal getPieceCount() {
+		return pieceCount;
+	}
+	public void setPieceCount(BigDecimal pieceCount) {
+		this.pieceCount = pieceCount;
+	}
+/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
 }
