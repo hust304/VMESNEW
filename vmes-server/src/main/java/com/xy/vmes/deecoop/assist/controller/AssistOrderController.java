@@ -695,7 +695,7 @@ public class AssistOrderController {
         AssistOrder editOrder = new AssistOrder();
         editOrder.setId(orderId);
 
-        String msgTemp = "审核退回:{0}";
+        String msgTemp = "审核退回：{0}";
         String remarkStr = MessageFormat.format(msgTemp, remark);
         editOrder.setRemark(remarkStr);
 

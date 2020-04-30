@@ -286,12 +286,15 @@ public class SaleRetreatAuditServiceImp implements SaleRetreatAuditService {
 
         SaleRetreat retreatEdit = new SaleRetreat();
         retreatEdit.setId(parentId);
-        String msgTemp = "审核退回:{0}{3}审核人:{1}{3}审核时间:{2}";
-        String remarkStr = MessageFormat.format(msgTemp,
-                remark,
-                userName,
-                DateUtils.toDateStr(new Date()),
-                Common.SYS_ENDLINE_DEFAULT);
+//        String msgTemp = "审核退回:{0}{3}审核人:{1}{3}审核时间:{2}";
+//        String remarkStr = MessageFormat.format(msgTemp,
+//                remark,
+//                userName,
+//                DateUtils.toDateStr(new Date()),
+//                Common.SYS_ENDLINE_DEFAULT);
+
+        String msgTemp = "审核退回：{0}";
+        String remarkStr = MessageFormat.format(msgTemp, remark);
         retreatEdit.setRemark(remarkStr);
         //退货单状态(0:待提交 1:待审核 2:待退款 3:已完成 -1:已取消)
         retreatEdit.setState("0");
