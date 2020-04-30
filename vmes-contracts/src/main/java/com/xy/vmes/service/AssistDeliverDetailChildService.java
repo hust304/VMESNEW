@@ -96,6 +96,19 @@ public interface AssistDeliverDetailChildService {
     AssistDeliverDetailChild findDeliverDetailChild(PageData object) throws Exception;
     AssistDeliverDetailChild findDeliverDetailChildById(String id) throws Exception;
     List<AssistDeliverDetailChild> findDeliverDetailChildList(PageData object) throws Exception;
+
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param orderDtlList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductBusinessMapByOut(List<AssistDeliverDetailChild> orderDtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

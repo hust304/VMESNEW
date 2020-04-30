@@ -11,11 +11,13 @@ import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -190,6 +192,44 @@ public class AssistDeliverDetailChildServiceImp implements AssistDeliverDetailCh
         return this.findDataList(object, null);
     }
 
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param orderDtlList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductBusinessMapByOut(List<AssistDeliverDetailChild> orderDtlList) {
+        Map<String, Map<String, Object>> prodBusinessByOutMap = new HashMap<>();
+        if (orderDtlList == null || orderDtlList.size() == 0) {return prodBusinessByOutMap;}
+
+        for (AssistDeliverDetailChild dtlObject : orderDtlList) {
+            //id:销售订单明细id
+            String id = dtlObject.getId();
+            String productId = dtlObject.getProductId();
+
+            //productCount:货品数量(计量数量) := outCount 出库数量
+            BigDecimal productCount = BigDecimal.valueOf(0D);
+            if (dtlObject.getCount() != null) {
+                productCount = dtlObject.getCount();
+            }
+            //四舍五入到2位小数
+            productCount = productCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", productCount);
+
+            prodBusinessByOutMap.put(id, productMap);
+        }
+
+        return prodBusinessByOutMap;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

@@ -101,6 +101,12 @@
                 </choose>
             </if>
 
+            <if test="deliverId != null and deliverId != ''" >
+                and deliver_id = #{deliverId}
+            </if>
+            <if test="deliverDtlId != null and deliverDtlId != ''" >
+                and deliver_dtl_id = #{deliverDtlId}
+            </if>
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
                 and ${queryStr}

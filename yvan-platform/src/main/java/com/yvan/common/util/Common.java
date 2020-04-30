@@ -396,6 +396,9 @@ public class Common {
             put("checkIn", "4d89ccb1e64f499cbdc6409f173f5407");
 
             //外协入库 064dda15d44d4f8fa6330c5c7e46300e
+            put("assistIn", "064dda15d44d4f8fa6330c5c7e46300e");
+            //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02
+            put("assistRetreatIn", "1b62a5615c104e3db30cbed50c0e8b02");
             //组装入库 80ac00503a1d41e5926be50f93c32c54
 
 
@@ -423,6 +426,8 @@ public class Common {
             put("scrapOut", "def4b13175dc44b08d7a0315b811700e");
             //办公用品出库 f2b0aaceff914acd8636700a111ca8f0
             put("officeOut", "f2b0aaceff914acd8636700a111ca8f0");
+            //外协出库 2ed8e86f7db149ffabc95b6428947cba
+            put("assistOut", "2ed8e86f7db149ffabc95b6428947cba");
 
 //        //a804369b392c4035bc766cc536b29d35 备件库入库类型
 //        put("warehouseInTypeBySpare", "a804369b392c4035bc766cc536b29d35");

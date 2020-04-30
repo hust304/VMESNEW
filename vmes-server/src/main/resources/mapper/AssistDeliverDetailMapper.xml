@@ -63,6 +63,7 @@
             (replace(uuid(), '-', ''),'assistDeliverDetail','craftCode','工艺编号',23, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','craftName','工艺名称',24, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','supplierId','供应商id',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outStateName','出库状态',26, '1','1','1','0',now(), 'admin'),
 
     </insert>
 
@@ -170,6 +171,18 @@
             craft.sys_code craftCode,
             craft.name craftName
 
+            <!--获取出库单id-->
+            <if test="'true' == isNeedOutId" >
+                ,warehouseOut.state outState
+                ,CASE
+                WHEN warehouseOut.state = '0' THEN '未完成'
+                WHEN warehouseOut.state = '1' THEN '已完成'
+                WHEN warehouseOut.state = '-1' THEN '已取消'
+                ELSE null
+                END outStateName
+            </if>
+
+
         from vmes_assist_deliver_detail deliverDtl
             left join vmes_assist_deliver deliver on deliverDtl.parent_id = deliver.id
             left join vmes_customer supplier on deliver.supplier_id = supplier.id
@@ -179,6 +192,24 @@
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
             left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and deliverDtl.order_unit = orderUnit.unit)
             left join vmes_dictionary orderUnitName on deliverDtl.order_unit = orderUnitName.id
+
+            <!--获取出库单id-->
+            <if test="'true' == isNeedOutId" >
+                left join (
+                    select a.deliver_id, b.parent_id warehouseOutId
+                    from vmes_assist_deliver_detail_child a
+                        left join vmes_warehouse_out_detail b on a.out_dtl_id = b.id
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            a.deliver_id in (
+                                select id from vmes_assist_deliver where company_id = #{currentCompanyId}
+                            )
+                        </if>
+                    </where>
+                    group by a.deliver_id,b.parent_id
+                ) detailChild on deliverDtl.parent_id = detailChild.deliver_id
+                left join vmes_warehouse_out warehouseOut on detailChild.warehouseOutId = warehouseOut.id
+            </if>
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}

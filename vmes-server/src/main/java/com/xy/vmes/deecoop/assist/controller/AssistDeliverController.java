@@ -1,7 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
 import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
@@ -39,13 +38,15 @@ public class AssistDeliverController {
     @Autowired
     private AssistDeliverDetailChildService deliverDetailChildService;
 
-    @Autowired
-    private AssistOrderService orderService;
+//    @Autowired
+//    private AssistOrderService orderService;
     @Autowired
     private AssistOrderDetailService orderDtlService;
 
-
-
+    @Autowired
+    private WarehouseOutCreateService warehouseOutCreateService;
+    @Autowired
+    private RoleMenuService roleMenuService;
     @Autowired
     private CoderuleService coderuleService;
 
@@ -85,6 +86,8 @@ public class AssistDeliverController {
             model.putMsg("企业id为空或空字符串！");
             return model;
         }
+
+        String supplierName = pageData.getString("supplierName");
         String supplierId = pageData.getString("supplierId");
         if (supplierId == null || supplierId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -95,6 +98,21 @@ public class AssistDeliverController {
         if (orderId == null || orderId.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
             return model;
         }
 
@@ -154,6 +172,56 @@ public class AssistDeliverController {
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //系统推送(外协件-原材料)出库单
+        PageData findMap = new PageData();
+        findMap.put("deliverId", addDeliver.getId());
+        List<AssistDeliverDetailChild> deliverDetailChildList = deliverDetailChildService.findDeliverDetailChildList(findMap);
+        if (deliverDetailChildList != null && deliverDetailChildList.size() > 0) {
+            Map<String, Map<String, Object>> businessByOutMap = deliverDetailChildService.findProductBusinessMapByOut(deliverDetailChildList);
+            if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                warehouseOutCreateService.createWarehouseOutBusinessByComplex(supplierId,
+                        supplierName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyID,
+                        //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
+                        Common.DICTIONARY_MAP.get("assistIn"),
+                        addDeliver.getSysCode(),
+                        businessByOutMap);
+            } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                warehouseOutCreateService.createWarehouseOutBusinessBySimple(supplierId,
+                        supplierName,
+                        //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                        Common.DICTIONARY_MAP.get("warehouseEntity"),
+                        cuser,
+                        companyID,
+                        //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
+                        Common.DICTIONARY_MAP.get("assistIn"),
+                        addDeliver.getSysCode(),
+                        businessByOutMap);
+            }
+
+            //反写业务出库单id
+            if (businessByOutMap != null) {
+                for (Iterator iterator = businessByOutMap.keySet().iterator(); iterator.hasNext();) {
+                    String businessId = iterator.next().toString().trim();
+                    Map<String, Object> objectMap = businessByOutMap.get(businessId);
+                    if (objectMap != null && objectMap.get("") != null && objectMap.get("outDtlId").toString().trim().length() > 0) {
+                        String outDtlId = objectMap.get("outDtlId").toString().trim();
+
+                        AssistDeliverDetailChild editDetailChild = new AssistDeliverDetailChild();
+                        editDetailChild.setId(businessId);
+                        editDetailChild.setOutDtlId(outDtlId);
+                        deliverDetailChildService.update(editDetailChild);
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //如果有外协计划-更改外协计划状态
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDeliver/addAssistDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -218,6 +286,7 @@ public class AssistDeliverController {
         deliverService.update(editDeliver);
         deliverDetailService.updateStateByDetail("1", deliverId);
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //2. 变更订单状态
         List<AssistDeliverDetail> deliverDtlList = deliverDetailService.findDeliverDetailListByParentId(deliverId);
         String orderDtlIds = deliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
