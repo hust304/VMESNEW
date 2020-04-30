@@ -318,6 +318,8 @@
             punit.name punitName,
             product.code code,
             product.name name,
+            product.spec spec,
+            product.property property,
             pu.np_formula npFormula,
             pu.pn_formula pnFormula,
             pu.isdisable isdisable,

@@ -39,11 +39,12 @@ public class ProductUnitServiceImp implements ProductUnitService {
     private ProductUnitPriceService productUnitPriceService;
     @Autowired
     private ProductUnitExcelService productUnitExcelService;
-
     @Autowired
     private DictionaryService dictionaryService;
     @Autowired
     private ColumnService columnService;
+    @Autowired
+    private SystemToolService systemToolService;
     /**
     * 创建人：刘威 自动创建，禁止修改
     * 创建时间：2018-11-15
@@ -299,46 +300,74 @@ public class ProductUnitServiceImp implements ProductUnitService {
         }
 
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
 
-        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
-        List<String> titlesHideList = new ArrayList<String>();
-        Map<String, String> varModelMap = new HashMap<String, String>();
-        if(columnList!=null&&columnList.size()>0){
-            for (Column column : columnList) {
-                if(column!=null){
-                    if("0".equals(column.getIshide())){
-                        titlesHideList.add(column.getTitleKey());
-                    }
-                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
-                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
-                    varModelMap.put(column.getTitleKey(),"");
-                    titlesList.add(titlesLinkedMap);
-                }
-            }
-        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+//
+//        List<LinkedHashMap> titlesList = new ArrayList<LinkedHashMap>();
+//        List<String> titlesHideList = new ArrayList<String>();
+//        Map<String, String> varModelMap = new HashMap<String, String>();
+//        if(columnList!=null&&columnList.size()>0){
+//            for (Column column : columnList) {
+//                if(column!=null){
+//                    if("0".equals(column.getIshide())){
+//                        titlesHideList.add(column.getTitleKey());
+//                    }
+//                    LinkedHashMap titlesLinkedMap = new LinkedHashMap();
+//                    titlesLinkedMap.put(column.getTitleKey(),column.getTitleName());
+//                    varModelMap.put(column.getTitleKey(),"");
+//                    titlesList.add(titlesLinkedMap);
+//                }
+//            }
+//        }
+//        Map result = new HashMap();
+//        result.put("hideTitles",titlesHideList);
+//        result.put("titles",titlesList);
+//
+//        List<Map> varMapList = new ArrayList();
         Map result = new HashMap();
-        result.put("hideTitles",titlesHideList);
-        result.put("titles",titlesList);
-
-        List<Map> varMapList = new ArrayList();
         List<Map> varList = this.getDataListPage(pd,pg);
-        if(varList!=null&&varList.size()>0){
-            for(int i=0;i<varList.size();i++){
-                Map map = varList.get(i);
-                Map<String, String> varMap = new HashMap<String, String>();
-                varMap.putAll(varModelMap);
-                for (Map.Entry<String, String> entry : varMap.entrySet()) {
-                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
-                }
-                varMapList.add(varMap);
+
+
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
             }
         }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+//        if(varList!=null&&varList.size()>0){
+//            for(int i=0;i<varList.size();i++){
+//                Map map = varList.get(i);
+//                Map<String, String> varMap = new HashMap<String, String>();
+//                varMap.putAll(varModelMap);
+//                for (Map.Entry<String, String> entry : varMap.entrySet()) {
+//                    varMap.put(entry.getKey(),map.get(entry.getKey())!=null?map.get(entry.getKey()).toString():"");
+//                }
+//                varMapList.add(varMap);
+//            }
+//        }
+//        result.put("varList",varMapList);
+//        result.put("pageData", pg);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
         result.put("varList",varMapList);
-        result.put("pageData", pg);
 
         model.putResult(result);
         return model;
