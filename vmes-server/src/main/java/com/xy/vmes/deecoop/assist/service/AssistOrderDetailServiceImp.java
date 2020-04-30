@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailMapper;
+import com.xy.vmes.entity.AssistOrder;
 import com.xy.vmes.entity.AssistOrderDetail;
 import com.xy.vmes.service.AssistOrderDetailService;
 
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.service.AssistOrderService;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
@@ -35,6 +37,9 @@ import javax.servlet.http.HttpServletResponse;
 public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
     @Autowired
     private AssistOrderDetailMapper assistOrderDetailMapper;
+
+    @Autowired
+    private AssistOrderService orderService;
     @Autowired
     private ColumnService columnService;
 
@@ -253,6 +258,63 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         //四舍五入到2位小数
         return totalAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
     }
+
+    /**
+     * 获取外协订单状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     *
+     * @param dtlList      外协订单明细List<AssistOrderDetail>
+     * @return
+     */
+    public String findParentStateByDetail(List<AssistOrderDetail> dtlList) {
+        if (dtlList == null || dtlList.size() == 0) {return null;}
+
+        //订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        int dtl_dtj = 0;  //0:待提交
+        int dtl_dsh = 0;  //1:待审核
+        int dtl_dfh = 0;  //2:待发货
+        int dtl_wxz = 0;  //3:外协中
+        int dtl_ywc = 0;  //4:已完成
+        int dtl_yqx = 0;  //-1:已取消
+        //由各自业务更改--(0:待提交 1:待审核 2:待发货 -1:已取消 )
+
+        //明细变更状态(4:待发货 5:已完成 -1:已取消)
+        for (AssistOrderDetail dtlObject : dtlList) {
+            if ("-1".equals(dtlObject.getState())) {
+                dtl_yqx = dtl_yqx + 1;
+            } else if ("0".equals(dtlObject.getState())) {
+                dtl_dtj = dtl_dtj + 1;
+            } else if ("1".equals(dtlObject.getState())) {
+                dtl_dsh = dtl_dsh + 1;
+            } else if ("2".equals(dtlObject.getState())) {
+                dtl_dfh = dtl_dfh + 1;
+            } else if ("3".equals(dtlObject.getState())) {
+                dtl_wxz = dtl_wxz + 1;
+            } else if ("4".equals(dtlObject.getState())) {
+                dtl_ywc = dtl_ywc + 1;
+            }
+        }
+
+        //订单明细状态:-1:已取消 全是已取消状态  订单状态:-1:已取消
+        if (dtl_yqx > 0 && dtl_yqx == dtlList.size()) {
+            return "-1";
+
+            //订单明细状态:3:外协中 全是外协中状态  订单状态:3:外协中
+        } else if (dtl_wxz > 0 && dtl_yqx >= 0
+            && (dtl_dtj == 0 && dtl_dsh == 0 && dtl_dfh == 0 && dtl_ywc == 0)
+        ) {
+            return "3";
+
+            //订单明细状态:4:已完成 全是已完成(发货)状态  订单状态:4:已完成
+        } else if (dtl_ywc > 0 && dtl_yqx >= 0
+            && (dtl_dtj == 0 && dtl_dsh == 0 && dtl_dfh == 0 && dtl_wxz == 0)
+        ) {
+            return "4";
+        }
+
+        return null;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
@@ -268,6 +330,36 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         assistOrderDetailMapper.updateStateByDetail(pageData);
     }
 
+    /**
+     * 根据订单明细状态-反写订单状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     *
+     * @param parent       订单对象
+     * @param detailList   订单明细List<SaleOrderDetail>
+     */
+    public void updateParentStateByDetailList(AssistOrder parent, List<AssistOrderDetail> detailList) throws Exception {
+        if (parent == null) {return;}
+        if (parent.getId() == null || parent.getId().trim().length() == 0) {return;}
+
+        if (detailList == null) {
+            detailList = this.findAssistOrderDetailListByParentId(parent.getId());
+        }
+
+        //获取订单状态-根据订单明细状态
+        String parentState = this.findParentStateByDetail(detailList);
+        if (parentState != null && parentState.trim().length() > 0) {
+            parent.setState(parentState.trim());
+        }
+
+//        //订单状态:3:已发货 设定发货日期
+//        if ("3".equals(parentState)) {
+//            parent.setDeliverDate(new Date());
+//        }
+
+        orderService.update(parent);
+
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

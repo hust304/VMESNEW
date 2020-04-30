@@ -1,5 +1,6 @@
 package com.xy.vmes.service;
 
+import com.xy.vmes.entity.AssistOrder;
 import com.xy.vmes.entity.AssistOrderDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
@@ -103,9 +104,28 @@ public interface AssistOrderDetailService {
 
     List<AssistOrderDetail> mapList2DetailList(List<Map<String, String>> mapList, List<AssistOrderDetail> objectList);
     BigDecimal findTotalAmount(List<AssistOrderDetail> objectList);
+
+    /**
+     * 获取外协订单状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     *
+     * @param dtlList      外协订单明细List<AssistOrderDetail>
+     * @return
+     */
+    String findParentStateByDetail(List<AssistOrderDetail> dtlList);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
-
+    /**
+     * 根据订单明细状态-反写订单状态
+     * 订单状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     * 订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+     *
+     * @param parent       订单对象
+     * @param detailList   订单明细List<SaleOrderDetail>
+     */
+    void updateParentStateByDetailList(AssistOrder parent, List<AssistOrderDetail> detailList) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
