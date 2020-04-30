@@ -1,14 +1,10 @@
 package com.xy.vmes.deecoop.assist.controller;
 
 import com.xy.vmes.common.util.DateFormat;
-import com.xy.vmes.entity.AssistDeliver;
-import com.xy.vmes.entity.AssistDeliverDetail;
-import com.xy.vmes.entity.AssistDeliverDetailChild;
-import com.xy.vmes.service.AssistDeliverDetailChildService;
-import com.xy.vmes.service.AssistDeliverDetailService;
-import com.xy.vmes.service.AssistDeliverService;
+import com.xy.vmes.common.util.StringUtil;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 
-import com.xy.vmes.service.CoderuleService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -22,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +38,13 @@ public class AssistDeliverController {
     private AssistDeliverDetailService deliverDetailService;
     @Autowired
     private AssistDeliverDetailChildService deliverDetailChildService;
+
+    @Autowired
+    private AssistOrderService orderService;
+    @Autowired
+    private AssistOrderDetailService orderDtlService;
+
+
 
     @Autowired
     private CoderuleService coderuleService;
@@ -179,6 +183,13 @@ public class AssistDeliverController {
             return model;
         }
 
+        String orderId = pageData.getString("orderId");
+        if (orderId == null || orderId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协订单id为空或空字符串！");
+            return model;
+        }
+
         String deliverJsonStr = pageData.getString("deliverJsonStr");
         if (deliverJsonStr == null || deliverJsonStr.trim().length() == 0) {
             model.putCode(Integer.valueOf(1));
@@ -208,8 +219,27 @@ public class AssistDeliverController {
         deliverDetailService.updateStateByDetail("1", deliverId);
 
         //2. 变更订单状态
+        List<AssistDeliverDetail> deliverDtlList = deliverDetailService.findDeliverDetailListByParentId(deliverId);
+        String orderDtlIds = deliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
+        //获取外协订单(原材料)Map结构体
+        //Map<外协订单明细id, List<Map<String, Object>>>
+        //Sql查询语句: AssistOrderDetailChildByAssistDeliverMapper.checkAssistOrderDetailChildByDeliver
+        Map<String, List<Map<String, Object>>> valueMap = deliverDetailService.findOrderDetailChildMap(orderDtlIds);
+        for (Iterator iterator = valueMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey_orderDtlId = iterator.next().toString().trim();
+            boolean isAllDeliver = deliverDetailService.isAllDeliverByOrderDetail(mapKey_orderDtlId, valueMap);
+            if (isAllDeliver) {
+                AssistOrderDetail editOrderDtl = new AssistOrderDetail();
+                editOrderDtl.setId(mapKey_orderDtlId);
+                //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+                editOrderDtl.setState("3");
+                orderDtlService.update(editOrderDtl);
+            }
+        }
 
-        //3. 变更订单计划状态
+        AssistOrder editOrder = new AssistOrder();
+        editOrder.setId(orderId);
+        orderDtlService.updateParentStateByDetailList(editOrder, null);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDeliver/updateAssistDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -217,6 +247,4 @@ public class AssistDeliverController {
     }
 
 }
-
-
 

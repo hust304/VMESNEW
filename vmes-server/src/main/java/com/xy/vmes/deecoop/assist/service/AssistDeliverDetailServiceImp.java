@@ -8,6 +8,7 @@ import com.xy.vmes.service.AssistDeliverDetailService;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.service.AssistOrderDetailChildByAssistDeliverService;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -15,6 +16,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -28,6 +31,8 @@ import com.yvan.Conv;
 public class AssistDeliverDetailServiceImp implements AssistDeliverDetailService {
     @Autowired
     private AssistDeliverDetailMapper assistDeliverDetailMapper;
+    @Autowired
+    private AssistOrderDetailChildByAssistDeliverService orderDetailChilService;
     @Autowired
     private ColumnService columnService;
 
@@ -193,6 +198,91 @@ public class AssistDeliverDetailServiceImp implements AssistDeliverDetailService
         findMap.put("parentId", parentId);
 
         return this.findDeliverDetailList(findMap);
+    }
+
+    public String findOrderDtlIdsByDeliverDtlList(List<AssistDeliverDetail> detailList) {
+        if (detailList == null || detailList.size() == 0) {return new String();}
+
+        StringBuffer orderDtlIds = new StringBuffer();
+        for (AssistDeliverDetail detail : detailList) {
+            if (detail.getOrderDetailId() != null && detail.getOrderDetailId().trim().length() > 0) {
+                orderDtlIds.append(detail.getOrderDetailId().trim() + ",");
+            }
+        }
+        return orderDtlIds.toString();
+    }
+
+    /**
+     * 获取外协订单(原材料)Map结构体
+     * Map<外协订单明细id, List<Map<String, Object>>>
+     * Sql查询语句: AssistOrderDetailChildByAssistDeliverMapper.checkAssistOrderDetailChildByDeliver
+     *
+     * @param orderDtlIds
+     * @return
+     */
+    public Map<String, List<Map<String, Object>>> findOrderDetailChildMap(String orderDtlIds) {
+        Map<String, List<Map<String, Object>>> valueMap = new HashMap<>();
+        if (orderDtlIds == null || orderDtlIds.trim().length() == 0) {return valueMap;}
+
+        orderDtlIds = StringUtil.stringTrimSpace(orderDtlIds);
+        orderDtlIds = "'" + orderDtlIds.replace(",", "','") + "'";
+
+        //Sql查询语句: AssistOrderDetailChildByAssistDeliverMapper.checkAssistOrderDetailChildByDeliver
+        PageData findMap = new PageData();
+        findMap.put("orderDtlIds", orderDtlIds);
+        List<Map<String, Object>> mapList = orderDetailChilService.checkAssistOrderDetailChildByDeliver(findMap);
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+                //订单明细id orderDtlId
+                String orderDtlId = (String)objectMap.get("orderDtlId");
+
+                if (valueMap.get(orderDtlId) == null) {
+                    List<Map<String, Object>> tempList = new ArrayList<>();
+                    tempList.add(objectMap);
+                    valueMap.put(orderDtlId, tempList);
+                } else if (valueMap.get(orderDtlId) != null) {
+                    List<Map<String, Object>> tempList = valueMap.get(orderDtlId);
+                    tempList.add(objectMap);
+                    valueMap.put(orderDtlId, tempList);
+                }
+            }
+        }
+
+        return valueMap;
+    }
+
+    public boolean isAllDeliverByOrderDetail(String orderDtlId, Map<String, List<Map<String, Object>>> valueMap) {
+        boolean isAllDeliver = false;
+        if (orderDtlId == null || orderDtlId.trim().length() == 0) {return isAllDeliver;}
+        if (valueMap == null) {return isAllDeliver;}
+
+        List<Map<String, Object>> mapList = valueMap.get(orderDtlId);
+        if (mapList != null && mapList.size() > 0) {
+            boolean isAllPlus = true;
+            for (Map<String, Object> mapObject : mapList) {
+                //orderCount(外协订单-原材料数量)
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("orderCount") != null) {
+                    orderCount = (BigDecimal)mapObject.get("orderCount");
+                }
+
+                //deliverCount(外协订单-原材料发货完成数量)
+                BigDecimal deliverCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("deliverCount") != null) {
+                    deliverCount = (BigDecimal)mapObject.get("deliverCount");
+                }
+
+                //orderCount > deliverCount
+                if (orderCount.doubleValue() > deliverCount.doubleValue()) {
+                    isAllPlus = false;
+                    break;
+                }
+            }
+            isAllDeliver = isAllPlus;
+        }
+
+        return isAllDeliver;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {

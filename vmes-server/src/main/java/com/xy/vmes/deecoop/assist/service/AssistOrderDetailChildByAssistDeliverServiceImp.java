@@ -120,4 +120,8 @@ public class AssistOrderDetailChildByAssistDeliverServiceImp implements AssistOr
         model.putResult(result);
         return model;
     }
+
+    public List<Map<String, Object>> checkAssistOrderDetailChildByDeliver(PageData pd) {
+        return orderDetailChildMapper.checkAssistOrderDetailChildByDeliver(pd);
+    }
 }

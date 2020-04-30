@@ -104,4 +104,43 @@
             order by ${orderStr}
         </if>
    </select>
+
+    <!--外协订单明细子表(原材料)-与发货明细子表(原材料) -->
+    <select id="checkAssistOrderDetailChildByDeliver" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            detailChild.id orderDtlChildId,
+            detailChild.order_id orderId,
+            detailChild.order_dtl_id orderDtlId,
+
+            <!--orderCount(外协订单-原材料数量) -->
+            round(detailChild.count, 2) orderCount,
+            <!--deliverCount(外协订单-原材料发货完成数量)-->
+            round(ifnull(deliver.deliverCount, 0),2) deliverCount
+
+        from vmes_assist_order_detail_child detailChild
+            <!--按(原材料)-对(vmes_assist_deliver_detail_child:发货单明细子表(发货明细原材料))汇总-->
+            left join (
+                select
+                    deliverDtl.order_detail_id,
+                    deliverDtlChild.orderDtl_child_id,
+                    sum(count) deliverCount
+                from vmes_assist_deliver_detail deliverDtl
+                    left join vmes_assist_deliver_detail_child deliverDtlChild on deliverDtl.id = deliverDtlChild.deliver_dtl_id
+                <where>
+                    <if test='orderDtlIds != null and orderDtlIds != ""' >
+                        and deliverDtl.order_detail_id in (${orderDtlIds})
+                    </if>
+
+                    <!--state:状态(0:待发货 1:已发货 -1:已取消)-->
+                    and deliverDtl.state = 1
+                </where>
+                group by deliverDtl.order_detail_id, deliverDtlChild.orderDtl_child_id
+            ) deliver on detailChild.order_dtl_id = deliver.order_detail_id and detailChild.id = deliver.orderDtl_child_id
+        <where>
+            <if test='orderDtlIds != null and orderDtlIds != ""' >
+                and detailChild.order_dtl_id in (${orderDtlIds})
+            </if>
+        </where>
+    </select>
 </mapper>

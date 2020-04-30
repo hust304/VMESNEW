@@ -350,15 +350,8 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         String parentState = this.findParentStateByDetail(detailList);
         if (parentState != null && parentState.trim().length() > 0) {
             parent.setState(parentState.trim());
+            orderService.update(parent);
         }
-
-//        //订单状态:3:已发货 设定发货日期
-//        if ("3".equals(parentState)) {
-//            parent.setDeliverDate(new Date());
-//        }
-
-        orderService.update(parent);
-
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

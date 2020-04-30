@@ -19,4 +19,13 @@ import java.util.Map;
 public interface AssistOrderDetailChildByAssistDeliverMapper {
     List<Map> findAssistOrderDetailChildByDeliver(PageData pd, Pagination pg);
     List<Map> findAssistOrderDetailChildByDeliver(PageData pd);
+
+    /**
+     * 验证外协订单原材料与外协发货单原材料
+     * 原材料:外协订单数量与发货订单(已发货)数量
+     *
+     * @param pd
+     * @return
+     */
+    List<Map<String, Object>> checkAssistOrderDetailChildByDeliver(PageData pd);
 }

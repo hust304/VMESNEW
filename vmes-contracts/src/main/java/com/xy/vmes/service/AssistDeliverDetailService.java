@@ -99,6 +99,19 @@ public interface AssistDeliverDetailService {
     List<AssistDeliverDetail> findDeliverDetailList(PageData object) throws Exception;
     List<AssistDeliverDetail> findDeliverDetailListByParentId(String parentId) throws Exception;
 
+    String findOrderDtlIdsByDeliverDtlList(List<AssistDeliverDetail> detailList);
+
+    /**
+     * 获取外协订单(原材料)Map结构体
+     * Map<外协订单明细id, List<Map<String, Object>>>
+     * Sql查询语句: AssistOrderDetailChildByAssistDeliverMapper.checkAssistOrderDetailChildByDeliver
+     *
+     * @param orderDtlIds
+     * @return
+     */
+    Map<String, List<Map<String, Object>>> findOrderDetailChildMap(String orderDtlIds);
+
+    boolean isAllDeliverByOrderDetail(String orderDtlId, Map<String, List<Map<String, Object>>> valueMap);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

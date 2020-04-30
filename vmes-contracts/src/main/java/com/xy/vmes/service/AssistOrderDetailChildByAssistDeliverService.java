@@ -17,5 +17,7 @@ public interface AssistOrderDetailChildByAssistDeliverService {
 
     List<Map> findAssistOrderDetailChildByDeliver(PageData pd, Pagination pg) throws Exception;
     ResultModel listPageAssistOrderDetailChildByDeliver(PageData pd) throws Exception;
+
+    List<Map<String, Object>> checkAssistOrderDetailChildByDeliver(PageData pd);
 }
 
