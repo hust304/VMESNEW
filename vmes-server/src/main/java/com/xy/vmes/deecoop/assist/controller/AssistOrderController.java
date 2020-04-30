@@ -653,6 +653,9 @@ public class AssistOrderController {
         editOrder.setAuditId(cuser);
         orderService.update(editOrder);
 
+        //明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        orderDtlService.updateStateByDetail("2", orderId);
+
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrder/auditPassAssistOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
@@ -701,6 +704,9 @@ public class AssistOrderController {
         //审核人ID
         editOrder.setAuditId(cuser);
         orderService.update(editOrder);
+
+        //明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        orderDtlService.updateStateByDetail("0", orderId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrder/auditDisagreeAssistOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
