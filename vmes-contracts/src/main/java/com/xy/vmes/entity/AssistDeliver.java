@@ -43,7 +43,7 @@ public class AssistDeliver implements Serializable {
 	//发货金额
 	@TableField("amount")
 	private BigDecimal amount;
-	//发货完成时间
+	//发货时间(yyyy-MM-dd)
 	@TableField("deliver_date")
 	private Date deliverDate;
 

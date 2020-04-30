@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.common.util.DateFormat;
 import com.xy.vmes.entity.AssistDeliver;
 import com.xy.vmes.entity.AssistDeliverDetail;
 import com.xy.vmes.entity.AssistDeliverDetailChild;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -146,9 +148,71 @@ public class AssistDeliverController {
             detailChild.setCuser(deliverDetail.getCuser());
             deliverDetailChildService.save(detailChild);
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //系统推送(外协件-原材料)出库单
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDeliver/addAssistDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 修改外协发货单(发货类型)-发货完成
+     *
+     * @author 陈刚
+     * @date 2020-04-27
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistDeliver/updateAssistDeliverType")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel updateAssistDeliverType() throws Exception {
+        logger.info("################/assist/assistDeliver/updateAssistDeliverType 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String deliverId = pageData.getString("deliverId");
+        if (deliverId == null || deliverId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单id为空或空字符串！");
+            return model;
+        }
+
+        String deliverJsonStr = pageData.getString("deliverJsonStr");
+        if (deliverJsonStr == null || deliverJsonStr.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("发货单JsonStr为空或空字符串！！");
+            return model;
+        }
+
+        //1. 修改发货单状态
+        //获取系统当前日期(yyyy-MM-dd)
+        String sysDateStr = DateFormat.date2String(new Date(), DateFormat.DEFAULT_DATE_FORMAT);
+        Map<String, String> deliverMap = (Map<String, String>) YvanUtil.jsonToMap(deliverJsonStr);
+        AssistDeliver editDeliver = (AssistDeliver)HttpUtils.pageData2Entity(deliverMap, new AssistDeliver());
+        editDeliver.setId(deliverId);
+
+        //deliverDate 发货时间(yyyy-MM-dd)
+        Date deliverDate = DateFormat.dateString2Date(sysDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        if (editDeliver.getDeliverDate() != null) {
+            String deliverDateStr = DateFormat.date2String(editDeliver.getDeliverDate(), DateFormat.DEFAULT_DATE_FORMAT);
+            deliverDate = DateFormat.dateString2Date(deliverDateStr, DateFormat.DEFAULT_DATE_FORMAT);
+        }
+        editDeliver.setDeliverDate(deliverDate);
+
+        //发货状态(0:待发货 1:已发货 -1:已取消)
+        editDeliver.setState("1");
+
+        deliverService.update(editDeliver);
+        deliverDetailService.updateStateByDetail("1", deliverId);
+
+        //2. 变更订单状态
+
+        //3. 变更订单计划状态
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistDeliver/updateAssistDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

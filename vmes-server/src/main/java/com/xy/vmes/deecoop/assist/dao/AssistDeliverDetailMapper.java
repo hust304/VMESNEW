@@ -44,6 +44,8 @@ public interface AssistDeliverDetailMapper extends BaseMapper<AssistDeliverDetai
     List<Map> getDataListPage(PageData pd, Pagination pg);
     List<Map> getDataListPage(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
+    void updateStateByDetail(PageData pd);
+
 }
 
 

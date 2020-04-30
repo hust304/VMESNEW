@@ -66,6 +66,16 @@
 
     </insert>
 
+    <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
+        update vmes_assist_deliver_detail set
+        state = #{state},
+        udate = now()
+        <where>
+            <if test="parentIds != null and parentIds != ''" >
+                and parent_id in (${parentIds})
+            </if>
+        </where>
+    </update>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
     <select id="dataList" parameterType="com.yvan.PageData" resultType="com.xy.vmes.entity.AssistDeliverDetail">

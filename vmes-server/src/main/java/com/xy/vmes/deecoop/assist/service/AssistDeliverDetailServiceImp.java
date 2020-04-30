@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.service;
 
+import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.deecoop.assist.dao.AssistDeliverDetailMapper;
 import com.xy.vmes.entity.AssistDeliverDetail;
 import com.xy.vmes.service.AssistDeliverDetailService;
@@ -193,6 +194,21 @@ public class AssistDeliverDetailServiceImp implements AssistDeliverDetailService
 
         return this.findDeliverDetailList(findMap);
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void updateStateByDetail(String state, String parentIds) throws Exception {
+        if (state == null || state.trim().length() == 0) {return;}
+        if (parentIds == null || parentIds.trim().length() == 0) {return;}
+
+        PageData pageData = new PageData();
+        pageData.put("state", state);
+
+        parentIds = StringUtil.stringTrimSpace(parentIds);
+        parentIds = "'" + parentIds.replace(",", "','") + "'";
+        pageData.put("parentIds", parentIds);
+
+        assistDeliverDetailMapper.updateStateByDetail(pageData);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
