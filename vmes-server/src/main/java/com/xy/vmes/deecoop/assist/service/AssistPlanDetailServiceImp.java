@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistPlanDetailMapper;
+import com.xy.vmes.entity.AssistPlan;
 import com.xy.vmes.entity.AssistPlanDetail;
 import com.xy.vmes.service.AssistPlanDetailByAssistOrderService;
 import com.xy.vmes.service.AssistPlanDetailService;
@@ -8,6 +9,7 @@ import com.xy.vmes.service.AssistPlanDetailService;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.service.AssistPlanService;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -28,6 +30,8 @@ import com.yvan.Conv;
 public class AssistPlanDetailServiceImp implements AssistPlanDetailService {
     @Autowired
     private AssistPlanDetailMapper assistPlanDetailMapper;
+    @Autowired
+    private AssistPlanService assistPlanService;
     @Autowired
     private AssistPlanDetailByAssistOrderService assistPlanDetailByOrderService;
     @Autowired
@@ -226,6 +230,115 @@ public class AssistPlanDetailServiceImp implements AssistPlanDetailService {
 
         return this.dataList(pageData);
     }
+
+    public AssistPlanDetail findAssistPlanDetail(PageData object) throws Exception {
+        List<AssistPlanDetail> objectList = this.findAssistPlanDetailList(object);
+        if (objectList != null && objectList.size() > 0) {
+            return objectList.get(0);
+        }
+
+        return null;
+    }
+    public AssistPlanDetail findAssistPlanDetailById(String id) throws Exception {
+        if (id == null || id.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("id", id);
+
+        return this.findAssistPlanDetail(findMap);
+    }
+
+    public List<AssistPlanDetail> findAssistPlanDetailList(PageData object) throws Exception {
+        return this.findDataList(object, null);
+    }
+    public List<AssistPlanDetail> findAssistPlanDetailListByParentId(String parentId) throws Exception {
+        if (parentId == null || parentId.trim().length() == 0) {return null;}
+
+        PageData findMap = new PageData();
+        findMap.put("parentId", parentId);
+
+        return this.findAssistPlanDetailList(findMap);
+    }
+
+    /**
+     * 获取外协计划状态
+     * 计划状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     * 计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     *
+     * @param dtlList      外协订单明细List<AssistPlanDetail>
+     * @return
+     */
+    public String findParentStateByDetail(List<AssistPlanDetail> dtlList) {
+        if (dtlList == null || dtlList.size() == 0) {return null;}
+
+        //计划状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+        int dtl_dtj = 0;  //0:待提交
+        int dtl_dsh = 0;  //1:待审核
+        int dtl_dzx = 0;  //2:待执行
+        int dtl_zxz = 0;  //3:执行中
+        int dtl_ywc = 0;  //4:已完成
+        int dtl_yqx = 0;  //-1:已取消
+        //由各自业务更改--(0:待提交 1:待审核 2:待执行 -1:已取消 )
+
+        //明细变更状态(3:执行中 4:已完成 -1:已取消)
+        for (AssistPlanDetail dtlObject : dtlList) {
+            if ("-1".equals(dtlObject.getState())) {
+                dtl_yqx = dtl_yqx + 1;
+            } else if ("0".equals(dtlObject.getState())) {
+                dtl_dtj = dtl_dtj + 1;
+            } else if ("1".equals(dtlObject.getState())) {
+                dtl_dsh = dtl_dsh + 1;
+            } else if ("2".equals(dtlObject.getState())) {
+                dtl_dzx = dtl_dzx + 1;
+            } else if ("3".equals(dtlObject.getState())) {
+                dtl_zxz = dtl_zxz + 1;
+            } else if ("4".equals(dtlObject.getState())) {
+                dtl_ywc = dtl_ywc + 1;
+            }
+        }
+
+        //订单明细状态:-1:已取消 全是已取消状态  订单状态:-1:已取消
+        if (dtl_yqx > 0 && dtl_yqx == dtlList.size()) {
+            return "-1";
+
+            //订单明细状态:4:已完成 全是已完成(发货)状态  订单状态:4:已完成
+        } else if (dtl_ywc > 0 && dtl_yqx >= 0
+            && (dtl_dtj == 0 && dtl_dsh == 0 && dtl_dzx == 0 && dtl_zxz == 0)
+        ) {
+            return "4";
+
+            //计划明细状态:3:执行中 计划明细中存在(一个或多个)执行中状态 计划状态:3:执行中
+        } else if (dtl_zxz > 0) {
+            return "3";
+        }
+
+        return null;
+    }
+
+    /**
+     * 根据外协计划明细状态-反写计划状态
+     * 计划状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     * 计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     *
+     * @param parent       计划对象
+     * @param detailList   计划明细List<AssistPlanDetail>
+     */
+    public void updateParentStateByDetailList(AssistPlan parent, List<AssistPlanDetail> detailList) throws Exception {
+        if (parent == null) {return;}
+        if (parent.getId() == null || parent.getId().trim().length() == 0) {return;}
+
+        if (detailList == null) {
+            detailList = this.findAssistPlanDetailListByParentId(parent.getId());
+        }
+
+        //获取订单状态-根据订单明细状态
+        String parentState = this.findParentStateByDetail(detailList);
+        if (parentState != null && parentState.trim().length() > 0) {
+            parent.setState(parentState.trim());
+            assistPlanService.update(parent);
+        }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
     *

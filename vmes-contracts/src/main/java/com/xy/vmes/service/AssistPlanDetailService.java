@@ -1,11 +1,11 @@
 package com.xy.vmes.service;
 
 
+import com.xy.vmes.entity.AssistPlan;
 import com.xy.vmes.entity.AssistPlanDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
-import org.springframework.web.multipart.MultipartFile;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +133,33 @@ public interface AssistPlanDetailService {
      * @throws Exception
      */
     List<AssistPlanDetail> findDataList(PageData pageData, Boolean isQueryAll) throws Exception;
+
+    AssistPlanDetail findAssistPlanDetail(PageData object) throws Exception;
+    AssistPlanDetail findAssistPlanDetailById(String id) throws Exception;
+
+    List<AssistPlanDetail> findAssistPlanDetailList(PageData object) throws Exception;
+    List<AssistPlanDetail> findAssistPlanDetailListByParentId(String parentId) throws Exception;
+
+    /**
+     * 获取外协计划状态
+     * 计划状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     * 计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     *
+     * @param dtlList      外协订单明细List<AssistPlanDetail>
+     * @return
+     */
+    String findParentStateByDetail(List<AssistPlanDetail> dtlList);
+
+    /**
+     * 根据外协计划明细状态-反写计划状态
+     * 计划状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     * 计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+     *
+     * @param parent       计划对象
+     * @param detailList   计划明细List<AssistPlanDetail>
+     */
+    void updateParentStateByDetailList(AssistPlan parent, List<AssistPlanDetail> detailList) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
     * 分页查询
