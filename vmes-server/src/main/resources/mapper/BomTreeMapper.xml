@@ -523,6 +523,9 @@
                 and ${queryStr}
             </if>
         </where>
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
     </select>
 
 

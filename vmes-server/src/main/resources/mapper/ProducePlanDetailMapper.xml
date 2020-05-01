@@ -442,7 +442,7 @@
     <select id="getMaterialRequisitionGroupDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         parentId,warehouseId,productId,code,round(sum(ifnull(count,0)),2) count,state,stateName,cuser,cdate,udate,remark,isdisable,qrcode,pathName,warehouseName,
-        businessId,productCode,productName,productSpec,productGenre,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
+        businessId,productCode,productName,productSpec,productGenre,productProperty,productGenreName,productUnit,productUnitName,warehouseOutCode,parentWarehouseId,id,
         priceUnit,priceUnitName,round(ifnull(priceCount,0),2) priceCount,round(ifnull(productCount,0),2) productCount,warehouseProductId,
         n2pFormula,n2pIsScale,n2pDecimalCount,
         p2nFormula,p2nIsScale,p2nDecimalCount,stockCount,stockCountByPrice,
@@ -491,6 +491,7 @@
         prod.name productName,
         prod.spec productSpec,
         prod.genre productGenre,
+        prod.property productProperty,
         genre.name productGenreName,
         productUnit.name productUnitName,
         priceUnit.name priceUnitName,

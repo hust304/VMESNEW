@@ -39,7 +39,6 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     private WarehouseOutService warehouseOutService;
     @Autowired
     private WarehouseOutDetailMapper warehouseOutDetailMapper;
-
     @Autowired
     private WarehouseProductService warehouseProductService;
     @Autowired
@@ -56,6 +55,8 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
     private ColumnService columnService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private SystemToolService systemToolService;
 
     /**
     * 创建人：刘威 自动创建，禁止修改
@@ -909,6 +910,13 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -926,8 +934,15 @@ public class WarehouseOutDetailServiceImp implements WarehouseOutDetailService {
         }
 
         List<Map> varList = this.getDataListPage(pd, pg);
+
+
         if (varList != null && varList.size() > 0) {
+            String prodColumnKey = pd.getString("prodColumnKey");
             for (Map<String, Object> mapObject : varList) {
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+
                 //priceCount 计价单位数量
                 BigDecimal priceCount = BigDecimal.valueOf(0D);
                 if (mapObject.get("priceCount") != null) {

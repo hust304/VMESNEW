@@ -142,10 +142,10 @@
         left join vmes_customer customer on customer.id = invoice.customer_id
         <where>
             <if test="name != null and name != ''" >
-                and invoice.company_name = #{name}
+                and invoice.company_name LIKE CONCAT(CONCAT('%', #{name}),'%')
             </if>
             <if test="code != null and code != ''" >
-                and invoice.invoice_number = #{code}
+                and invoice.invoice_number LIKE CONCAT(CONCAT('%', #{code}),'%')
             </if>
             <if test="customerId != null and customerId != ''" >
                 and invoice.customer_id = #{customerId}

@@ -675,6 +675,12 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             return model;
         }
 
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -695,6 +701,17 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         result.put("pageData", pg);
 
         List<Map> varList = producePlanDetailMapper.getMaterialRequisition(pd,pg);
+
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -713,6 +730,13 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
 
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
@@ -734,6 +758,17 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         result.put("pageData", pg);
 
         List<Map> varList = producePlanDetailMapper.getMaterialRequisitionGroup(pd,pg);
+
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
+            for (Map<String, Object> mapObject : varList) {
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));
@@ -766,6 +801,13 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
             return model;
         }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
         //获取指定栏位字符串-重新调整List<Column>
         String fieldCode = pd.getString("fieldCode");
         if (fieldCode != null && fieldCode.trim().length() > 0) {
@@ -779,8 +821,17 @@ public class ProducePlanDetailServiceImp implements ProducePlanDetailService {
         result.put("pageData", pg);
 
         List<Map> varList = producePlanDetailMapper.getMaterialRequisitionGroupDetail(pd,pg);
+
         if (varList != null && varList.size() > 0) {
+
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
             for (Map<String, Object> mapObject : varList) {
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, mapObject);
+                mapObject.put("prodInfo", prodInfo);
+
                 //priceCount 计价单位数量
                 BigDecimal priceCount = BigDecimal.valueOf(0D);
                 if (mapObject.get("priceCount") != null) {
