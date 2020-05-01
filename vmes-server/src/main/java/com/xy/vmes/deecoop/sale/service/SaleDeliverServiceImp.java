@@ -390,28 +390,28 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 }
 
                 ///////////////////////////////////////////////////////
-                BigDecimal pieceCount = BigDecimal.valueOf(0D);
-                if (mapObject.get("pieceCount") != null) {
-                    pieceCount = (BigDecimal)mapObject.get("pieceCount");
-                }
-
-                if (pieceCount.doubleValue() == 0) {
-                    BigDecimal pieceCountSum = BigDecimal.valueOf(0D);
-                    if (deliverDtlList != null && deliverDtlList.size() > 0) {
-                        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
-                            BigDecimal pieceCountDtl = BigDecimal.valueOf(0D);
-                            if (deliverDetail.getPieceCount() != null) {
-                                pieceCountDtl = deliverDetail.getPieceCount();
-                            }
-                            pieceCountSum = BigDecimal.valueOf(pieceCountSum.doubleValue() + pieceCountDtl.doubleValue());
-                        }
-                    }
-                    pieceCount = pieceCountSum;
-                }
-
-                //四舍五入到2位小数
-                pieceCount = pieceCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                mapObject.put("pieceCount", pieceCount);
+//                BigDecimal pieceCount = BigDecimal.valueOf(0D);
+//                if (mapObject.get("pieceCount") != null) {
+//                    pieceCount = (BigDecimal)mapObject.get("pieceCount");
+//                }
+//
+//                if (pieceCount.doubleValue() == 0) {
+//                    BigDecimal pieceCountSum = BigDecimal.valueOf(0D);
+//                    if (deliverDtlList != null && deliverDtlList.size() > 0) {
+//                        for (SaleDeliverDetail deliverDetail : deliverDtlList) {
+//                            BigDecimal pieceCountDtl = BigDecimal.valueOf(0D);
+//                            if (deliverDetail.getPieceCount() != null) {
+//                                pieceCountDtl = deliverDetail.getPieceCount();
+//                            }
+//                            pieceCountSum = BigDecimal.valueOf(pieceCountSum.doubleValue() + pieceCountDtl.doubleValue());
+//                        }
+//                    }
+//                    pieceCount = pieceCountSum;
+//                }
+//
+//                //四舍五入到2位小数
+//                pieceCount = pieceCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                mapObject.put("pieceCount", pieceCount);
             }
         }
 
@@ -613,6 +613,25 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
             return model;
         }
 
+        //设定发货单明细(发货件数)
+        String deliverDtlJsonStr = pageData.getString("deliverDtlJsonStr");
+        if (deliverDtlJsonStr != null && deliverDtlJsonStr.trim().length() > 0) {
+            List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(deliverDtlJsonStr);
+            for (Map<String, String> mapObject : mapList) {
+                SaleDeliverDetail editDeliverDtl = (SaleDeliverDetail)HttpUtils.pageData2Entity(mapObject, new SaleDeliverDetail());
+
+                BigDecimal pieceCount = BigDecimal.valueOf(0D);
+                if (editDeliverDtl.getPieceCount() != null) {
+                    pieceCount = editDeliverDtl.getPieceCount();
+                }
+                //四舍五入到0位小数
+                pieceCount = pieceCount.setScale(0, BigDecimal.ROUND_HALF_UP);
+                editDeliverDtl.setPieceCount(pieceCount);
+
+                saleDeliverDetailService.update(editDeliverDtl);
+            }
+        }
+
         SaleDeliver saleDeliver = (SaleDeliver)HttpUtils.pageData2Entity(pageData, new SaleDeliver());
         saleDeliver.setId(deliverId);
         saleDeliver.setLinkName(linkName);
@@ -620,8 +639,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
         //状态(0:待发货 1:已发货 -1:已取消)
         saleDeliver.setState("1");
         this.update(saleDeliver);
-
-//        saleDeliver = this.selectById(deliverId);
 
         //发货单id获取发货明细List
         List<SaleDeliverDetail> deliverDtlList = saleDeliverDetailService.findSaleDeliverDetailListByParentId(deliverId);
@@ -668,36 +685,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 //checkCount 验证数量(发货数量-退货数量)
                 BigDecimal checkCount = valueMap.get("checkCount");
 
-//                //checkSum:=(发货金额-退货金额)
-//                BigDecimal checkSum = valueMap.get("checkSum");
-//
-//                //price_type:计价类型(1:先计价 2:后计价)
-//                //2:后计价 反写订单明细,反写订单总金额
-//                if (priceType != null && "2".equals(priceType.trim())) {
-//                    orderDetail.setPriceUnit(deliverDetail.getPriceUnit());
-//
-//                    //订单明细货品金额:=(发货金额-退货金额)
-//                    BigDecimal productSum = BigDecimal.valueOf(0D);
-//                    if (checkSum != null) {
-//                        productSum = checkSum;
-//                    }
-//                    orderDetail.setProductSum(productSum);
-//
-//                    //货品单价 productPrice
-//                    BigDecimal productPrice = BigDecimal.valueOf(0D);
-//                    if (checkCount != null && checkCount.doubleValue() != 0 && checkSum != null) {
-//                        productPrice = BigDecimal.valueOf(checkSum.doubleValue() / checkCount.doubleValue());
-//                        //四舍五入到2位小数
-//                        productPrice = productPrice.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//                        orderDetail.setProductPrice(productPrice);
-//                    }
-//
-////                    if (deliverDetail.getProductPrice() != null) {
-////                        productPrice = deliverDetail.getProductPrice();
-////                    }
-////                    orderDetail.setProductPrice(productPrice);
-//                }
-
                 if (checkCount.doubleValue() >= orderCount.doubleValue()) {
                     //明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
                     orderDetail.setState("5");
@@ -737,73 +724,6 @@ public class SaleDeliverServiceImp implements SaleDeliverService {
                 null,
                 deliverTotalSum,
                 remark);
-
-
-
-//        //查询付款单明细 vmes_sale_receive_detail
-//        //收款明细状态(0:待收款 1:已收款 -1:已取消)
-//        //获取订单付款信息<订单id, 订单付款信息Map> - (receiveSum: 付款金额)
-//        Map<String, Map<String, BigDecimal>> orderReceiveMap = saleReceiveDetailService.findMapOrderReceiveByOrderId(orderIdsBuf.toString(), "1");
-//
-//        //反写订单状态
-//        if (orderIdMap.size() > 0) {
-//            for (Iterator iterator = orderIdMap.keySet().iterator(); iterator.hasNext();) {
-//                String orderId = (String)iterator.next();
-//
-//                //修改订单明细状态
-//                List<SaleOrderDetail> detailList = saleOrderDetailService.findSaleOrderDetailListByParentId(orderId);
-//                saleOrderDetailService.updateDetailStateByOrderId(orderId, detailList);
-//
-//                //orderTotalSum 订单金额
-//                SaleOrder orderDB = saleOrderService.findSaleOrderById(orderId);
-//                //BigDecimal orderTotalSum = orderDB.getOrderSum();
-//
-//                //设定发货完成时间
-//                orderDB.setCurrentDeliverDate(new Date());
-//                saleOrderService.update(orderDB);
-//
-//                //price_type:计价类型(1:先计价 2:后计价)
-//                if ("2".equals(orderDB.getPriceType())) {
-//                    //totalSum 合计金额
-//                    BigDecimal totalSum = saleOrderDetailService.findTotalSumByPrice(detailList);
-//
-//                    SaleOrder editOrder = new SaleOrder();
-//                    editOrder.setId(orderId);
-//                    //四舍五入到2位小数
-//                    totalSum = totalSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//                    editOrder.setTotalSum(totalSum);
-//                    editOrder.setOrderSum(totalSum);
-//                    //discountSum 折扣金额
-//                    editOrder.setDiscountSum(BigDecimal.valueOf(0D));
-//                    orderTotalSum = totalSum;
-//                    saleOrderService.update(editOrder);
-//                }
-//
-//                SaleOrder parent = new SaleOrder();
-//                parent.setId(orderId);
-//                saleOrderDetailService.updateParentStateByDetailList(parent, detailList);
-//
-//                //订单明细状态(0:待提交 1:待审核 2:待生产 3:待出库 4:待发货 5:已完成 -1:已取消)
-//                if (saleOrderDetailService.isAllExistStateByDetailList("5", detailList)) {
-//                    if (orderReceiveMap.get(orderId) != null) {
-//                        Map<String, BigDecimal> receiveMap = orderReceiveMap.get(orderId);
-//
-//                        //订单id-订单已完成付款金额
-//                        BigDecimal receiveSum = BigDecimal.valueOf(0D);
-//                        if (receiveMap.get("receiveSum") != null) {
-//                            receiveSum = receiveMap.get("receiveSum");
-//                        }
-//                        SaleOrder editOrder = new SaleOrder();
-//                        editOrder.setId(orderId);
-//                        if (receiveSum.doubleValue() >= orderTotalSum.doubleValue()) {
-//                            //订单状态(0:待提交 1:待审核 2:待发货 3:已发货 4:已完成 -1:已取消)
-//                            editOrder.setState("4");
-//                            saleOrderService.update(editOrder);
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
         return model;
     }

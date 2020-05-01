@@ -79,6 +79,8 @@
             (replace(uuid(), '-', ''),'saleDeliverDetail','customerId','客户id',29, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'saleDeliverDetail','customerName','客户名称',29, '1','1','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'saleDeliverDetail','pieceCountPage','件数',32, '1','1','1','0',now(), 'admin'),
+
     </insert>
 
     <!-- 发货单明细(后计价) -->
@@ -256,6 +258,8 @@
             deliver.customer_id customerId,
             customer.name customerName,
             orderDetail.order_count orderDetailCount,
+            round(ifnull(detail.piece_count, 0), 0) pieceCount,
+            detail.piece_count pieceCountPage,
 
             saleOrder.sys_code sysOrderCode,
             saleOrder.price_type priceType,
