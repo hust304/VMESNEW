@@ -62,6 +62,7 @@
         (replace(uuid(), '-', ''),'assistOrderDetail','orderCode','订单编号',23, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'assistOrderDetail','supplierName','供应商',24, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'assistOrderDetail','supplierId','供应商id',24, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','planId','计划id',25, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -129,7 +130,7 @@
 
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         detail.id id,
         detail.parent_id parentId,
@@ -139,7 +140,7 @@
 
         round(ifnull(detail.order_count, 0),2) orderCount,
         round(ifnull(detail.loss_ratio, 0),2) lossRatio,
-        round(ifnull(detail.price, 0),2) price,
+        round(ifnull(detail.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
         round(ifnull(detail.amount, 0),2) amount,
         DATE_FORMAT(detail.expect_date,'%Y-%m-%d') expectDate,
 
@@ -173,6 +174,8 @@
         assistOrder.supplier_id supplierId,
         supplier.name supplierName,
 
+        <!--外协计划-->
+        plan.id planId,
         plan.sys_code planCode
 
         from vmes_assist_order_detail detail

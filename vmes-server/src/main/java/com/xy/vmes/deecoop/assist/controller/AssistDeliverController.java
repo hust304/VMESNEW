@@ -220,9 +220,6 @@ public class AssistDeliverController {
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //如果有外协计划-更改外协计划状态
-
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDeliver/addAssistDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
