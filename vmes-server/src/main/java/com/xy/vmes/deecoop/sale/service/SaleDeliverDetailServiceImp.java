@@ -828,7 +828,7 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
             }
 
             //productPrice 货品单价 := 发货金额 / 发货数量
-            mapObject.put("productPrice", "0.00");
+            mapObject.put("productPrice", "0.0000");
             if (orderCount.doubleValue() != 0D && sum.doubleValue() != 0D) {
                 BigDecimal productPrice = BigDecimal.valueOf(sum.doubleValue() / orderCount.doubleValue());
                 //四舍五入到2位小数
