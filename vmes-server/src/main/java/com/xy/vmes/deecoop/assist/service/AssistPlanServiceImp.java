@@ -478,6 +478,8 @@ public class AssistPlanServiceImp implements AssistPlanService {
         AssistPlan assistPlan = (AssistPlan)HttpUtils.pageData2Entity(pd, new AssistPlan());
         assistPlan.setState("2");
         assistPlan.setAuditId(currentUserId);
+        this.update(assistPlan);
+
         Map columnMap = new HashMap();
         columnMap.put("parent_id",assistPlan.getId());
         List<AssistPlanDetail> assistPlanDetailList = assistPlanDetailService.selectByColumnMap(columnMap);

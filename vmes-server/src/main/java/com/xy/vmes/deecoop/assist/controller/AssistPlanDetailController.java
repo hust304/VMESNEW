@@ -1,9 +1,9 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistPlanDetailByAssistOrderService;
 import com.xy.vmes.service.AssistPlanDetailService;
 import com.xy.vmes.entity.AssistPlanDetail;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -29,7 +28,8 @@ public class AssistPlanDetailController {
 
     @Autowired
     private AssistPlanDetailService assistPlanDetailService;
-
+    @Autowired
+    private AssistPlanDetailByAssistOrderService assistPlanDetailByOrderService;
     /**
     * @author 刘威 自动创建，禁止修改
     * @date 2020-04-25
@@ -123,38 +123,17 @@ public class AssistPlanDetailController {
         return model;
     }
 
-
-    /**
-    * Excel导出
-    * @author 刘威 自动创建，可以修改
-    * @date 2020-04-25
-    */
-    @PostMapping("/assist/assistPlanDetail/exportExcelAssistPlanDetails")
-    public void exportExcelAssistPlanDetails() throws Exception {
-        logger.info("################/assist/assistPlanDetail/exportExcelAssistPlanDetails 执行开始 ################# ");
+    //添加外协订单:(外协-订单管理-订单列表) 从计划中勾选
+    @PostMapping("/assist/assistPlanDetail/listPageAssistPlanDetailByAssistOrder")
+    public ResultModel listPageAssistPlanDetailByAssistOrder() throws Exception {
+        logger.info("################/assist/assistPlanDetail/listPageAssistPlanDetailByAssistOrder 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        assistPlanDetailService.exportExcelAssistPlanDetails(pd);
+        ResultModel model = assistPlanDetailByOrderService.listPageAssistPlanDetailByAssistOrder(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/assist/assistPlanDetail/exportExcelAssistPlanDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-    }
-
-    /**
-    * Excel导入
-    *
-    * @author 刘威 自动创建，可以修改
-    * @date 2020-04-25
-    */
-    @PostMapping("/assist/assistPlanDetail/importExcelAssistPlanDetails")
-    public ResultModel importExcelAssistPlanDetails(@RequestParam(value="excelFile") MultipartFile file) throws Exception  {
-        logger.info("################/assist/assistPlanDetail/importExcelAssistPlanDetails 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        ResultModel model = assistPlanDetailService.importExcelAssistPlanDetails(file);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/assist/assistPlanDetail/importExcelAssistPlanDetails 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/assist/assistPlanDetail/listPageAssistPlanDetailByAssistOrder 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
-
 }
 
 

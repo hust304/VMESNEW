@@ -6,6 +6,38 @@
 创建时间：2020-04-19
  -->
 <mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistPlanDetailByAssistOrderMapper">
+    <insert id="insertColumn" >
+        delete from vmes_column where model_code = 'AssistPlanDetailByAssistOrder' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','planDtlId','外协计划明细id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','parentId','外协计划id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','assistProductId','外协件id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','orderUnit','单位id(单据单位)',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','count','计划数量(单据单位)',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','planDate','计划到货日期',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','state','状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','cuser','创建用户id',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','cdate','创建时间',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','uuser','修改用户id',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','remark','备注',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','assistProductName','外协件',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','orderUnitName','单位',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','craftCode','工艺编号',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','craftName','工艺名称',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','price','单价',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','lossRatio','损耗率',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'AssistPlanDetailByAssistOrder','planCode','计划编号',19, '1','1','1','0',now(), 'admin'),
+    </insert>
+
+
     <select id="listAssistPlanDetailByAssistOrder" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
             md5(uuid()) id,
@@ -14,26 +46,27 @@
             planDtl.assist_product_id assistProductId,
             planDtl.order_unit orderUnit,
             planDtl.count count,
-            planDtl.plan_date planDate,
+            DATE_FORMAT(planDtl.plan_date,'%Y-%m-%d') planDate,
             planDtl.state state,
             planDtl.isdisable isdisable,
 
             assistProd.product_name assistProductName,
-            prodUnit.unit productUnit,
-            prodUnitName.name productUnitName,
+            orderUnitName.name orderUnitName,
 
             <!--外协工艺名称-->
             craft.sys_code craftCode,
             craft.name craftName,
             <!--外协供应商-->
             round(ifnull(supplier.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
-            round(ifnull(supplier.loss_ratio, 0),2) lossRatio
+            round(ifnull(supplier.loss_ratio, 0),2) lossRatio,
+            plan.sys_code planCode
 
         from vmes_assist_plan_detail planDtl
+            left join vmes_assist_plan plan on planDtl.parent_id = plan.id
             left join vmes_assist_product assistProd on planDtl.assist_product_id = assistProd.id and assistProd.isdisable = '1'
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
-            left join vmes_product_unit prodUnit on assistProd.product_id = prodUnit.product_id and prodUnit.type = 1
-            left join vmes_dictionary prodUnitName on prodUnit.unit = prodUnitName.id
+            left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and planDtl.order_unit = orderUnit.unit)
+            left join vmes_dictionary orderUnitName on planDtl.order_unit = orderUnitName.id
             left join (
                 select
                     assist_product_id,
@@ -53,22 +86,24 @@
             ) supplier on assistProd.id = supplier.assist_product_id
 
         <where>
-            <if test="companyId != null and companyId != ''" >
-                and planDtl.parent_id in (
-                    select id
-                    from vmes_assist_plan
-                    <where>
-                        <if test="companyId != null and companyId != ''" >
-                            and company_id = #{companyId}
-                        </if>
-                        <!--state:状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)-->
-                        and state in ('2','3','4')
-                        <!--是否启用(0:已禁用 1:启用)-->
-                        and isdisable = '1'
-                    </where>
-                )
+            <if test="notInPlanDtlIds != null and notInPlanDtlIds != ''" >
+                and planDtl.id not in (${notInPlanDtlIds})
             </if>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and plan.company_id = #{currentCompanyId}
+            </if>
+            <!--state:状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)-->
+            and planDtl.state in ('2')
+            <!--是否启用(0:已禁用 1:启用)-->
+            and planDtl.isdisable = '1'
 
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
         </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
     </select>
 </mapper>

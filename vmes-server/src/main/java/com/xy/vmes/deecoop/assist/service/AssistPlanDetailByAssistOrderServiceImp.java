@@ -50,7 +50,7 @@ public class AssistPlanDetailByAssistOrderServiceImp implements AssistPlanDetail
         ResultModel model = new ResultModel();
         Pagination pg = HttpUtils.parsePagination(pd);
 
-        List<Column> columnList = columnService.findColumnList("saleOrderDetailByProducePlan");
+        List<Column> columnList = columnService.findColumnList("AssistPlanDetailByAssistOrder");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");

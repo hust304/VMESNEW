@@ -142,19 +142,6 @@ public interface AssistPlanDetailService {
     */
     ResultModel listPageAssistPlanDetails(PageData pd) throws Exception;
 
-    /**
-    * 导出
-    * @param pd    查询参数对象PageData
-    * @throws Exception
-    */
-    void exportExcelAssistPlanDetails(PageData pd) throws Exception;
-
-    /**
-    * 导入
-    * @return      返回对象ResultModel
-    * @throws Exception
-    */
-    ResultModel importExcelAssistPlanDetails(MultipartFile file) throws Exception;
 }
 
 

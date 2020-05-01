@@ -67,6 +67,9 @@
                 </where>
             ) supplier on assistProd.id = supplier.assist_product_id
         <where>
+            <if test="notInAssistProductIds != null and notInAssistProductIds != ''" >
+                and assistProd.id not in (${notInAssistProductIds})
+            </if>
             <if test="companyId != null and companyId != ''" >
                 and assistProd.company_id = #{companyId}
             </if>
@@ -76,9 +79,16 @@
             <if test="craftName != null and craftName != ''" >
                 and craft.name LIKE CONCAT('%',CONCAT(#{craftName}),'%')
             </if>
-
             and assistProd.isdisable = '1'
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
         </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
     </select>
 
 </mapper>
