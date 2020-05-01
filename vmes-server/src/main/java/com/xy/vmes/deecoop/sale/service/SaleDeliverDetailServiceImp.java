@@ -785,11 +785,11 @@ public class SaleDeliverDetailServiceImp implements SaleDeliverDetailService {
 
                 //pieceCount 件数 js正则表达式 (0) 被认为非法
                 BigDecimal pieceCountPage = null;
-                if (mapObject.get("pieceCountPage") != null) {
-                    pieceCountPage = (BigDecimal)mapObject.get("pieceCountPage");
-                    if (pieceCountPage.doubleValue() > 0) {
+                if (mapObject.get("pieceCount") != null) {
+                    BigDecimal pieceCount = (BigDecimal)mapObject.get("pieceCount");
+                    if (pieceCount.doubleValue() > 0) {
                         //四舍五入到0位小数
-                        pieceCountPage = pieceCountPage.setScale(0, BigDecimal.ROUND_HALF_UP);
+                        pieceCountPage = pieceCount.setScale(0, BigDecimal.ROUND_HALF_UP);
                     }
                 }
                 mapObject.put("pieceCountPage", pieceCountPage);
