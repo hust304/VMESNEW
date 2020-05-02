@@ -185,8 +185,8 @@ public class AssistDeliverController {
                         Common.DICTIONARY_MAP.get("warehouseEntity"),
                         cuser,
                         companyID,
-                        //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                        Common.DICTIONARY_MAP.get("assistIn"),
+                        //外协出库 2ed8e86f7db149ffabc95b6428947cba:assistOut
+                        Common.DICTIONARY_MAP.get("assistOut"),
                         addDeliver.getSysCode(),
                         businessByOutMap);
             } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
@@ -197,8 +197,8 @@ public class AssistDeliverController {
                         Common.DICTIONARY_MAP.get("warehouseEntity"),
                         cuser,
                         companyID,
-                        //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                        Common.DICTIONARY_MAP.get("assistIn"),
+                        //外协出库 2ed8e86f7db149ffabc95b6428947cba:assistOut
+                        Common.DICTIONARY_MAP.get("assistOut"),
                         addDeliver.getSysCode(),
                         businessByOutMap);
             }
@@ -208,7 +208,7 @@ public class AssistDeliverController {
                 for (Iterator iterator = businessByOutMap.keySet().iterator(); iterator.hasNext();) {
                     String businessId = iterator.next().toString().trim();
                     Map<String, Object> objectMap = businessByOutMap.get(businessId);
-                    if (objectMap != null && objectMap.get("") != null && objectMap.get("outDtlId").toString().trim().length() > 0) {
+                    if (objectMap != null && objectMap.get("outDtlId") != null && objectMap.get("outDtlId").toString().trim().length() > 0) {
                         String outDtlId = objectMap.get("outDtlId").toString().trim();
 
                         AssistDeliverDetailChild editDetailChild = new AssistDeliverDetailChild();

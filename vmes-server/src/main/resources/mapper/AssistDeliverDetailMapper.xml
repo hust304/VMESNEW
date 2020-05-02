@@ -218,6 +218,25 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}
             </if>
+
+            <!--页面查询条件-->
+            <if test="deliverDtlState != null and deliverDtlState != ''">
+                and deliverDtl.state = #{deliverDtlState}
+            </if>
+            <if test="deliverCode != null and deliverCode != ''">
+                and deliver.sys_code LIKE CONCAT(CONCAT(#{deliverCode}),'%')
+            </if>
+            <if test="orderCode != null and orderCode != ''">
+                and assistOrder.sys_code LIKE CONCAT(CONCAT(#{orderCode}),'%')
+            </if>
+
+            <if test="supplier != null and supplier != ''">
+                and supplier.name LIKE CONCAT(CONCAT(#{supplier}),'%')
+            </if>
+            <if test="assistProductName != null and assistProductName != ''">
+                and assistProd.product_name LIKE CONCAT(CONCAT(#{assistProductName}),'%')
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
