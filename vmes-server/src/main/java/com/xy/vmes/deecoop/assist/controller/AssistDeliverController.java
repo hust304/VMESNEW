@@ -16,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
 * 说明：vmes_assist_deliver:外协发货表Controller
@@ -162,19 +160,27 @@ public class AssistDeliverController {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //3. 添加外协发货明细子表(原材料)
+        List<AssistDeliverDetailChild> deliverDetailChildList = new ArrayList<>();
         List<Map<String, String>> mapList = (List<Map<String, String>>) YvanUtil.jsonToList(deliverDetailChildJsonStr);
         for (Map<String, String> mapObject : mapList) {
             AssistDeliverDetailChild detailChild = (AssistDeliverDetailChild)HttpUtils.pageData2Entity(mapObject, new AssistDeliverDetailChild());
-            detailChild.setDeliverId(deliverDetail.getParentId());
-            detailChild.setDeliverDtlId(deliverDetail.getId());
-            detailChild.setCuser(deliverDetail.getCuser());
-            deliverDetailChildService.save(detailChild);
+
+            //原材料数量(单据单位) count
+            BigDecimal count = detailChild.getCount();
+            if (count != null && count.doubleValue() > 0) {
+                //四舍五入到2位小数
+                count = count.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                detailChild.setCount(count);
+
+                detailChild.setDeliverId(deliverDetail.getParentId());
+                detailChild.setDeliverDtlId(deliverDetail.getId());
+                detailChild.setCuser(deliverDetail.getCuser());
+                deliverDetailChildService.save(detailChild);
+                deliverDetailChildList.add(detailChild);
+            }
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //系统推送(外协件-原材料)出库单
-        PageData findMap = new PageData();
-        findMap.put("deliverId", addDeliver.getId());
-        List<AssistDeliverDetailChild> deliverDetailChildList = deliverDetailChildService.findDeliverDetailChildList(findMap);
         if (deliverDetailChildList != null && deliverDetailChildList.size() > 0) {
             Map<String, Map<String, Object>> businessByOutMap = deliverDetailChildService.findProductBusinessMapByOut(deliverDetailChildList);
             if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
