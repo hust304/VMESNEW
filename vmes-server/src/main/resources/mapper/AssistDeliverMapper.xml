@@ -66,6 +66,8 @@
             (replace(uuid(), '-', ''),'assistDeliver','typeName','发货类型',24, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliver','orderCode','订单编号',25, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliver','supplier','供应商',26, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistDeliver', 'makeUserName', '经办人', 27, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
     <!-- 列表(全部) 自动创建，禁止修改-->
@@ -171,12 +173,14 @@
         END typeName,
 
         assistOrder.sys_code orderCode,
-        supplier.name supplier
+        supplier.name supplier,
+        makeUser.user_name makeUserName
+
 
         from vmes_assist_deliver deliver
-            left join vmes_customer supplier on deliver.supplier_id = supplier.id
             left join vmes_assist_order assistOrder on deliver.order_id = assistOrder.id
-
+            left join vmes_customer supplier on deliver.supplier_id = supplier.id
+            left join vmes_user makeUser on assistOrder.make_id = makeUser.id
         <where>
             <if test="deliverId != null and deliverId != ''" >
                 and deliver.id = #{deliverId}

@@ -70,6 +70,10 @@
             (replace(uuid(), '-', ''),'assistDeliverDetail','outUserName','出库制单人',29, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','outCdate','出库制单日期',30, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','outTypeName','出库类型',31, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowDeliver', '是否显示发货详情', 32, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowOut', '是否显示出库详情', 33, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'deliverType', 'deliverType', 34, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -172,13 +176,16 @@
             assistOrder.sys_code orderCode,
             deliver.sys_code deliverCode,
             deliver.supplier_id supplierId,
+            deliver.type deliverType,
             supplier.name supplier,
 
             <!--外协件信息-->
             assistProd.product_name assistProductName,
             orderUnitName.name assistProductUnitName,
             craft.sys_code craftCode,
-            craft.name craftName
+            craft.name craftName,
+            '' isShowDeliver,
+            '' isShowOut
 
             <!--获取出库单id-->
             <if test="'true' == isNeedOutId" >

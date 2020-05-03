@@ -158,6 +158,9 @@
             left join vmes_dictionary unitName on detailChild.unit_id = unitName.id
 
         <where>
+            <if test="deliverId != null and deliverId != ''" >
+                and detailChild.deliver_id = #{deliverId}
+            </if>
             <if test="deliverDtlId != null and deliverDtlId != ''" >
                 and detailChild.deliver_dtl_id = #{deliverDtlId}
             </if>

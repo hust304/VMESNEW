@@ -340,7 +340,35 @@ public class AssistDeliverDetailServiceImp implements AssistDeliverDetailService
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.getDataListPage(pd,pg);
+        //isNeedInfo:是否需要显示(出库详情,发货详情):'true'
+        String isNeedInfo = pd.getString("isNeedInfo");
+
+        List<Map> varList = this.getDataListPage(pd, pg);
+        if ("true".equals(isNeedInfo) && varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //发货详情(按钮) 是否显示
+                //isShowDeliver:发货详情 1:显示 0:不显示
+                mapObject.put("isShowDeliver", "0");
+
+                //根据vmes_sale_deliver.type 是否为空:发货类型(1:发货 2:送货 3:供应商自提)
+                String deliverType = (String)mapObject.get("deliverType");
+                if (deliverType != null && deliverType.trim().length() > 0) {
+                    //isShowDeliver:发货详情 1:显示 0:不显示
+                    mapObject.put("isShowDeliver", "1");
+                }
+
+                ///////////////////////////////////////////////////////
+                //出库详情(按钮) 是否显示
+                //isShowOut:出库详情 1:显示 0:不显示
+                mapObject.put("isShowOut", "0");
+                String warehouseOutId = (String)mapObject.get("warehouseOutId");
+                if (warehouseOutId != null && warehouseOutId.trim().length() > 0) {
+                    //isShowOut:出库详情 1:显示 0:不显示
+                    mapObject.put("isShowOut", "1");
+                }
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

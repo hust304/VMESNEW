@@ -64,6 +64,31 @@ public class AssistDeliverController {
     }
 
     /**
+     * 获取外协发货单
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistDeliver/findAssistDeliver")
+    public ResultModel findAssistDeliver() throws Exception {
+        logger.info("################/assist/assistDeliver/findAssistDeliver 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        Map<String, Object> deliverMap = new HashMap<>();
+        List<Map> varList = deliverService.getDataListPage(pageData, null);
+        if (varList != null && varList.size() > 0) {
+            deliverMap = (Map<String, Object>)varList.get(0);
+        }
+        model.put("deliverMap", deliverMap);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistDeliver/findAssistDeliver 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 新增外协发货单
      * @return
      * @throws Exception
