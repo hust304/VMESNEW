@@ -253,12 +253,11 @@ public class WarehouseOutExecuteController {
     * @date 2018-11-01
     */
     @PostMapping("/warehouse/warehouseOutExecute/listPageWarehouseOutExecutes")
-    public ResultModel listPageWarehouseOutExecutes()  throws Exception {
+    public ResultModel listPageWarehouseOutExecutes() throws Exception {
         logger.info("################warehouseOutExecute/listPageWarehouseOutExecutes 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        Pagination pg = HttpUtils.parsePagination(pd);
-        ResultModel model = warehouseOutExecuteService.listPageWarehouseOutExecutes(pd,pg);
+        ResultModel model = warehouseOutExecuteService.listPageWarehouseOutExecutes(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################warehouseOutExecute/listPageWarehouseOutExecutes 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;

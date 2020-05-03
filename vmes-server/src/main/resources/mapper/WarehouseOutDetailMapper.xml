@@ -207,6 +207,7 @@
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'productPriceSum', '金额', 41, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
 
         (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'stockCount', '库存数量', 41, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
+        (replace(uuid(), '-', ''), 'WarehouseOutDetail', 'productProperty', '自定义属性', 42, '1', '0', '1', '0', '2018-12-5 17:38:48', 'admin'),
     </insert>
 
     <insert id="insertColumn1" >

@@ -155,7 +155,7 @@ public interface WarehouseOutExecuteService {
 
     ResultModel updateWarehouseOutExecute(PageData pageData) throws Exception;
     ResultModel deleteWarehouseOutExecute(PageData pageData) throws Exception;
-    ResultModel listPageWarehouseOutExecutes(PageData pd, Pagination pg) throws Exception;
+    ResultModel listPageWarehouseOutExecutes(PageData pd) throws Exception;
 
 
 }

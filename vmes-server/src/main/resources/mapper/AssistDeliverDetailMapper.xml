@@ -63,8 +63,13 @@
             (replace(uuid(), '-', ''),'assistDeliverDetail','craftCode','工艺编号',23, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','craftName','工艺名称',24, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','supplierId','供应商id',25, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','outStateName','出库状态',26, '1','1','1','0',now(), 'admin'),
 
+            (replace(uuid(), '-', ''),'assistDeliverDetail','warehouseOutId','出库单id',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outStateName','出库状态',27, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outCode','出库单号',28, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outUserName','出库制单人',29, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outCdate','出库制单日期',30, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outTypeName','出库类型',31, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -177,7 +182,12 @@
 
             <!--获取出库单id-->
             <if test="'true' == isNeedOutId" >
+                ,detailChild.warehouseOutId
+                ,warehouseOut.code outCode
                 ,warehouseOut.state outState
+                ,outType.name outTypeName
+                ,DATE_FORMAT(warehouseOut.cdate,'%Y-%m-%d') outCdate
+                ,outUser.user_name outUserName
                 ,CASE
                 WHEN warehouseOut.state = '0' THEN '未完成'
                 WHEN warehouseOut.state = '1' THEN '已完成'
@@ -213,6 +223,8 @@
                     group by a.deliver_id,b.parent_id
                 ) detailChild on deliverDtl.parent_id = detailChild.deliver_id
                 left join vmes_warehouse_out warehouseOut on detailChild.warehouseOutId = warehouseOut.id
+                left join vmes_dictionary outType on warehouseOut.type = outType.id
+                left join vmes_user outUser on warehouseOut.make_id = outUser.id
             </if>
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >

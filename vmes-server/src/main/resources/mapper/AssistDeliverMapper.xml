@@ -178,6 +178,9 @@
             left join vmes_assist_order assistOrder on deliver.order_id = assistOrder.id
 
         <where>
+            <if test="deliverId != null and deliverId != ''" >
+                and deliver.id = #{deliverId}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}
             </if>

@@ -122,7 +122,8 @@
             (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'priceType', '计价类型(1:先计价 2:后计价)', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'stateName', '发货状态', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
             (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'deliverCode', '发货单号', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
-            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderDetailCount', '订购数量', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin')
+            (replace(uuid(), '-', ''), 'saleDeliverDetailByPrice', 'orderDetailCount', '订购数量', 26, '1', '0', '1', '0', '2018-12-5 17:01:51', 'admin'),
+            (replace(uuid(), '-', ''),'saleDeliverDetailByPrice','productProperty','自定义属性',28, '1','0','1','0',now(), 'admin')
 
     </insert>
 
@@ -280,6 +281,7 @@
             product.property property,
             product.picture_code pictureCode,
             genre.name productGenreName,
+            product.property productProperty,
 
             <!--发货单明细货品单位: 单位换算公式-->
             prodUnitPrice.np_formula n2pFormula,

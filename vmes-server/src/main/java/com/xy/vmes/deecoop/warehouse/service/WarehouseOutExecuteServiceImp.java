@@ -209,11 +209,17 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     * 创建时间：2018-11-01
     */
     @Override
-    public List<Map> getDataListPage(PageData pd,Pagination pg) throws Exception{
-        if(pg==null){
+    public List<Map> getDataListPage(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
             return warehouseOutExecuteMapper.getDataListPage(pd);
+        } else if (pg != null) {
+            return warehouseOutExecuteMapper.getDataListPage(pd, pg);
         }
-        return warehouseOutExecuteMapper.getDataListPage(pd,pg);
+
+        return mapList;
     }
     public List<Map> getDataListPage(PageData pd) throws Exception{
         return warehouseOutExecuteMapper.getDataListPage(pd);
@@ -1480,12 +1486,8 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
     }
 
     @Override
-    public ResultModel listPageWarehouseOutExecutes(PageData pd, Pagination pg) throws Exception {
-        if(pg==null){
-            pg =  HttpUtils.parsePagination(pd);
-        }
+    public ResultModel listPageWarehouseOutExecutes(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        Map result = new HashMap();
 
         List<Column> columnList = columnService.findColumnList("WarehouseOutExecute");
         if (columnList == null || columnList.size() == 0) {
@@ -1499,18 +1501,19 @@ public class WarehouseOutExecuteServiceImp implements WarehouseOutExecuteService
         if (fieldCode != null && fieldCode.trim().length() > 0) {
             columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
         }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
 
-
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
         String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
         if ("false".equals(isNeedPage)) {
             pg = null;
         } else {
             result.put("pageData", pg);
         }
 
-
-        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
-        List<Map> varList = this.getDataListPage(pd,pg);
+        List<Map> varList = this.getDataListPage(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
         result.put("hideTitles",titleMap.get("hideTitles"));
         result.put("titles",titleMap.get("titles"));
