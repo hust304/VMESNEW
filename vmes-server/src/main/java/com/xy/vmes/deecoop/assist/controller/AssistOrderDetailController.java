@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistOrderDetailQueryBySignService;
 import com.xy.vmes.service.AssistOrderDetailService;
 
 import com.yvan.HttpUtils;
@@ -23,7 +24,8 @@ public class AssistOrderDetailController {
 
     @Autowired
     private AssistOrderDetailService assistOrderDetailService;
-
+    @Autowired
+    private AssistOrderDetailQueryBySignService orderDetailQueryBySignService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -37,6 +39,22 @@ public class AssistOrderDetailController {
         ResultModel model = assistOrderDetailService.listPageAssistOrderDetail(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 外协-收货管理-生成收货单-收货-弹出界面查询
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistOrderDetail/listPageAssistOrderDetaiQueryBySign")
+    public ResultModel listPageAssistOrderDetaiQueryBySign() throws Exception {
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetaiQueryBySign 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = orderDetailQueryBySignService.listPageAssistOrderDetaiQueryBySign(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetaiQueryBySign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

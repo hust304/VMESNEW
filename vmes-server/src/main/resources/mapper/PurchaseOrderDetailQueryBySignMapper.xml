@@ -81,8 +81,8 @@
                     sum(quality_fine_count) quality_fine_count
                 from vmes_purchase_sign_detail
                 <where>
-                    <if test="parentId != null and parentId != ''">
-                        and order_id = #{parentId}
+                    <if test="orderId != null and orderId != ''">
+                        and order_id = #{orderId}
                     </if>
                     <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
                     and state = '2'

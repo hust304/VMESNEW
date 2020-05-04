@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：外协订单明细查询汇总 Mapper.xml
+外协-收货管理-生成收货单-收货-弹出界面查询
+创建人：陈刚
+创建时间：2020-05-04
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistOrderDetailQueryBySignMapper">
+    <insert id="assistOrderDetailQueryBySign" >
+        delete from vmes_column where model_code = 'assistOrderDetailQueryBySign';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','parentId','外协订单id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','planDetailId','计划明细id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','assistProductId','外协件id',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','orderUnit','单位id(单据单位)',4, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','orderCount','订单数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','lossRatio','损耗率',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','price','单价',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','amount','金额',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','expectDate','约定交期(yyyy-MM-dd)',9, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','assistProductName','外协件',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','orderUnitName','单位',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','craftCode','工艺编号',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailQueryBySign','craftName','工艺名称',13, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'endArriveCount', '(签收完成)签收数', 14, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'endSignFineCount', '(签收完成)收货合格', 15, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'endQualityFineCount', '(签收完成)检验合格数', 16, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'signCount', '已签收数', 17, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'signFineCount', '收货合格数', 18, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'maxAarriveCount', '未签收数量', 19, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'signInCount', '检验中', 20, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'arriveCount', '签收数量', 21, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'quality', '质检属性', 22, '1', '1', '1', '0', now(), 'admin'),
+
+    </insert>
+
+    <select id="listAssistOrderDetaiQueryBySign" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            <!--外协订单明细-->
+            orderDtl.id id,
+            orderDtl.parent_id parentId,
+            orderDtl.plan_detail_id planDetailId,
+            orderDtl.assist_product_id assistProductId,
+            orderDtl.order_unit orderUnit,
+
+            round(ifnull(orderDtl.order_count, 0),2) orderCount,
+            round(ifnull(orderDtl.loss_ratio, 0),2) lossRatio,
+            round(ifnull(orderDtl.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
+            round(ifnull(orderDtl.amount, 0),2) amount,
+            DATE_FORMAT(orderDtl.expect_date,'%Y-%m-%d') expectDate,
+
+            <!--外协件信息-->
+            assistProd.product_name assistProductName,
+            orderUnitName.name orderUnitName,
+            craft.sys_code craftCode,
+            craft.name craftName,
+
+            <!--采购签收明细(签收检验完成)汇总 -->
+            round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
+            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
+            round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+
+            <!--采购签收明细-->
+            round(ifnull(signDtl.signCount, 0), 2) signCount,
+            round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
+            <!--最大允许签收数量: 采购数量 - 收货合格数 -->
+            round((ifnull(orderDtl.order_count, 0) - ifnull(signDtl.sign_fine_count, 0)), 2) maxAarriveCount,
+            round((ifnull(signDtl.signCount, 0) - ifnull(signDetailEnd.arrive_count, 0)), 2) signInCount,
+
+            <!--java 类实现(arriveCount) -->
+            '' arriveCount,
+
+            <!--quality:质检属性 (1:免检 2:检验)-->
+            <!--product.purchase_quality_type 1:全检-->
+            <!--product.purchase_quality_type 2:抽检-->
+            product.purchase_quality_type purchaseQualityType,
+            CASE
+            WHEN product.purchase_quality_type is null or CHAR_LENGTH(TRIM(product.purchase_quality_type)) = 0 THEN '免检'
+            ELSE '检验'
+            END quality
+
+        from vmes_assist_order_detail orderDtl
+            left join vmes_assist_product assistProd on orderDtl.assist_product_id = assistProd.id
+            left join vmes_product product on assistProd.product_id = product.id
+            left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
+            left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and orderDtl.order_unit = orderUnit.unit)
+            left join vmes_dictionary orderUnitName on orderDtl.order_unit = orderUnitName.id
+
+        <!--(外协订单明细id)外协签收明细汇总 vmes_assist_sign_detail-->
+        left join (
+            select
+                order_detail_id,
+                sum(arrive_count) arrive_count,
+                sum(sign_fine_count) sign_fine_count,
+                sum(quality_fine_count) quality_fine_count
+            from vmes_assist_sign_detail
+            <where>
+                <if test="orderId != null and orderId != ''">
+                    and order_id = #{parentId}
+                </if>
+                <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
+                and state = '2'
+            </where>
+            group by order_detail_id
+        ) signDetailEnd on orderDtl.id = signDetailEnd.order_detail_id
+
+        <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
+        left join (
+            select
+                order_detail_id,
+                sum(arrive_count) signCount,
+                sum(sign_fine_count) sign_fine_count
+            from vmes_assist_sign_detail
+            <where>
+                <if test="orderId != null and orderId != ''">
+                    and order_id = #{orderId}
+                </if>
+                <![CDATA[ and state <> '-1' ]]>
+            </where>
+            group by order_detail_id
+        ) signDtl on orderDtl.id = signDtl.order_detail_id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and orderDtl.parent_id = #{orderId}
+            </if>
+        </where>
+
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+</mapper>
