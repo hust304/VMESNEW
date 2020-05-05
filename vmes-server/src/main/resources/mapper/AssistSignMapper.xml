@@ -53,6 +53,8 @@
             (replace(uuid(), '-', ''),'assistSign','orderCode','外协单号',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSign','supplierName','供应商',16, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSign','signUserName','签收人',17, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'assistSign','isShowEdit','是否显示修改按钮',18, '1','0','1','0',now(), 'admin'),
     </insert>
 
 
@@ -132,7 +134,10 @@
 
             signUser.user_name signUserName,
             assistOrder.sys_code orderCode,
-            supplier.name supplierName
+            supplier.name supplierName,
+
+            <!-- java类获取数据(isShowEdit) -->
+            '' isShowEdit
 
         from vmes_assist_sign sign
             left join vmes_assist_order assistOrder on sign.order_id = assistOrder.id

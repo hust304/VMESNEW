@@ -507,6 +507,49 @@ public class AssistSignController {
         return model;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    private String findShowEditByMapList(List<Map<String, Object>> mapList) {
+        //isShowEdit(是否显示编辑按钮) 1:显示(默认显示) 0:不显示
+        String isShowEdit = "1";
+        if (mapList == null || mapList.size() == 0) {return isShowEdit;}
+
+        for (Map<String, Object> mapObject : mapList) {
+            //quality质检属性 (1:免检 2:检验)
+            String quality = (String)mapObject.get("quality");
+
+            //quality质检属性:1:免检
+            if ("1".equals(quality)) {
+                //executeCount (免检)入库执行数量
+                BigDecimal executeCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("executeCount") != null) {
+                    executeCount = (BigDecimal)mapObject.get("executeCount");
+                }
+
+                //(免检)入库执行数量(大于0) 不可修改(isShowEdit:0:不显示)
+                if (executeCount.doubleValue() > 0) {
+                    isShowEdit = "0";
+                    break;
+                }
+
+                //quality质检属性:2:检验
+            } else if ("2".equals(quality)) {
+                //qualityCount (实际)检验数量
+                BigDecimal qualityCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("qualityCount") != null) {
+                    qualityCount = (BigDecimal)mapObject.get("qualityCount");
+                }
+
+                //(实际)检验数量(大于0) 不可修改 (isShowEdit:0:不显示)
+                if (qualityCount.doubleValue() > 0) {
+                    isShowEdit = "0";
+                    break;
+                }
+            }
+        }
+
+        return isShowEdit;
+    }
+
 
 }
 
