@@ -2,6 +2,7 @@ package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistSignDetailMapper;
 import com.xy.vmes.entity.AssistSignDetail;
+import com.xy.vmes.service.AssistOrderDetailQueryBySignService;
 import com.xy.vmes.service.AssistSignDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -15,6 +16,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -28,6 +31,8 @@ import com.yvan.Conv;
 public class AssistSignDetailServiceImp implements AssistSignDetailService {
     @Autowired
     private AssistSignDetailMapper assistSignDetailMapper;
+    @Autowired
+    private AssistOrderDetailQueryBySignService assistOrderDetailQueryBySignService;
     @Autowired
     private ColumnService columnService;
 
@@ -195,6 +200,95 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
 
         return this.findAssistSignDetailList(findMap);
     }
+
+    /**
+     * 获取签收单状态-根据签收单明细状态
+     * 签收单单状态(1:检验中 2:已完成 -1:已取消)
+     * 签收单明细状态(1:检验中 2:已完成 -1:已取消)
+     *
+     * @param objectList      外协签收单明细List<AssistSignDetail>
+     * @return
+     */
+    public String findParentStateByDetailList(List<AssistSignDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return null;}
+
+        //签收单明细状态(1:检验中 2:已完成 -1:已取消)
+        int jyz = 0; //1:检验中
+        int ywc = 0; //2:已完成
+        int yqx = 0; //-1:已取消
+
+        if (objectList != null && objectList.size() > 0) {
+            for (AssistSignDetail detail : objectList) {
+                if ("-1".equals(detail.getState())) {
+                    yqx = yqx + 1;
+                } else if ("1".equals(detail.getState())) {
+                    jyz = jyz + 1;
+                } else if ("2".equals(detail.getState())) {
+                    ywc = ywc + 1;
+                }
+            }
+        }
+
+        //签收单明细状态:-1:已取消 全是已取消状态  签收单状态:-1:已取消
+        if (yqx > 0 && yqx == objectList.size()) {
+            return "-1";
+
+            //签收单明细状态:2:已完成(发货) 全是已完成  签收单状态:2:已完成
+        } else if (ywc > 0 && yqx >= 0 && jyz == 0) {
+            return "2";
+
+            //签收单明细状态:1:检验中 一条或多条  签收单状态:1:检验中
+        } else if (jyz > 0) {
+            return "1";
+        }
+
+        return null;
+    }
+
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param objectList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> objectList) {
+        Map<String, Map<String, Object>> productByInMap = new HashMap<String, Map<String, Object>>();
+        if (objectList == null || objectList.size() == 0) {return productByInMap;}
+
+        for (Map<String, String> objectMap : objectList) {
+            //signDtlId 采购签收明细id
+            String signDtlId = objectMap.get("signDtlId");
+
+            //productId 货品id
+            String productId = objectMap.get("productId");
+
+            //count 签收数量(arriveCount) count := inCount 入库数量
+            BigDecimal count = BigDecimal.valueOf(0D);
+            String arriveCountStr = objectMap.get("arriveCount");
+            if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
+                try {
+                    count = new BigDecimal(arriveCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Map<String, Object> productMap = new HashMap<>();
+            productMap.put("productId", productId);
+            productMap.put("inDtlId", null);
+            productMap.put("inCount", count);
+
+            productByInMap.put(signDtlId, productMap);
+        }
+
+        return productByInMap;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

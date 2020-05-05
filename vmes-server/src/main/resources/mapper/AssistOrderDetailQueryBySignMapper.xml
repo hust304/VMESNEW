@@ -140,4 +140,59 @@
             order by ${orderStr}
         </if>
     </select>
+
+    <!--check外协订单明细(订单数量,签收(检验完成数量) ) -->
+    <select id="findCheckAssistOrderDetaiBySign" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            <!--外协订单明细-->
+            orderDtl.id orderDtlId,
+            orderDtl.parent_id orderId,
+
+            planDtl.parent_id planId,
+            orderDtl.plan_detail_id planDtlId,
+
+            round(ifnull(orderDtl.order_count, 0),2) orderCount,
+            orderDtl.assist_product_id assistProductId,
+            orderDtl.order_unit orderUnit,
+            <!--外协签收明细 (检验已完成)-->
+            round(ifnull(signDetailEnd.arrive_count, 0), 2) signCount,
+            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) signFineCount
+
+        from vmes_assist_order_detail orderDtl
+            left join vmes_assist_plan_detail planDtl on orderDtl.plan_detail_id = planDtl.id
+            <!--(外协订单明细id)外协签收明细汇总 vmes_assist_sign_detail-->
+            left join (
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count,
+                    sum(sign_fine_count) sign_fine_count,
+                    sum(quality_fine_count) quality_fine_count
+                from vmes_assist_sign_detail
+                <where>
+                    <if test="orderId != null and orderId != ''">
+                        and order_id = #{parentId}
+                    </if>
+
+                    <if test="orderDtlIds != null and orderDtlIds != ''">
+                        and order_detail_id in (${orderDtlIds})
+                    </if>
+                    <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
+                    and state = '2'
+                </where>
+                group by order_detail_id
+            ) signDetailEnd on orderDtl.id = signDetailEnd.order_detail_id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and orderDtl.parent_id = #{orderId}
+            </if>
+            <if test="orderDtlIds != null and orderDtlIds != ''">
+                and orderDtl.id in (${orderDtlIds})
+            </if>
+        </where>
+
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
 </mapper>

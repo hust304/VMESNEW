@@ -99,6 +99,28 @@ public interface AssistSignDetailService {
     List<AssistSignDetail> findAssistSignDetailList(PageData object) throws Exception;
     List<AssistSignDetail> findAssistSignDetailListByParentId(String parentId) throws Exception;
 
+    /**
+     * 获取签收单状态-根据签收单明细状态
+     * 签收单单状态(1:检验中 2:已完成 -1:已取消)
+     * 签收单明细状态(1:检验中 2:已完成 -1:已取消)
+     *
+     * @param objectList      外协签收单明细List<AssistSignDetail>
+     * @return
+     */
+    String findParentStateByDetailList(List<AssistSignDetail> objectList);
+
+    /**
+     * 返回业务货品入库Map
+     * 业务货品入库Map<业务单id, 货品Map<String, Object>> 业务单id-业务明细id (订单明细id,发货单明细id)
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     inDtlId:   入库明细id
+     *     inCount:   入库数量
+     *
+     * @param objectList
+     * @return
+     */
+    Map<String, Map<String, Object>> findBusinessProducMapByIn(List<Map<String, String>> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

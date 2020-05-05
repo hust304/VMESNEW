@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.assist.service;
 import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailMapper;
 import com.xy.vmes.entity.AssistOrder;
 import com.xy.vmes.entity.AssistOrderDetail;
+import com.xy.vmes.service.AssistOrderDetailQueryBySignService;
 import com.xy.vmes.service.AssistOrderDetailService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -40,6 +41,9 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
 
     @Autowired
     private AssistOrderService orderService;
+    @Autowired
+    private AssistOrderDetailQueryBySignService orderDetailQueryBySignService;
+
     @Autowired
     private ColumnService columnService;
 
@@ -315,6 +319,30 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
 
         return null;
     }
+
+    public Map<String, Map<String, Object>> findCheckAssistOrderDetailMap(PageData findMap) {
+        Map<String, Map<String, Object>> detailMap = new HashMap<>();
+        if (findMap == null || findMap.size() == 0) {return detailMap;}
+
+        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+        try {
+            //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
+            mapList = orderDetailQueryBySignService.findCheckAssistOrderDetaiBySign(findMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+                //orderDtlId: 外协订单明细id
+                String orderDtlId = (String)objectMap.get("orderDtlId");
+                detailMap.put(orderDtlId, objectMap);
+            }
+        }
+
+        return detailMap;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}
