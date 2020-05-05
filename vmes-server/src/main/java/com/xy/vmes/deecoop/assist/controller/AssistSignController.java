@@ -40,11 +40,16 @@ public class AssistSignController {
     private AssistPlanDetailService assistPlanDetailService;
 
     @Autowired
+    private WarehouseInService inService;
+    @Autowired
+    private WarehouseInDetailService inDetailService;
+    @Autowired
+    private WarehouseInCreateService warehouseInCreateService;
+
+    @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
     private CoderuleService coderuleService;
-    @Autowired
-    private WarehouseInCreateService warehouseInCreateService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -417,6 +422,88 @@ public class AssistSignController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistSign/addPurchaseSign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 取消(外协)签收单
+     * @author 陈刚
+     * @date 2019-12-05
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistSign/cancelAssistSign")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel cancelAssistSign() throws Exception {
+        logger.info("################/assist/assistSign/cancelAssistSign 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        //signId 采购签收单id
+        String signId = pageData.getString("signId");
+        if (signId == null || signId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("采购签收单id为空或空字符串！");
+            return model;
+        }
+
+        //获取免检入库单id-根据(签收单id,quality:质检属性:1:免检)查询
+        PageData findMap = new PageData();
+        findMap.put("parentId", signId);
+        findMap.put("quality", "1");
+        List<Map> mapList = assistSignDetailService.getDataListPage(findMap, null);
+
+        //获取(入库单id)Map-遍历查询结构集
+        Map<String, String> inParentMap = new HashMap<>();
+        if (mapList != null && mapList.size() > 0) {
+            for (Map<String, Object> objectMap : mapList) {
+                //inParentId (免检)入库单
+                String inParentId = (String)objectMap.get("inParentId");
+
+                if (inParentId != null && inParentId.trim().length() > 0) {
+                    inParentMap.put(inParentId.trim(), inParentId.trim());
+                }
+            }
+        }
+
+        //取消入库单
+        if (inParentMap != null) {
+            for (Iterator iterator = inParentMap.keySet().iterator(); iterator.hasNext();) {
+                //inParentId 入库单id
+                String inParentId = (String)iterator.next();
+
+                //修改入库单明细状态
+                PageData mapDetail = new PageData();
+                mapDetail.put("parentId", inParentId);
+                //明细状态:state:状态(0:待派单 1:执行中 2:已完成 -1.已取消)
+                mapDetail.put("state", "-1");
+                inDetailService.updateStateByDetail(mapDetail);
+
+                //修改入库单状态
+                WarehouseIn editWarehouseIn = new WarehouseIn();
+                editWarehouseIn.setId(inParentId);
+                //状态(0:未完成 1:已完成 -1:已取消)
+                editWarehouseIn.setState("-1");
+                inService.update(editWarehouseIn);
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //取消外协签收单
+        //明细状态:状态(1:检验中 2:已完成 -1:已取消)
+        assistSignDetailService.updateStateByDetail("-1", signId);
+
+        AssistSign editSign = new AssistSign();
+        editSign.setId(signId);
+        //状态(1:检验中 2:已完成 -1:已取消)
+        editSign.setState("-1");
+        assistSignService.update(editSign);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistSign/cancelAssistSign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
