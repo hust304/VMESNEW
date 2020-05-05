@@ -36,7 +36,6 @@ public class AssistSignServiceImp implements AssistSignService {
      */
     @Override
     public void save(AssistSign object) throws Exception{
-        object.setId(Conv.createUuid());
         object.setCdate(new Date());
         object.setUdate(new Date());
         assistSignMapper.insert(object);

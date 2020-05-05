@@ -182,6 +182,7 @@ public class AssistSignController {
         addSign.setCuser(cuser);
         //签收人(系统用户id)
         addSign.setSignId(cuser);
+        addSign.setSignDate(new Date());
 
         //外协订单id orderId
         addSign.setOrderId(orderId);
