@@ -33,6 +33,8 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
     private AssistSignDetailMapper assistSignDetailMapper;
     @Autowired
     private AssistSignService signService;
+    @Autowired
+    private AssistSignQualityDetailService assistSignQualityDetailService;
 
     @Autowired
     private AssistOrderDetailService orderDetailService;
@@ -681,16 +683,16 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
                 }
             }
 
-//            //添加(vmes_purchase_quality_detail:外协质检项明细)
-//            Object childObj = objectMap.get("children");
-//            List childList = (List)childObj;
-//            if (childList != null && childList.size() > 0) {
-//                for (int i = 0; i < childList.size(); i++) {
-//                    Map<String, String> childMap = (Map<String, String>)childList.get(i);
-//                    PurchaseQualityDetail addQualityDtl = (PurchaseQualityDetail)HttpUtils.pageData2Entity(childMap, new PurchaseQualityDetail());
-//                    qualityDetailService.save(addQualityDtl);
-//                }
-//            }
+            //添加(vmes_purchase_quality_detail:外协质检项明细)
+            Object childObj = objectMap.get("children");
+            List childList = (List)childObj;
+            if (childList != null && childList.size() > 0) {
+                for (int i = 0; i < childList.size(); i++) {
+                    Map<String, String> childMap = (Map<String, String>)childList.get(i);
+                    AssistSignQualityDetail addQualityDtl = (AssistSignQualityDetail)HttpUtils.pageData2Entity(childMap, new AssistSignQualityDetail());
+                    assistSignQualityDetailService.save(addQualityDtl);
+                }
+            }
         }
 
         //修改外协订单////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
