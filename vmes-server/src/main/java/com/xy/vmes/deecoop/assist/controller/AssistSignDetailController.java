@@ -40,7 +40,29 @@ public class AssistSignDetailController {
         return model;
     }
 
+//    //外协签收明细-检验执行
+//    @PostMapping("/purchase/purchaseSignDetail/purchaseSignDetailByQualityExecute")
+//    public ResultModel purchaseSignDetailByQualityExecute() throws Exception {
+//        logger.info("################/purchase/purchaseSignDetail/purchaseSignDetailByQualityExecute 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pd = HttpUtils.parsePageData();
+//        ResultModel model = purchaseSignDetailService.purchaseSignDetailByQualityExecute(pd);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################/purchase/purchaseSignDetail/purchaseSignDetailByQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
 
+    //外协签收明细-免检
+    @PostMapping("/assist/assistSignDetail/updateAssistSignDetailByQuality")
+    public ResultModel updateAssistSignDetailByQuality() throws Exception {
+        logger.info("################/assist/assistSignDetail/updateAssistSignDetailByQuality 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistSignDetailService.updateAssistSignDetailByQuality(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistSignDetail/updateAssistSignDetailByQuality 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 

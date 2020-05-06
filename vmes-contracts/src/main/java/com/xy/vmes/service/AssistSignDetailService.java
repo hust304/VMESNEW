@@ -132,7 +132,11 @@ public interface AssistSignDetailService {
     */
     ResultModel listPageAssistSignDetail(PageData pd) throws Exception;
 
+    //外协签收明细-检验执行
+    ResultModel assistSignDetailByQualityExecute(PageData pageData) throws Exception;
 
+    //外协签收明细-免检
+    ResultModel updateAssistSignDetailByQuality(PageData pageData) throws Exception;
 }
 
 

@@ -52,17 +52,18 @@
         (replace(uuid(), '-', ''),'assistOrderDetail','remark','备注',15, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'assistOrderDetail','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'assistOrderDetail','assistProductName','外协件',17, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','orderUnitName','单位',18, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','craftCode','工艺编号',19, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','craftName','工艺名称',20, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','planCode','计划编号',21, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','stateName','状态',22, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','productId','(外协件)货品id',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','assistProductName','外协件',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','orderUnitName','单位',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','craftCode','工艺编号',20, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','craftName','工艺名称',21, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','planCode','计划编号',22, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','stateName','状态',23, '1','1','1','0',now(), 'admin'),
 
-        (replace(uuid(), '-', ''),'assistOrderDetail','orderCode','订单编号',23, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','supplierName','供应商',24, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','supplierId','供应商id',24, '1','1','1','0',now(), 'admin'),
-        (replace(uuid(), '-', ''),'assistOrderDetail','planId','计划id',25, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','orderCode','订单编号',24, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','supplierName','供应商',25, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','supplierId','供应商id',26, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetail','planId','计划id',27, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -166,6 +167,7 @@
         ELSE null
         END stateName,
 
+        assistProd.product_id productId,
         assistProd.product_name assistProductName,
         orderUnitName.name orderUnitName,
         <!--外协工艺名称-->
