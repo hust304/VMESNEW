@@ -44,6 +44,8 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
     private WarehouseInCreateService warehouseInCreateService;
 
     @Autowired
+    private PurchaseByFinanceBillService purchaseByFinanceBillService;
+    @Autowired
     private RoleMenuService roleMenuService;
     @Autowired
     private ColumnService columnService;
@@ -647,20 +649,21 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             //四舍五入到2位小数
             amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
-//            //生成外协付款单(vmes_finance_bill)
-//            //外协签收单号
-//            signCode = objectMap.get("signCode");
-//            purchaseByFinanceBillService.addFinanceBillByPurchase(editSignDetail.getId(),
-//                    companyId,
-//                    supplierId,
-//                    cuser,
-//                    //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
-//                    "6",
-//                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
-//                    "2",
-//                    null,
-//                    amount,
-//                    signCode);
+            //生成外协付款单(vmes_finance_bill)
+            //外协签收单号
+            signCode = objectMap.get("signCode");
+            purchaseByFinanceBillService.addFinanceBillByAssist(editSignDetail.getId(),
+                    companyId,
+                    supplierId,
+                    cuser,
+                    //type: 单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协))
+                    //11:收货账单(外协) 12:退款单(外协)
+                    "11",
+                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "2",
+                    null,
+                    amount,
+                    signCode);
 
             //外协签收单id
             String parentId = objectMap.get("parentId");
@@ -1100,16 +1103,15 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
         //qualityFineCount (实际)检验合格数
         editSignDetail.setQualityFineCount(arriveCountDB);
 
-//        BigDecimal price = BigDecimal.valueOf(0D);
-//        if (signDetailMap.get("price") != null) {
-//            price = (BigDecimal)signDetailMap.get("price");
-//        }
+        BigDecimal price = BigDecimal.valueOf(0D);
+        if (signDetailMap.get("price") != null) {
+            price = (BigDecimal)signDetailMap.get("price");
+        }
 
-//        //amount 签收金额 = 签收数量 * 单价(外协订单明细)
-//        BigDecimal amount = BigDecimal.valueOf(0D);
-//        amount = BigDecimal.valueOf(price.doubleValue() * arriveCountDB.doubleValue());
-//        //四舍五入到2位小数
-//        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        //amount 签收金额 = 签收数量 * 单价(外协订单明细)
+        BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * arriveCountDB.doubleValue());
+        //四舍五入到2位小数
+        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         this.update(editSignDetail);
 
@@ -1133,17 +1135,18 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
 
         //生成外协(vmes_finance_bill)付款单
         String signCode = (String)signDetailMap.get("signCode");
-//        purchaseByFinanceBillService.addFinanceBillByPurchase(editSignDetail.getId(),
-//                companyId,
-//                supplierId,
-//                cuser,
-//                //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
-//                "6",
-//                //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
-//                "2",
-//                null,
-//                amount,
-//                signCode);
+        purchaseByFinanceBillService.addFinanceBillByAssist(editSignDetail.getId(),
+                companyId,
+                supplierId,
+                cuser,
+                //type: 单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协))
+                //11:收货账单(外协) 12:退款单(外协)
+                "11",
+                //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                "2",
+                null,
+                amount,
+                signCode);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //修改外协订单
@@ -1177,12 +1180,6 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             if (valueMap.get("orderCount") != null) {
                 orderCount = (BigDecimal)valueMap.get("orderCount");
             }
-
-//            //arriveCount 签收数量:= (已完成)签收数量 - (已完成)退货数量
-//            BigDecimal arriveCount = BigDecimal.valueOf(0D);
-//            if (valueMap.get("arriveCount") != null) {
-//                arriveCount = (BigDecimal)valueMap.get("arriveCount");
-//            }
 
             //signFineCount 收货合格数(签收数-(检验)退货数)
             BigDecimal signFineCount = BigDecimal.valueOf(0D);
@@ -1351,6 +1348,4 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
     }
 
 }
-
-
 

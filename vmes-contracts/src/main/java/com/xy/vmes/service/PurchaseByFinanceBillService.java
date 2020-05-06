@@ -55,4 +55,25 @@ public interface PurchaseByFinanceBillService {
                                   String attribute,
                                   BigDecimal amount,
                                   String remark) throws Exception;
+
+    /**
+     *
+     * @param businessId  业务单据id
+     * @param companyId   企业id
+     * @param customerId  客户id
+     * @param userId      用户id
+     * @param type        付款单类型(vmes_finance_bill.type)
+     * @param attribute   付款单属性(vmes_finance_bill.attribute)
+     * @param amount
+     * @throws Exception
+     */
+    void addFinanceBillByAssist(String businessId,
+                                  String companyId,
+                                  String customerId,
+                                  String userId,
+                                  String type,
+                                  String state,
+                                  String attribute,
+                                  BigDecimal amount,
+                                  String remark) throws Exception;
 }
