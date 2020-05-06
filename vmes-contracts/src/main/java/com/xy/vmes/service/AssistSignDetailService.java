@@ -132,6 +132,10 @@ public interface AssistSignDetailService {
     */
     ResultModel listPageAssistSignDetail(PageData pd) throws Exception;
 
+    //获取(质量-外协检验)外协签收明细检验
+    //菜单路径:(质量-外协检验) 当前外协签收明细(执行)按钮弹出框查询调用方法
+    ResultModel listPageAssistSignDetailByQualityExecute(PageData pd) throws Exception;
+
     //外协签收明细-检验执行
     ResultModel assistSignDetailByQualityExecute(PageData pageData) throws Exception;
 

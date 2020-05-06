@@ -160,6 +160,22 @@ public class QualityController {
     }
 
     /**
+     * 获取(质量-外协检验) 外协件货品检验项目
+     * @author 陈刚
+     * @date 2020-05-05
+     */
+    @PostMapping("/quality/quality/findQualityByAssist")
+    public ResultModel findQualityByAssist() throws Exception {
+        logger.info("################/quality/quality/findQualityByAssist 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = qualityService.findQualityByAssist(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/quality/quality/findQualityByAssist 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
      * 添加质检项
      * @author 陈刚
      * @date 2019-12-05

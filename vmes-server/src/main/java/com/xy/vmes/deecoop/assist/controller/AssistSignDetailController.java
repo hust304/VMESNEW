@@ -40,17 +40,37 @@ public class AssistSignDetailController {
         return model;
     }
 
-//    //外协签收明细-检验执行
-//    @PostMapping("/purchase/purchaseSignDetail/purchaseSignDetailByQualityExecute")
-//    public ResultModel purchaseSignDetailByQualityExecute() throws Exception {
-//        logger.info("################/purchase/purchaseSignDetail/purchaseSignDetailByQualityExecute 执行开始 ################# ");
-//        Long startTime = System.currentTimeMillis();
-//        PageData pd = HttpUtils.parsePageData();
-//        ResultModel model = purchaseSignDetailService.purchaseSignDetailByQualityExecute(pd);
-//        Long endTime = System.currentTimeMillis();
-//        logger.info("################/purchase/purchaseSignDetail/purchaseSignDetailByQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-//        return model;
-//    }
+    /**
+     * 获取(质量-外协检验)外协签收明细检验
+     * 菜单路径:(质量-外协检验) 当前外协签收明细(执行)按钮弹出框查询调用方法
+     *
+     * 模块菜单路径:质量-外协检验
+     *
+     * @author 陈刚
+     * @date 2020-05-04
+     */
+    @PostMapping("assist/assistSignDetail/listPageAssistSignDetailByQualityExecute")
+    public ResultModel listPageAssistSignDetailByQualityExecute() throws Exception {
+        logger.info("################assist/assistSignDetail/listPageAssistSignDetailByQualityExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistSignDetailService.listPageAssistSignDetailByQualityExecute(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################assist/assistSignDetail/listPageAssistSignDetailByQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //外协签收明细-检验执行
+    @PostMapping("assist/assistSignDetail/assistSignDetailByQualityExecute")
+    public ResultModel assistSignDetailByQualityExecute() throws Exception {
+        logger.info("################assist/assistSignDetail/assistSignDetailByQualityExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistSignDetailService.assistSignDetailByQualityExecute(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################assist/assistSignDetail/assistSignDetailByQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     //外协签收明细-免检
     @PostMapping("/assist/assistSignDetail/updateAssistSignDetailByQuality")

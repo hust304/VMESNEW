@@ -60,12 +60,12 @@ public class AssistSignDetail implements Serializable {
 	@TableField("receive_count")
 	private BigDecimal receiveCount;
 	//(检验入库)入库单明细id
-	@TableField("quality_indtl_id")
-	private String qualityIndtlId;
+	@TableField("quality_inDtl_id")
+	private String qualityInDtlId;
 
 	//(检验让步接收入库)入库单明细id
-	@TableField("receive_indtl_id")
-	private String receiveIndtlId;
+	@TableField("receive_inDtl_id")
+	private String receiveInDtlId;
 	//状态(1:检验中 2:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
@@ -180,17 +180,17 @@ public class AssistSignDetail implements Serializable {
 	public BigDecimal getReceiveCount() {
 		return receiveCount;
 	}
-	public void setQualityIndtlId(String qualityIndtlId) {
-		this.qualityIndtlId = qualityIndtlId;
+	public String getQualityInDtlId() {
+		return qualityInDtlId;
 	}
-	public String getQualityIndtlId() {
-		return qualityIndtlId;
+	public void setQualityInDtlId(String qualityInDtlId) {
+		this.qualityInDtlId = qualityInDtlId;
 	}
-	public void setReceiveIndtlId(String receiveIndtlId) {
-		this.receiveIndtlId = receiveIndtlId;
+	public String getReceiveInDtlId() {
+		return receiveInDtlId;
 	}
-	public String getReceiveIndtlId() {
-		return receiveIndtlId;
+	public void setReceiveInDtlId(String receiveInDtlId) {
+		this.receiveInDtlId = receiveInDtlId;
 	}
 	public void setState(String state) {
 		this.state = state;

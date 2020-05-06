@@ -41,13 +41,13 @@
             (replace(uuid(), '-', ''),'assistSignDetail','inDetailId','(免检签收入库)入库单明细id',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','assistProductId','外协件id',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','orderUnit','单据单位id',6, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistSignDetail','arriveCount','签收数量',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetail','arriveCount','签收数',7, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','quality','质检属性 (1:免检 2:检验)',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','qualityType','检验方式 (1:全检 2:抽检)',9, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistSignDetail','qualityCount','(实际)检验数量',10, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistSignDetail','badCount','(检验)不合格数量',11, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistSignDetail','retreatCount','(检验)退货数量',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistSignDetail','receiveCount','(检验)让步接收数量',13, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetail','qualityCount','实检数',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetail','badCount','不合格数',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetail','retreatCount','退货数',12, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetail','receiveCount','让步接收',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','qualityIndtlId','(检验入库)入库单明细id',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','receiveIndtlId','(检验让步接收入库)入库单明细id',15, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetail','state','状态(1:检验中 2:已完成 -1:已取消)',16, '1','1','1','0',now(), 'admin'),
@@ -71,6 +71,11 @@
             (replace(uuid(), '-', ''), 'assistSignDetail', 'qualityTypeValue', '检验方式Value', 32, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'assistSignDetail', 'qualityTypeName', '检验方式', 33, '1', '0', '1', '0', now(), 'admin'),
             (replace(uuid(), '-', ''), 'assistSignDetail', 'inParentId', '(免检)入库单id', 34, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistSignDetail', 'signCode', '签收单号', 35, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetail', 'price', '单价', 36, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetail', 'supplierId', '供应商id', 37, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetail', 'supplierName', '供应商名称', 38, '1', '0', '1', '0', now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -103,9 +108,9 @@
         bad_count badCount,
         retreat_count retreatCount,
         receive_count receiveCount,
-        quality_indtl_id qualityIndtlId,
+        quality_inDtl_id qualityInDtlId,
 
-        receive_indtl_id receiveIndtlId,
+        receive_inDtl_id receiveInDtlId,
         state state,
         sign_fine_count signFineCount,
         quality_fine_count qualityFineCount,
@@ -163,9 +168,9 @@
         round(ifnull(signDtl.bad_count, 0), 2) badCount,
         round(ifnull(signDtl.retreat_count, 0), 2) retreatCount,
         round(ifnull(signDtl.receive_count, 0), 2) receiveCount,
-        signDtl.quality_indtl_id qualityIndtlId,
+        signDtl.quality_inDtl_id qualityInDtlId,
 
-        signDtl.receive_indtl_id receiveIndtlId,
+        signDtl.receive_inDtl_id receiveInDtlId,
         signDtl.state state,
         round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
         round(ifnull(signDtl.quality_fine_count, 0), 2) qualityFineCount,
@@ -199,6 +204,7 @@
 
         sign.sys_code signCode,
         <!--外协订单-->
+        round(ifnull(orderDtl.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
         assistOrder.supplier_id supplierId,
         supplier.name supplierName,
 
@@ -220,6 +226,7 @@
         left join vmes_dictionary orderUnitName on signDtl.order_unit = orderUnitName.id
 
         <!--关联外协订单-->
+        left join vmes_purchase_order_detail orderDtl on signDtl.order_detail_id = orderDtl.id
         left join vmes_assist_order assistOrder on signDtl.order_id = assistOrder.id
         left join vmes_customer supplier on assistOrder.supplier_id = supplier.id
 
@@ -227,6 +234,9 @@
         left join vmes_warehouse_in_detail inDetail on signDtl.in_detail_id = inDetail.id
         left join vmes_warehouse_in inParent on inDetail.parent_id = inParent.id
         <where>
+            <if test="signDtlId != null and signDtlId != ''">
+                and signDtl.id = #{signDtlId}
+            </if>
             <if test='parentId != null and parentId != ""' >
                 and signDtl.parent_id = #{parentId}
             </if>
