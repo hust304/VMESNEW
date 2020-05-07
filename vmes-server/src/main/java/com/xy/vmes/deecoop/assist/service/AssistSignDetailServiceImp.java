@@ -704,7 +704,7 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
 
             //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
             PageData findMap = new PageData();
-            findMap.put("detailIds", detailIds);
+            findMap.put("orderDtlIds", detailIds);
             orderDetailMap = orderDetailService.findCheckAssistOrderDetailMap(findMap);
         }
 
@@ -720,38 +720,40 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
                 editOrderDtl.setId(orderDetailId);
 
                 Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
-                //orderCount 订单数量
-                BigDecimal orderCount = BigDecimal.valueOf(0D);
-                if (valueMap.get("orderCount") != null) {
-                    orderCount = (BigDecimal)valueMap.get("orderCount");
-                }
-
-                //signFineCount 收货合格数(签收数-(检验)退货数)
-                BigDecimal signFineCount = BigDecimal.valueOf(0D);
-                if (valueMap.get("signFineCount") != null) {
-                    signFineCount = (BigDecimal)valueMap.get("signFineCount");
-                }
-
-                //外协订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
-                if (signFineCount.doubleValue() >= orderCount.doubleValue()) {
-                    editOrderDtl.setState("4");
-                    orderDetailService.update(editOrderDtl);
-
-                    //planDtlId 外协计划明细id
-                    String planDtlId = (String)valueMap.get("planDtlId");
-                    if (planDtlId != null && planDtlId.trim().length() > 0) {
-                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
-                        editPlanDtl.setId(planDtlId);
-                        //外协计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                        editPlanDtl.setState("4");
-                        planDetailService.update(editPlanDtl);
+                if (valueMap != null) {
+                    //orderCount 订单数量
+                    BigDecimal orderCount = BigDecimal.valueOf(0D);
+                    if (valueMap.get("orderCount") != null) {
+                        orderCount = (BigDecimal)valueMap.get("orderCount");
                     }
-                }
 
-                //planId 外协计划id
-                if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
-                    String planId = (String)valueMap.get("planId");
-                    planIdMap.put(planId.trim(), planId.trim());
+                    //signFineCount 收货合格数(签收数-(检验)退货数)
+                    BigDecimal signFineCount = BigDecimal.valueOf(0D);
+                    if (valueMap.get("signFineCount") != null) {
+                        signFineCount = (BigDecimal)valueMap.get("signFineCount");
+                    }
+
+                    //外协订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+                    if (signFineCount.doubleValue() >= orderCount.doubleValue()) {
+                        editOrderDtl.setState("4");
+                        orderDetailService.update(editOrderDtl);
+
+                        //planDtlId 外协计划明细id
+                        String planDtlId = (String)valueMap.get("planDtlId");
+                        if (planDtlId != null && planDtlId.trim().length() > 0) {
+                            AssistPlanDetail editPlanDtl = new AssistPlanDetail();
+                            editPlanDtl.setId(planDtlId);
+                            //外协计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                            editPlanDtl.setState("4");
+                            planDetailService.update(editPlanDtl);
+                        }
+
+                        //planId 外协计划id
+                        if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
+                            String planId = (String)valueMap.get("planId");
+                            planIdMap.put(planId.trim(), planId.trim());
+                        }
+                    }
                 }
             }
         }
@@ -783,29 +785,6 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             String signDtlId = objectMap.get("id");
             //货品id
             String productId = objectMap.get("productId");
-
-//            //p2nFormula 单位换算公式:计价单位转换计量单位:
-//            String p2nFormula = new String();
-//            if (objectMap.get("p2nFormula") != null) {
-//                p2nFormula = objectMap.get("p2nFormula").trim();
-//            }
-
-//            //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-//            String p2nIsScale = new String();
-//            if (objectMap.get("p2nIsScale") != null) {
-//                p2nIsScale = objectMap.get("p2nIsScale").trim();
-//            }
-
-//            //小数位数 (最小:0位 最大:4位)
-//            Integer p2nDecimalCount = Integer.valueOf(2);
-//            String p2nDecimalCountStr = objectMap.get("p2nDecimalCount");
-//            if (p2nDecimalCountStr != null) {
-//                try {
-//                    p2nDecimalCount = Integer.valueOf(p2nDecimalCountStr);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
 
             ////////////////////////////////////////////////////////////////////////////////////////////
             //签收数量 arriveCount
