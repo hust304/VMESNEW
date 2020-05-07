@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.assist.service;
 
-import com.xy.vmes.common.util.EvaluateUtil;
 import com.xy.vmes.deecoop.assist.dao.AssistSignDetailMapper;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
@@ -1177,38 +1176,40 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             editOrderDtl.setId(orderDetailId);
 
             Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
-            //orderCount 订单数量
-            BigDecimal orderCount = BigDecimal.valueOf(0D);
-            if (valueMap.get("orderCount") != null) {
-                orderCount = (BigDecimal)valueMap.get("orderCount");
-            }
-
-            //signFineCount 收货合格数(签收数-(检验)退货数)
-            BigDecimal signFineCount = BigDecimal.valueOf(0D);
-            if (valueMap.get("signFineCount") != null) {
-                signFineCount = (BigDecimal)valueMap.get("signFineCount");
-            }
-
-            //外协单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
-            if (signFineCount.doubleValue() >= orderCount.doubleValue()) {
-                editOrderDtl.setState("4");
-                orderDetailService.update(editOrderDtl);
-
-                //planDtlId 外协计划明细id
-                String planDtlId = (String)valueMap.get("planDtlId");
-                if (planDtlId != null && planDtlId.trim().length() > 0) {
-                    AssistPlanDetail editPlanDtl = new AssistPlanDetail();
-                    editPlanDtl.setId(planDtlId);
-                    //外协计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-                    editPlanDtl.setState("4");
-                    planDetailService.update(editPlanDtl);
+            if (valueMap != null) {
+                //orderCount 订单数量
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (valueMap.get("orderCount") != null) {
+                    orderCount = (BigDecimal)valueMap.get("orderCount");
                 }
-            }
 
-            //planId 外协计划id
-            if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
-                String planId = (String)valueMap.get("planId");
-                planIdMap.put(planId.trim(), planId.trim());
+                //signFineCount 收货合格数(签收数-(检验)退货数)
+                BigDecimal signFineCount = BigDecimal.valueOf(0D);
+                if (valueMap.get("signFineCount") != null) {
+                    signFineCount = (BigDecimal)valueMap.get("signFineCount");
+                }
+
+                //外协单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
+                if (signFineCount.doubleValue() >= orderCount.doubleValue()) {
+                    editOrderDtl.setState("4");
+                    orderDetailService.update(editOrderDtl);
+
+                    //planDtlId 外协计划明细id
+                    String planDtlId = (String)valueMap.get("planDtlId");
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
+                        editPlanDtl.setId(planDtlId);
+                        //外协计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        editPlanDtl.setState("4");
+                        planDetailService.update(editPlanDtl);
+                    }
+
+                    //planId 外协计划id
+                    if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
+                        String planId = (String)valueMap.get("planId");
+                        planIdMap.put(planId.trim(), planId.trim());
+                    }
+                }
             }
         }
 
