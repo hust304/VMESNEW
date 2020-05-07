@@ -42,6 +42,7 @@
 
         (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'arriveCount', '签收数量', 21, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'quality', '质检属性', 22, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'purchaseQualityType', '检验方式id(1:全检 2:抽检)', 23, '1', '0', '1', '0', now(), 'admin'),
 
     </insert>
 

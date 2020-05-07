@@ -404,6 +404,7 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
                 if (mapObject.get("qualityType") != null && mapObject.get("qualityType").toString().trim().length() > 0) {
                     qualityType = mapObject.get("qualityType").toString().trim();
                 }
+                mapObject.put("qualityTypeValue", qualityType);
 
                 //qualityTypeName 检验方式id (1:全检 2:抽检)
                 String qualityTypeName = "全检";
