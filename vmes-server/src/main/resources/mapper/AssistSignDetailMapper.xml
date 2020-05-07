@@ -229,7 +229,7 @@
         left join vmes_dictionary orderUnitName on signDtl.order_unit = orderUnitName.id
 
         <!--关联外协订单-->
-        left join vmes_purchase_order_detail orderDtl on signDtl.order_detail_id = orderDtl.id
+        left join vmes_assist_order_detail orderDtl on signDtl.order_detail_id = orderDtl.id
         left join vmes_assist_order assistOrder on signDtl.order_id = assistOrder.id
         left join vmes_customer supplier on assistOrder.supplier_id = supplier.id
 
