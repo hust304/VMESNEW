@@ -54,26 +54,29 @@
             (replace(uuid(), '-', ''),'assistDeliverDetail','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
 
             (replace(uuid(), '-', ''),'assistDeliverDetail','stateName','状态',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','orderCode','订单编号',18, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','deliverCode','发货单号',19, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','supplier','供应商',20, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','deliverCode','发货单号',18, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'deliverType', 'deliverType', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','supplierId','供应商id',20, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','supplier','供应商',21, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'assistDeliverDetail','assistProductName','外协件',21, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','assistProductUnitName','单位',22, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','craftCode','工艺编号',23, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','craftName','工艺名称',24, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','supplierId','供应商id',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','orderCode','订单编号',22, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','orderState','订单状态',23, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','orderStateName','订单状态',24, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'assistDeliverDetail','warehouseOutId','出库单id',26, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','outStateName','出库状态',27, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','outCode','出库单号',28, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','outUserName','出库制单人',29, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','outCdate','出库制单日期',30, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDeliverDetail','outTypeName','出库类型',31, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','assistProductName','外协件',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','assistProductUnitName','单位',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','craftCode','工艺编号',27, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','craftName','工艺名称',28, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowDeliver', '是否显示发货详情', 32, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowOut', '是否显示出库详情', 33, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'deliverType', 'deliverType', 34, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','warehouseOutId','出库单id',29, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outStateName','出库状态',30, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outCode','出库单号',31, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outUserName','出库制单人',32, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outCdate','出库制单日期',33, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outTypeName','出库类型',34, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowDeliver', '是否显示发货详情', 35, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowOut', '是否显示出库详情', 36, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -165,19 +168,30 @@
             deliverDtl.remark remark,
             deliverDtl.isdisable isdisable,
 
+            <!--发货单-->
             CASE
-            WHEN deliverDtl.state = '0' THEN '待发货'
-            WHEN deliverDtl.state = '1' THEN '已发货'
-            WHEN deliverDtl.state = '-1' THEN '已取消'
+                WHEN deliverDtl.state = '0' THEN '待发货'
+                WHEN deliverDtl.state = '1' THEN '已发货'
+                WHEN deliverDtl.state = '-1' THEN '已取消'
             ELSE null
             END stateName,
-
-            <!--发货单-->
-            assistOrder.sys_code orderCode,
             deliver.sys_code deliverCode,
             deliver.supplier_id supplierId,
             deliver.type deliverType,
             supplier.name supplier,
+
+            <!--外协订单-->
+            assistOrder.sys_code orderCode,
+            assistOrder.state orderState,
+            CASE
+                WHEN assistOrder.state = '0' THEN '待提交'
+                WHEN assistOrder.state = '1' THEN '待审核'
+                WHEN assistOrder.state = '2' THEN '待发货'
+                WHEN assistOrder.state = '3' THEN '外协中'
+                WHEN assistOrder.state = '4' THEN '已完成'
+                WHEN assistOrder.state = '-1' THEN '已取消'
+            ELSE null
+            END orderStateName,
 
             <!--外协件信息-->
             assistProd.product_name assistProductName,
@@ -234,6 +248,9 @@
                 left join vmes_user outUser on warehouseOut.make_id = outUser.id
             </if>
         <where>
+            <if test="deliverDtlId != null and deliverDtlId != ''" >
+                and deliverDtl.id = #{deliverDtlId}
+            </if>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and deliver.company_id = #{currentCompanyId}
             </if>
@@ -247,6 +264,9 @@
             </if>
             <if test="orderCode != null and orderCode != ''">
                 and assistOrder.sys_code LIKE CONCAT(CONCAT(#{orderCode}),'%')
+            </if>
+            <if test="orderState != null and orderState != ''">
+                and assistOrder.state = #{orderState}
             </if>
 
             <if test="supplier != null and supplier != ''">
