@@ -41,8 +41,8 @@ public class AssistDiscard implements Serializable {
 	@TableField("amount")
 	private BigDecimal amount;
 	//报废完成日期(yyyy-MM-dd)
-	@TableField("retreat_date")
-	private Date retreatDate;
+	@TableField("discard_date")
+	private Date discardDate;
 	//状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
 	@TableField("state")
 	private String state;
@@ -116,11 +116,11 @@ public class AssistDiscard implements Serializable {
 	public BigDecimal getAmount() {
 		return amount;
 	}
-	public void setRetreatDate(Date retreatDate) {
-		this.retreatDate = retreatDate;
+	public Date getDiscardDate() {
+		return discardDate;
 	}
-	public Date getRetreatDate() {
-		return retreatDate;
+	public void setDiscardDate(Date discardDate) {
+		this.discardDate = discardDate;
 	}
 	public void setState(String state) {
 		this.state = state;

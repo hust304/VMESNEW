@@ -4,6 +4,8 @@ import com.xy.vmes.entity.AssistRetreatDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +101,7 @@ public interface AssistRetreatDetailService {
     List<AssistRetreatDetail> findAssistRetreatDetailList(PageData object) throws Exception;
     List<AssistRetreatDetail> findAssistRetreatDetailListByParentId(String parentId) throws Exception;
 
+    BigDecimal findTotalAmount(List<AssistRetreatDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 

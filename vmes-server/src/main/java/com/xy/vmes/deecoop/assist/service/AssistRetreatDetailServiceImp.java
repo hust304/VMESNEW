@@ -11,10 +11,13 @@ import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -196,6 +199,21 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         return this.findAssistRetreatDetailList(findMap);
     }
 
+    public BigDecimal findTotalAmount(List<AssistRetreatDetail> objectList) {
+        if (objectList == null || objectList.size() == 0) {return BigDecimal.valueOf(0D);}
+
+        BigDecimal totalAmount = BigDecimal.valueOf(0D);
+        for (AssistRetreatDetail detail : objectList) {
+
+            //amount:金额
+            if (detail.getAmount() != null) {
+                totalAmount = BigDecimal.valueOf(totalAmount.doubleValue() + detail.getAmount().doubleValue());
+            }
+        }
+
+        //四舍五入到2位小数
+        return totalAmount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

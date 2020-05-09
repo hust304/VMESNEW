@@ -35,6 +35,7 @@
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'assistDiscard','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','supplierId','供应商id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','auditId','审核人id',3, '1','1','1','0',now(), 'admin'),
@@ -42,7 +43,7 @@
             (replace(uuid(), '-', ''),'assistDiscard','custCode','外协报废单号(用户自定义单号)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','type','报废类型(1:外协件 2:外协原材料)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','amount','报废金额',7, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDiscard','retreatDate','报废完成日期(yyyy-MM-dd)',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDiscard','discardDate','报废完成',8, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','state','状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)',9, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','cuser','创建用户id',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','cdate','创建时间',11, '1','1','1','0',now(), 'admin'),
@@ -50,7 +51,12 @@
             (replace(uuid(), '-', ''),'assistDiscard','udate','修改时间',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','remark','备注',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','isdisable','是否启用(0:已禁用 1:启用)',15, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDiscard','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''), 'assistDiscard', 'stateName', '状态', 16, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDiscard','supplierName','供应商',17, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDiscard', 'auditUserName', '审核人', 18, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDiscard', 'creatDateStr', '创建日期', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDiscard', 'creatUserName', '创建人', 20, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
 
@@ -66,7 +72,7 @@
         cust_code custCode,
         type type,
         amount amount,
-        retreat_date retreatDate,
+        discard_date discardDate,
         state state,
 
         cuser cuser,
@@ -108,27 +114,58 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-        id id,
-        company_id companyId,
-        supplier_id supplierId,
-        audit_id auditId,
-        sys_code sysCode,
+            assistDiscard.id id,
+            assistDiscard.company_id companyId,
+            assistDiscard.supplier_id supplierId,
+            assistDiscard.audit_id auditId,
+            assistDiscard.sys_code sysCode,
 
-        cust_code custCode,
-        type type,
-        amount amount,
-        retreat_date retreatDate,
-        state state,
+            assistDiscard.cust_code custCode,
+            assistDiscard.type type,
+            round(ifnull(assistDiscard.amount, 0),2) amount,
+            DATE_FORMAT(assistDiscard.discard_date,'%Y-%m-%d') discardDate,
+            assistDiscard.state state,
 
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
-        udate udate,
-        remark remark,
+            assistDiscard.cuser cuser,
+            assistDiscard.cdate cdate,
+            assistDiscard.uuser uuser,
+            assistDiscard.udate udate,
+            assistDiscard.remark remark,
 
-        isdisable isdisable
-        from vmes_assist_discard
+            assistDiscard.isdisable isdisable,
+
+            CASE
+                WHEN assistDiscard.state = '0' THEN '待提交'
+                WHEN assistDiscard.state = '1' THEN '待审核'
+                WHEN assistDiscard.state = '2' THEN '待报废'
+                WHEN assistDiscard.state = '3' THEN '已完成'
+                WHEN assistDiscard.state = '-1' THEN '已取消'
+            ELSE null
+            END stateName,
+            supplier.name supplierName,
+            DATE_FORMAT(assistDiscard.cdate,'%Y-%m-%d') creatDateStr,
+            creatUser.user_name creatUserName,
+            auditUser.user_name auditUserName
+
+        from vmes_assist_discard assistDiscard
+            left join vmes_customer supplier on assistDiscard.supplier_id = supplier.id
+            left join vmes_user creatUser on assistDiscard.cuser = creatUser.id
+            left join vmes_user auditUser on assistDiscard.audit_id = auditUser.id
         <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and assistDiscard.company_id = #{currentCompanyId}
+            </if>
+            <if test="state != null and state != ''">
+                and assistDiscard.state = #{state}
+            </if>
+            <if test="sysCode != null and sysCode != ''" >
+                and assistDiscard.sys_code = #{sysCode}
+            </if>
+
+            <if test="supplierName != null and supplierName != ''">
+                and supplier.name LIKE CONCAT(CONCAT('%', #{supplierName}),'%')
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}

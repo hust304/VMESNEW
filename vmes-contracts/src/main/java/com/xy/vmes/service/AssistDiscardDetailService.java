@@ -4,6 +4,8 @@ import com.xy.vmes.entity.AssistDiscardDetail;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +101,7 @@ public interface AssistDiscardDetailService {
     List<AssistDiscardDetail> findAssistDiscardDetailList(PageData object) throws Exception;
     List<AssistDiscardDetail> findAssistDiscardDetailListByParentId(String parentId) throws Exception;
 
+    BigDecimal findTotalAmount(List<AssistDiscardDetail> objectList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 

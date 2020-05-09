@@ -32,6 +32,12 @@
         (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','retreatCount','退料',12, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','discardCount','报废',13, '1','1','1','0',now(), 'admin'),
         (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','maxCount','最大(退料,报废)',14, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','deliverId','外协发货单id',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','deliverDtlId','外协发货明细id',16, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','orderId','外协订单id',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistDeliverDetailChildByRetreat','orderDtlId','外协订单明细id',18, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="findAssistDeliverDetailChildByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -57,6 +63,10 @@
 
             deliverDtlChild.isdisable isdisable,
 
+            <!--外协订单信息-->
+            orderChild.order_id orderId,
+            orderChild.order_dtl_id orderDtlId,
+
             <!--货品表(原材料信息)-->
             product.code sysProductCode,
             product.source_code custProductCode,
@@ -78,6 +88,8 @@
             round((ifnull(deliverDtlChild.count, 0) - (ifnull(retreat.order_count, 0) + ifnull(discard.order_count, 0))) ,2) maxCount
         from vmes_assist_deliver_detail_child deliverDtlChild
             left join vmes_assist_deliver deliver on deliverDtlChild.deliver_id = deliver.id
+            left join vmes_assist_order_detail_child orderChild on deliverDtlChild.orderDtl_child_id = orderChild.id
+
             left join vmes_product product on deliverDtlChild.product_id = product.id
             left join vmes_dictionary unitName on deliverDtlChild.unit_id = unitName.id
 

@@ -106,6 +106,18 @@ public class AssistRetreatController {
         addRetreat.setCompanyId(companyID);
         addRetreat.setSupplierId(supplierId);
 
+        //type 退货类型(1:外协件 2:外协原材料)
+        String type = pageData.getString("type");
+        if (type != null && type.trim().length() > 0) {
+            addRetreat.setType(type);
+        }
+
+        //amount:金额(外协订单)
+        BigDecimal amount = retreatDetailService.findTotalAmount(retreatDtlList);
+        if (amount != null && amount.doubleValue() != 0) {
+            addRetreat.setAmount(amount);
+        }
+
         //外协订单编号
         String code = coderuleService.createCoderCdateOnShortYearByDate(
                 companyID,
@@ -377,6 +389,12 @@ public class AssistRetreatController {
         AssistRetreat editRetreat = new AssistRetreat();
         editRetreat.setId(retreatId);
         editRetreat.setSupplierId(supplierId);
+
+        //amount:金额(外协订单)
+        BigDecimal amount = retreatDetailService.findTotalAmount(retreatDtlList);
+        if (amount != null && amount.doubleValue() != 0) {
+            editRetreat.setAmount(amount);
+        }
 
         //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
         editRetreat.setState("0");

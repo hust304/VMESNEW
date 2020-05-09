@@ -107,6 +107,18 @@ public class AssistDiscardController {
         addDiscard.setCompanyId(companyID);
         addDiscard.setSupplierId(supplierId);
 
+        //type 退货类型(1:外协件 2:外协原材料)
+        String type = pageData.getString("type");
+        if (type != null && type.trim().length() > 0) {
+            addDiscard.setType(type);
+        }
+
+        //amount:金额(外协订单)
+        BigDecimal amount = discardDetailService.findTotalAmount(retreatDtlList);
+        if (amount != null && amount.doubleValue() != 0) {
+            addDiscard.setAmount(amount);
+        }
+
         //外协订单编号
         String code = coderuleService.createCoderCdateOnShortYearByDate(
                 companyID,
@@ -378,6 +390,12 @@ public class AssistDiscardController {
         AssistDiscard editDiscard = new AssistDiscard();
         editDiscard.setId(retreatId);
         editDiscard.setSupplierId(supplierId);
+
+        //amount:金额(外协订单)
+        BigDecimal amount = discardDetailService.findTotalAmount(retreatDtlList);
+        if (amount != null && amount.doubleValue() != 0) {
+            editDiscard.setAmount(amount);
+        }
 
         //状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
         editDiscard.setState("0");
