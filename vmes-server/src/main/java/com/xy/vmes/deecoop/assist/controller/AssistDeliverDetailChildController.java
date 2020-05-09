@@ -44,6 +44,7 @@ public class AssistDeliverDetailChildController {
     }
 
     //外协-退货管理-生成退货单(退料)
+    //外协-报废管理-生成报废单(报废原料)
     @PostMapping("/assist/assistDeliverDetailChild/listPageAssistDeliverDetailChildByRetreat")
     public ResultModel listPageAssistDeliverDetailChildByRetreat() throws Exception {
         logger.info("################/assist/assistDeliverDetailChild/listPageAssistDeliverDetailChildByRetreat 执行开始 ################# ");

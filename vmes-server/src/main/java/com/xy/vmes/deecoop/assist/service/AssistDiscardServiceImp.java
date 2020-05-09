@@ -6,21 +6,16 @@ import com.xy.vmes.service.AssistDiscardService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import com.yvan.Conv;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_assist_discard:外协报废单 实现类
@@ -197,7 +192,7 @@ public class AssistDiscardServiceImp implements AssistDiscardService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    public ResultModel listPageassistDiscard(PageData pd) throws Exception{
+    public ResultModel listPageAssistDiscard(PageData pd) throws Exception{
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("assistDiscard");
         if (columnList == null || columnList.size() == 0) {
