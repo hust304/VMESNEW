@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistRetreatDetailByEditService;
 import com.xy.vmes.service.AssistRetreatDetailService;
 
 import com.yvan.HttpUtils;
@@ -22,7 +23,9 @@ public class AssistRetreatDetailController {
     private Logger logger = LoggerFactory.getLogger(AssistRetreatDetailController.class);
 
     @Autowired
-    private AssistRetreatDetailService assistRetreatDetailService;
+    private AssistRetreatDetailService retreatDetailService;
+    @Autowired
+    private AssistRetreatDetailByEditService retreatDetailByEditService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -33,9 +36,25 @@ public class AssistRetreatDetailController {
         logger.info("################/assist/assistRetreatDetail/listPageAssistRetreatDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = assistRetreatDetailService.listPageAssistRetreatDetail(pd);
+        ResultModel model = retreatDetailService.listPageAssistRetreatDetail(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistRetreatDetail/listPageAssistRetreatDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 外协-退料管理-退料列表(编辑)功能
+     * @author 陈刚
+     * @date 2020-05-07
+     */
+    @PostMapping("/assist/assistRetreatDetail/listPageAssistRetreatDetailEditByProduct")
+    public ResultModel listPageAssistRetreatDetailEditByProduct() throws Exception {
+        logger.info("################/assist/assistRetreatDetail/listPageAssistRetreatDetailEditByProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailByEditService.listPageAssistRetreatDetailEditByProduct(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreatDetail/listPageAssistRetreatDetailEditByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

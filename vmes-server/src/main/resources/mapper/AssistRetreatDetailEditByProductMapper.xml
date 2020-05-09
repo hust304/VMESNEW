@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_retreat_detail:外协退货明细(原材料) Mapper.xml
+外协-退料管理-退料列表(编辑)功能
+创建人：陈刚
+创建时间：2020-05-09
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistRetreatDetailEditByProductMapper">
+    <insert id="assistRetreatDetailEditByProduct" >
+        delete from vmes_column where model_code = 'assistRetreatDetailEditByProduct' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','id','id',0, '1','1','1','0',now(), 'admin')
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','parentId','退货单',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','orderId','外协订单id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','orderDtlId','订单明细id',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','deliverDtlChildId','发货明细子表id(原材料)',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','deliverDtlId','外协发货明细id',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','deliverId','外协发货id',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','assistProductId','外协件id(外协件)',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','productId','原材料id(系统货品表id)',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','orderUnit','订单单位id',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','orderCount','退货数量',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','price','单价(外协件)',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','amount','金额(外协件)',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','state','状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','cuser','创建用户id',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','cdate','创建时间',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','uuser','修改用户id',16, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','udate','修改时间',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','remark','备注',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','isdisable','是否启用(0:已禁用 1:启用)',19, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistRetreatDetailEditByProduct', 'productCode', '货品编码', 20, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistRetreatDetailEditByProduct', 'productName', '货品名称', 21, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistRetreatDetailEditByProduct', 'productSpec', '规格型号', 22, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistRetreatDetailEditByProduct', 'productProperty', '自定义属性', 23, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistRetreatDetailEditByProduct', 'orderUnitName', '单位', 24, '1', '1', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','deliverCount','发货数',25, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','retreatCount','退料',26, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','discardCount','报废',27, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistRetreatDetailEditByProduct','maxRetreatCount','最大退料',28, '1','1','1','0',now(), 'admin'),
+    </insert>
+
+    <select id="findAssistRetreatDetailEditByProduct" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        detail.id id,
+        detail.parent_id parentId,
+        detail.order_id orderId,
+        detail.order_dtl_id orderDtlId,
+        detail.deliver_dtl_child_id deliverDtlChildId,
+
+        detail.deliver_dtl_id deliverDtlId,
+        detail.deliver_id deliverId,
+        detail.assist_product_id assistProductId,
+        detail.product_id productId,
+        detail.order_unit orderUnit,
+
+        round(ifnull(detail.order_count, 0),2) orderCount,
+        round(ifnull(detail.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
+        round(ifnull(detail.amount, 0),2) amount,
+        detail.state state,
+        detail.cuser cuser,
+
+        detail.cdate cdate,
+        detail.uuser uuser,
+        detail.udate udate,
+        detail.remark remark,
+        detail.isdisable isdisable,
+
+        <!--货品表(原材料信息)-->
+        product.code sysProductCode,
+        product.source_code custProductCode,
+        CASE
+        WHEN product.source_code is null THEN product.code
+        WHEN product.source_code is not null THEN product.source_code
+        ELSE null
+        END productCode,
+        product.name productName,
+        product.spec productSpec,
+        product.property productProperty,
+        orderUnit.name orderUnitName,
+
+        round(ifnull(deliverDtlChild.count, 0),2) deliverCount,
+        round(ifnull(retreat.order_count, 0),2) retreatCount,
+        round(ifnull(discard.order_count, 0),2) discardCount,
+        <!--maxRetreatCount:最大允许退料数量: -->
+        round((ifnull(deliverDtlChild.count, 0) - (ifnull(retreat.order_count, 0) + ifnull(discard.order_count, 0))) ,2) maxRetreatCount
+
+        from vmes_assist_retreat_detail detail
+            left join vmes_product product on detail.product_id = product.id
+            left join vmes_dictionary orderUnit on detail.order_unit = orderUnit.id
+            left join vmes_assist_deliver_detail_child deliverDtlChild on detail.deliver_dtl_child_id = deliverDtlChild.id
+
+            <!--外协退货单-->
+            left join (
+                select deliver_dtl_child_id, sum(order_count) order_count
+                from vmes_assist_retreat_detail
+                <where>
+                    <if test="parentId != null and parentId != ''" >
+                        and deliver_id in (
+                            select deliver_id
+                            from vmes_assist_retreat_detail
+                            where parent_id = #{parentId}
+                        )
+                        and id not in (
+                            select id
+                            from vmes_assist_retreat_detail
+                            where parent_id = #{parentId}
+                        )
+
+                        and parent_id = #{parentId}
+                    </if>
+
+                    <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+                    <![CDATA[and state <> -1]]>
+                </where>
+                group by deliver_dtl_child_id
+            ) retreat on deliverDtlChild.id = retreat.deliver_dtl_child_id
+
+            <!--外协报废单-->
+            left join (
+                select deliver_dtl_child_id, sum(order_count) order_count
+                from vmes_assist_discard_detail
+                <where>
+                    and parent_id in (
+                    select id
+                    from vmes_assist_discard
+                    <where>
+                        <if test="currentCompanyId != null and currentCompanyId != ''" >
+                            and company_id = #{currentCompanyId}
+                        </if>
+                        <if test='supplierId != null and supplierId != ""' >
+                            and supplier_id = #{supplierId}
+                        </if>
+                        <!--type 报废类型(1:外协件 2:外协原材料)-->
+                        and type = '2'
+                        <!--state:状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)-->
+                        <![CDATA[and state <> -1]]>
+                    </where>
+                    )
+                </where>
+                group by deliver_dtl_child_id
+            ) discard on deliverDtlChild.id = discard.deliver_dtl_child_id
+
+        <where>
+            <if test='parentId != null and parentId != ""' >
+                and detail.parent_id = #{parentId}
+            </if>
+
+            <!--queryStr 自定义sql查询语句-->
+            <if test='queryStr != null and queryStr != ""' >
+                and ${queryStr}
+            </if>
+
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+</mapper>

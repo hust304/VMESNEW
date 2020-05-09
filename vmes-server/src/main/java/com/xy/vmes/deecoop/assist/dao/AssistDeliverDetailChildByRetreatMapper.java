@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Mapper
 @Repository
-public interface AssistDeliverDetailChildByRetreatMapper {
+public interface  AssistDeliverDetailChildByRetreatMapper {
     List<Map> findAssistDeliverDetailChildByRetreat(PageData pd, Pagination pg);
     List<Map> findAssistDeliverDetailChildByRetreat(PageData pd);
 }
