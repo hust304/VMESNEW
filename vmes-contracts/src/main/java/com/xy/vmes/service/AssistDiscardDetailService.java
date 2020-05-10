@@ -113,7 +113,7 @@ public interface AssistDiscardDetailService {
     * @return      返回对象ResultModel
     * @throws Exception
     */
-    ResultModel listPageassistDiscardDetail(PageData pd) throws Exception;
+    ResultModel listPageAssistDiscardDetail(PageData pd) throws Exception;
 
 }
 

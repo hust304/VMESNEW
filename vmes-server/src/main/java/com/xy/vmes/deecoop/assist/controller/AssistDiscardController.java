@@ -384,7 +384,7 @@ public class AssistDiscardController {
             return model;
         }
 
-        List<AssistDiscardDetail> retreatDtlList = this.mapList2DetailList(mapList, null);
+        List<AssistDiscardDetail> discardDtlList = this.mapList2DetailList(mapList, null);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //1. 修改外协报废单表
         AssistDiscard editDiscard = new AssistDiscard();
@@ -392,7 +392,7 @@ public class AssistDiscardController {
         editDiscard.setSupplierId(supplierId);
 
         //amount:金额(外协订单)
-        BigDecimal amount = discardDetailService.findTotalAmount(retreatDtlList);
+        BigDecimal amount = discardDetailService.findTotalAmount(discardDtlList);
         if (amount != null && amount.doubleValue() != 0) {
             editDiscard.setAmount(amount);
         }
@@ -414,8 +414,8 @@ public class AssistDiscardController {
         discardDetailService.deleteByColumnMap(columnMap);
 
         //2. 添加外协报废单明细表
-        if (retreatDtlList != null && retreatDtlList.size() > 0) {
-            for (AssistDiscardDetail addDetail : retreatDtlList) {
+        if (discardDtlList != null && discardDtlList.size() > 0) {
+            for (AssistDiscardDetail addDetail : discardDtlList) {
                 addDetail.setParentId(editDiscard.getId());
                 addDetail.setCuser(editDiscard.getCuser());
                 addDetail.setState(editDiscard.getState());

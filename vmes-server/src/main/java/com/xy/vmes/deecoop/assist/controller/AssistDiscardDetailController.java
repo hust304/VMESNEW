@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistDiscardDetailByEditService;
 import com.xy.vmes.service.AssistDiscardDetailService;
 
 import com.yvan.HttpUtils;
@@ -23,20 +24,38 @@ public class AssistDiscardDetailController {
     private Logger logger = LoggerFactory.getLogger(AssistDiscardDetailController.class);
 
     @Autowired
-    private AssistDiscardDetailService AssistDiscardDetailService;
+    private AssistDiscardDetailService discardDetailService;
+    @Autowired
+    private AssistDiscardDetailByEditService discardDetailByEditService;
 
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2020-05-07
     */
-    @PostMapping("/assist/assistDiscardDetail/listPageassistDiscardDetail")
-    public ResultModel listPageassistDiscardDetail() throws Exception {
-        logger.info("################/assist/assistDiscardDetail/listPageassistDiscardDetail 执行开始 ################# ");
+    @PostMapping("/assist/assistDiscardDetail/listPageAssistDiscardDetail")
+    public ResultModel listPageAssistDiscardDetail() throws Exception {
+        logger.info("################/assist/assistDiscardDetail/listPageAssistDiscardDetail 执行开始 ################# ");
         Long startTime = System.currentTimeMillis();
         PageData pd = HttpUtils.parsePageData();
-        ResultModel model = AssistDiscardDetailService.listPageassistDiscardDetail(pd);
+        ResultModel model = discardDetailService.listPageAssistDiscardDetail(pd);
         Long endTime = System.currentTimeMillis();
-        logger.info("################/assist/assistDiscardDetail/listPageassistDiscardDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        logger.info("################/assist/assistDiscardDetail/listPageAssistDiscardDetail 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 外协-报废管理-报废列表(编辑)功能
+     * @author 陈刚
+     * @date 2020-05-07
+     */
+    @PostMapping("/assist/assistDiscardDetail/listPageAssistDiscardDetailEditByProduct")
+    public ResultModel listPageAssistDiscardDetailEditByProduct() throws Exception {
+        logger.info("################/assist/assistRetreatDetail/listPageAssistDiscardDetailEditByProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = discardDetailByEditService.listPageAssistDiscardDetailEditByProduct(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreatDetail/listPageAssistDiscardDetailEditByProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
