@@ -58,6 +58,31 @@ public class AssistRetreatDetailController {
         return model;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//    //供应商原材料退回-检验执行
+//    @PostMapping("assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute")
+//    public ResultModel assistRetreatDetailByProductQualityExecute() throws Exception {
+//        logger.info("################assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute 执行开始 ################# ");
+//        Long startTime = System.currentTimeMillis();
+//        PageData pd = HttpUtils.parsePageData();
+//        ResultModel model = retreatDetailService.assistRetreatDetailByProductQualityExecute(pd);
+//        Long endTime = System.currentTimeMillis();
+//        logger.info("################assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+//        return model;
+//    }
+
+    //供应商原材料退回-免检
+    @PostMapping("/assist/assistRetreatDetail/updateAssistRetreatDetailByProductQuality")
+    public ResultModel updateAssistRetreatDetailByProductQuality() throws Exception {
+        logger.info("################/assist/assistRetreatDetail/updateAssistRetreatDetailByProductQuality 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailService.updateAssistRetreatDetailByProductQuality(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreatDetail/updateAssistRetreatDetailByProductQuality 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 

@@ -158,10 +158,14 @@
             <if test="state != null and state != ''">
                 and retreat.state = #{state}
             </if>
+            <!--退货类型(1:外协件 2:外协原材料)-->
+            <if test="type != null and type != ''">
+                and retreat.type = #{type}
+            </if>
+
             <if test="sysCode != null and sysCode != ''" >
                 and retreat.sys_code = #{sysCode}
             </if>
-
             <if test="supplierName != null and supplierName != ''">
                 and supplier.name LIKE CONCAT(CONCAT('%', #{supplierName}),'%')
             </if>

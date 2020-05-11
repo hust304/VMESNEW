@@ -102,8 +102,26 @@ public interface AssistRetreatDetailService {
     List<AssistRetreatDetail> findAssistRetreatDetailListByParentId(String parentId) throws Exception;
 
     BigDecimal findTotalAmount(List<AssistRetreatDetail> objectList);
+
+    /**
+     * 获取外协退货单状态-根据退货单明细状态
+     * 外协退货单状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+     * 外协退货单明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+     *
+     * @param detailList      外协退货单明细List<AssistSignDetail>
+     * @return
+     */
+    String findParentStateByDetailList(List<AssistRetreatDetail> detailList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //供应商原材料退回-免检
+    ResultModel updateAssistRetreatDetailByProductQuality(PageData pageData) throws Exception;
+
+    //供应商原材料退回-检验执行
+    //ResultModel assistRetreatDetailByProductQualityExecute(PageData pageData) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
