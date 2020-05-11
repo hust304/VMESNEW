@@ -79,6 +79,38 @@ public class AssistRetreatDetail implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	//质检属性 (1:免检 2:检验)
+	@TableField("quality")
+	private String quality;
+	//检验方式 (1:全检 2:抽检)
+	@TableField("quality_type")
+	private String qualityType;
+	//(实际)检验数量
+	@TableField("quality_count")
+	private BigDecimal qualityCount;
+	//(检验)不合格数量
+	@TableField("bad_count")
+	private BigDecimal badCount;
+	//(检验)报废数量
+	@TableField("discard_count")
+	private BigDecimal discardCount;
+
+	//(检验)让步接收数量
+	@TableField("receive_count")
+	private BigDecimal receiveCount;
+	//(检验入库)入库单明细id
+	@TableField("quality_inDtl_id")
+	private String qualityInDtlId;
+	//(检验让步接收入库)入库单明细id
+	@TableField("receive_inDtl_id")
+	private String receiveInDtlId;
+	//收货合格数(签收数-退货数)
+	@TableField("sign_fine_count")
+	private BigDecimal signFineCount;
+	//(实际)检验合格数(签收数-不合格数)
+	@TableField("quality_fine_count")
+	private BigDecimal qualityFineCount;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -199,6 +231,66 @@ public class AssistRetreatDetail implements Serializable {
 	}
 	public String getIsdisable() {
 		return isdisable;
+	}
+	public String getQuality() {
+		return quality;
+	}
+	public void setQuality(String quality) {
+		this.quality = quality;
+	}
+	public String getQualityType() {
+		return qualityType;
+	}
+	public void setQualityType(String qualityType) {
+		this.qualityType = qualityType;
+	}
+	public BigDecimal getQualityCount() {
+		return qualityCount;
+	}
+	public void setQualityCount(BigDecimal qualityCount) {
+		this.qualityCount = qualityCount;
+	}
+	public BigDecimal getBadCount() {
+		return badCount;
+	}
+	public void setBadCount(BigDecimal badCount) {
+		this.badCount = badCount;
+	}
+	public BigDecimal getDiscardCount() {
+		return discardCount;
+	}
+	public void setDiscardCount(BigDecimal discardCount) {
+		this.discardCount = discardCount;
+	}
+	public BigDecimal getReceiveCount() {
+		return receiveCount;
+	}
+	public void setReceiveCount(BigDecimal receiveCount) {
+		this.receiveCount = receiveCount;
+	}
+	public String getQualityInDtlId() {
+		return qualityInDtlId;
+	}
+	public void setQualityInDtlId(String qualityInDtlId) {
+		this.qualityInDtlId = qualityInDtlId;
+	}
+	public String getReceiveInDtlId() {
+		return receiveInDtlId;
+	}
+	public void setReceiveInDtlId(String receiveInDtlId) {
+		this.receiveInDtlId = receiveInDtlId;
+	}
+	public BigDecimal getSignFineCount() {
+		return signFineCount;
+	}
+	public void setSignFineCount(BigDecimal signFineCount) {
+		this.signFineCount = signFineCount;
+	}
+	public BigDecimal getQualityFineCount() {
+		return qualityFineCount;
+	}
+	public void setQualityFineCount(BigDecimal qualityFineCount) {
+		this.qualityFineCount = qualityFineCount;
 	}
 
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
