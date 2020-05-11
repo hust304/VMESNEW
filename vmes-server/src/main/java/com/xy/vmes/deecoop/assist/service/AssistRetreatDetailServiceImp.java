@@ -327,12 +327,12 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         //根据(外协退货明细id-供应商退回) 查询
         //SQL语句: AssistRetreatDetailMapper.getDataListPage
         PageData findMap = new PageData();
-        findMap.put("assistRetreatDtlId", retreatDtlId);
+        findMap.put("retreatDtlId", retreatDtlId);
         List<Map> mapList = this.getDataListPage(findMap, null);
 
-        Map<String, Object> signDetailMap = new HashMap<>();
+        Map<String, Object> retreatDetailMap = new HashMap<>();
         if (mapList != null && mapList.size() > 0) {
-            signDetailMap = mapList.get(0);
+            retreatDetailMap = mapList.get(0);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,15 +355,15 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         //receiveCount (检验)让步接收数量
         editRetreatDetail.setReceiveCount(BigDecimal.valueOf(0D));
 
-        //arriveCount 签收数量
-        BigDecimal arriveCountDB = BigDecimal.valueOf(0D);
-        if (signDetailMap.get("arriveCount") != null) {
-            arriveCountDB = (BigDecimal)signDetailMap.get("arriveCount");
+        //orderCount 退货数量(供应商退回数量)
+        BigDecimal orderCountDB = BigDecimal.valueOf(0D);
+        if (retreatDetailMap.get("orderCount") != null) {
+            orderCountDB = (BigDecimal)retreatDetailMap.get("orderCount");
         }
         //signFineCount 收货合格数(签收数)
-        editRetreatDetail.setSignFineCount(arriveCountDB);
+        editRetreatDetail.setSignFineCount(orderCountDB);
         //qualityFineCount (实际)检验合格数
-        editRetreatDetail.setQualityFineCount(arriveCountDB);
+        editRetreatDetail.setQualityFineCount(orderCountDB);
 
 //        BigDecimal price = BigDecimal.valueOf(0D);
 //        if (signDetailMap.get("price") != null) {
@@ -378,16 +378,16 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         this.update(editRetreatDetail);
 
         //外协签收单id
-        String parentId = (String)signDetailMap.get("parentId");
+        String parentId = (String)retreatDetailMap.get("parentId");
         if (parentId != null && parentId.trim().length() > 0) {
-            List<AssistRetreatDetail> signDtlList = this.findAssistRetreatDetailListByParentId(parentId);
+            List<AssistRetreatDetail> retreatDtlList = this.findAssistRetreatDetailListByParentId(parentId);
 
-            //获取签收单状态-根据签收单明细
-            if (signDtlList != null && signDtlList.size() > 0) {
+            //获取外协退货单状态-根据外协退货明细
+            if (retreatDtlList != null && retreatDtlList.size() > 0) {
                 AssistRetreat editRetreat = new AssistRetreat();
                 editRetreat.setId(parentId);
 
-                String parentState = this.findParentStateByDetailList(signDtlList);
+                String parentState = this.findParentStateByDetailList(retreatDtlList);
                 editRetreat.setState(parentState);
                 retreatService.update(editRetreat);
             }
@@ -396,7 +396,7 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        //修改外协订单
 //        //根据(外协订单明细id) 查询
-//        String orderDtlIds = (String)signDetailMap.get("orderDetailId");
+//        String orderDtlIds = (String)retreatDetailMap.get("orderDetailId");
 //        Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
 //        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
 //            String detailIds = orderDtlIds.trim();
@@ -412,11 +412,11 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
 //        //遍历当前签收明细List
 //        //planId 外协计划id
 //        Map<String, String> planIdMap = new HashMap<>();
-//        if (signDetailMap != null && signDetailMap.size() > 0) {
+//        if (retreatDetailMap != null && retreatDetailMap.size() > 0) {
 //            AssistOrderDetail editOrderDtl = new AssistOrderDetail();
 //
 //            //orderDetailId 外协订单明细ID
-//            String orderDetailId = (String)signDetailMap.get("orderDetailId");
+//            String orderDetailId = (String)retreatDetailMap.get("orderDetailId");
 //            editOrderDtl.setId(orderDetailId);
 //
 //            Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
@@ -458,7 +458,7 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
 //        }
 //
 //        //反写外协订单状态
-//        String orderId = (String)signDetailMap.get("orderId");
+//        String orderId = (String)retreatDetailMap.get("orderId");
 //        AssistOrder editOrder = new AssistOrder();
 //        editOrder.setId(orderId);
 //        orderDetailService.updateParentStateByDetailList(editOrder, null);
@@ -479,12 +479,12 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         Map<String, Map<String, Object>> businessByInMap = new HashMap<>();
 
         //货品id
-        String productId = (String)signDetailMap.get("productId");
+        String productId = (String)retreatDetailMap.get("productId");
 
         //orderCount:退货数量
         BigDecimal orderCount = BigDecimal.valueOf(0D);
-        if (signDetailMap.get("orderCount") != null) {
-            orderCount = (BigDecimal)signDetailMap.get("orderCount");
+        if (retreatDetailMap.get("orderCount") != null) {
+            orderCount = (BigDecimal)retreatDetailMap.get("orderCount");
         }
 
 //        //(计量单位)签收数量 -> 单位换算公式(p2nFormula)
@@ -505,9 +505,9 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        String retreatCode = (String)signDetailMap.get("retreatCode");
-        String supplierId = (String)signDetailMap.get("supplierId");
-        String supplierName = (String)signDetailMap.get("supplierName");
+        String retreatCode = (String)retreatDetailMap.get("retreatCode");
+        String supplierId = (String)retreatDetailMap.get("supplierId");
+        String supplierName = (String)retreatDetailMap.get("supplierName");
 
         //正常接收入库(正常接收Map businessByInMap)
         if (businessByInMap != null && businessByInMap.size() > 0 && Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {

@@ -60,7 +60,7 @@ public class AssistRetreatDetailController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    //供应商原材料退回-检验执行
-//    @PostMapping("assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute")
+//    @PostMapping("assist/assistRetreatDetail/updateAssistRetreatDetailByProductQualityExecute")
 //    public ResultModel assistRetreatDetailByProductQualityExecute() throws Exception {
 //        logger.info("################assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute 执行开始 ################# ");
 //        Long startTime = System.currentTimeMillis();

@@ -138,6 +138,10 @@
                 </choose>
             </if>
 
+            <if test='parentId != null and parentId != ""' >
+                and parent_id = #{parentId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
                 and ${queryStr}
@@ -205,8 +209,8 @@
             left join vmes_assist_product assistProd on detail.assist_product_id = assistProd.id
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
         <where>
-            <if test='assistRetreatDtlId != null and assistRetreatDtlId != ""' >
-                and detail.id = #{assistRetreatDtlId}
+            <if test='retreatDtlId != null and retreatDtlId != ""' >
+                and detail.id = #{retreatDtlId}
             </if>
             <if test='parentId != null and parentId != ""' >
                 and detail.parent_id = #{parentId}
