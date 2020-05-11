@@ -58,18 +58,36 @@ public class AssistRetreatDetailController {
         return model;
     }
 
+    /**
+     * 获取(质量-外协检验-原料退回检验)外协退货单明细-(供应商退回)
+     * 菜单路径:(质量-外协检验-原料退回检验) 当前外协退货单明细(执行)按钮弹出框查询调用方法
+     *
+     * @author 陈刚
+     * @date 2020-05-04
+     */
+    @PostMapping("assist/assistRetreatDetail/listPageAssistRetreatDetailByQualityExecute")
+    public ResultModel listPageAssistRetreatDetailByQualityExecute() throws Exception {
+        logger.info("################assist/assistRetreatDetail/listPageAssistRetreatDetailByQualityExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailService.listPageAssistRetreatDetailByQualityExecute(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################assist/assistRetreatDetail/listPageAssistRetreatDetailByQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    //供应商原材料退回-检验执行
-//    @PostMapping("assist/assistRetreatDetail/updateAssistRetreatDetailByProductQualityExecute")
-//    public ResultModel assistRetreatDetailByProductQualityExecute() throws Exception {
-//        logger.info("################assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute 执行开始 ################# ");
-//        Long startTime = System.currentTimeMillis();
-//        PageData pd = HttpUtils.parsePageData();
-//        ResultModel model = retreatDetailService.assistRetreatDetailByProductQualityExecute(pd);
-//        Long endTime = System.currentTimeMillis();
-//        logger.info("################assist/assistRetreatDetail/assistRetreatDetailByProductQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-//        return model;
-//    }
+    //供应商原材料退回-检验执行
+    @PostMapping("assist/assistRetreatDetail/updateAssistRetreatDetailByProductQualityExecute")
+    public ResultModel updateAssistRetreatDetailByProductQualityExecute() throws Exception {
+        logger.info("################assist/assistRetreatDetail/updateAssistRetreatDetailByProductQualityExecute 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailService.updateAssistRetreatDetailByProductQualityExecute(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################assist/assistRetreatDetail/updateAssistRetreatDetailByProductQualityExecute 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
     //供应商原材料退回-免检
     @PostMapping("/assist/assistRetreatDetail/updateAssistRetreatDetailByProductQuality")

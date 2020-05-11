@@ -55,19 +55,34 @@
             (replace(uuid(), '-', ''),'assistRetreatDetail','remark','备注',18, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreatDetail','isdisable','是否启用(0:已禁用 1:启用)',19, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productCode', '货品编码', 20, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productName', '货品名称', 21, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productSpec', '规格型号', 22, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productProperty', '自定义属性', 23, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','quality','质检属性 (1:免检 2:检验)',20, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','qualityType','检验方式 (1:全检 2:抽检)',21, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','qualityCount','实检数',22, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','badCount','不合格数',23, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','discardCount','报废数',24, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','receiveCount','让步接收',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','qualityIndtlId','(检验入库)入库单明细id',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','receiveIndtlId','(检验让步接收入库)入库单明细id',27, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','signFineCount','收货合格数(签收数-退货数)',28, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','qualityFineCount','(实际)检验合格数(签收数-不合格数)',29, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'assistProdId', '外协件货品id', 24, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'assistProdName', '外协件', 25, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistRetreatDetail','craftName','工艺名称',26, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'orderUnitName', '单位', 27, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productCode', '货品编码', 30, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productName', '货品名称', 31, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productSpec', '规格型号', 32, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'productProperty', '自定义属性', 33, '1', '1', '1', '0', now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'retreatCode', '退货单编号', 28, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'supplierId', '供应商id', 29, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'supplierName', '供应商名称', 30, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'assistProdId', '外协件货品id', 34, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'assistProdName', '外协件', 35, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreatDetail','craftName','工艺名称',36, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'orderUnitName', '单位', 37, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'retreatCode', '退货单编号', 38, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'supplierId', '供应商id', 39, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'supplierName', '供应商名称', 40, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'qualityName', '是否质检', 41, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'qualityTypeValue', '检验方式Value', 42, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreatDetail', 'qualityTypeName', '检验方式', 43, '1', '0', '1', '0', now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
@@ -178,6 +193,31 @@
             detail.udate udate,
             detail.remark remark,
             detail.isdisable isdisable,
+
+            detail.quality quality,
+            detail.quality_type qualityType,
+            round(ifnull(detail.quality_count, 0), 2) qualityCount,
+            round(ifnull(detail.bad_count, 0), 2) badCount,
+            round(ifnull(detail.discard_count, 0), 2) discardCount,
+
+            round(ifnull(detail.receive_count, 0), 2) receiveCount,
+            detail.quality_inDtl_id qualityInDtlId,
+            detail.receive_inDtl_id receiveInDtlId,
+            round(ifnull(detail.sign_fine_count, 0), 2) signFineCount,
+            round(ifnull(detail.quality_fine_count, 0), 2) qualityFineCount,
+
+            CASE
+                WHEN detail.quality = '1' THEN '免检'
+                WHEN detail.quality = '2' THEN '检验'
+            ELSE null
+            END qualityName,
+
+            CASE
+                WHEN detail.quality_type = '1' THEN '全检'
+                WHEN detail.quality_type = '2' THEN '抽检'
+            ELSE null
+            END qualityTypeName,
+            detail.quality_type qualityTypeValue,
 
             <!--货品表(原材料信息)-->
             product.code sysProductCode,

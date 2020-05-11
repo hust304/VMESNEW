@@ -120,7 +120,7 @@ public interface AssistRetreatDetailService {
     ResultModel updateAssistRetreatDetailByProductQuality(PageData pageData) throws Exception;
 
     //供应商原材料退回-检验执行
-    //ResultModel assistRetreatDetailByProductQualityExecute(PageData pageData) throws Exception;
+    ResultModel updateAssistRetreatDetailByProductQualityExecute(PageData pageData) throws Exception;
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,8 +131,7 @@ public interface AssistRetreatDetailService {
     * @throws Exception
     */
     ResultModel listPageAssistRetreatDetail(PageData pd) throws Exception;
-
-
+    ResultModel listPageAssistRetreatDetailByQualityExecute(PageData pd) throws Exception;
 }
 
 
