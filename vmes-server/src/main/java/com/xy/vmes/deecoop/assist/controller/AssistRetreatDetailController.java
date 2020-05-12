@@ -43,7 +43,7 @@ public class AssistRetreatDetailController {
     }
 
     /**
-     * 外协-退料管理-退料列表(编辑)功能
+     * 外协-供应商退料-退料列表(编辑)功能
      * @author 陈刚
      * @date 2020-05-07
      */
@@ -58,6 +58,21 @@ public class AssistRetreatDetailController {
         return model;
     }
 
+    /**
+     * 外协-外协件退货-退货列表(编辑)功能
+     * @author 陈刚
+     * @date 2020-05-07
+     */
+    @PostMapping("/assist/assistRetreatDetail/listPageAssistRetreatDetailEdit")
+    public ResultModel listPageAssistRetreatDetailEdit() throws Exception {
+        logger.info("################/assist/assistRetreatDetail/listPageAssistRetreatDetailEdit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = retreatDetailByEditService.listPageAssistRetreatDetailEdit(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreatDetail/listPageAssistRetreatDetailEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
     /**
      * 获取(质量-外协检验-原料退回检验)外协退货单明细-(供应商退回)
      * 菜单路径:(质量-外协检验-原料退回检验) 当前外协退货单明细(执行)按钮弹出框查询调用方法
