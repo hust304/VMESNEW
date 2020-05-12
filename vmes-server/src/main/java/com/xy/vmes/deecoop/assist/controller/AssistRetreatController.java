@@ -444,6 +444,21 @@ public class AssistRetreatController {
             orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             detail.setOrderCount(orderCount);
 
+            //price 单价(外协件)
+            BigDecimal price = BigDecimal.valueOf(0D);
+            if (detail.getPrice() != null) {
+                price = detail.getPrice();
+            }
+            //四舍五入到4位小数
+            price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setPrice(price);
+
+            //amount 金额(外协件)
+            BigDecimal amount = BigDecimal.valueOf(orderCount.doubleValue() * price.doubleValue());
+            //四舍五入到2位小数
+            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            detail.setAmount(amount);
+
             objectList.add(detail);
         }
 

@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistOrderDetailByRetreatService;
 import com.xy.vmes.service.AssistOrderDetailQueryBySignService;
 import com.xy.vmes.service.AssistOrderDetailService;
 
@@ -26,6 +27,8 @@ public class AssistOrderDetailController {
     private AssistOrderDetailService assistOrderDetailService;
     @Autowired
     private AssistOrderDetailQueryBySignService orderDetailQueryBySignService;
+    @Autowired
+    private AssistOrderDetailByRetreatService orderDetailByRetreatService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -57,6 +60,24 @@ public class AssistOrderDetailController {
         logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetaiQueryBySign 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
+
+    /**
+     * 外协-外协件退货-生成退货(成品退货)
+     * 外协-外协件报废-生成报废(成品报废)
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistOrderDetail/listPageAssistOrderDetailByRetreat")
+    public ResultModel listPageAssistOrderDetailByRetreat() throws Exception {
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetailByRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = orderDetailByRetreatService.listPageAssistOrderDetailByRetreat(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetailByRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 }
 
