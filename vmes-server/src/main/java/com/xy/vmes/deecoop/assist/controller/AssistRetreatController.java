@@ -489,7 +489,7 @@ public class AssistRetreatController {
     }
 
     /**
-     * 审核不通过:外协订单
+     * 审核不通过:外协退货(原材料, 成品)
      *
      * @return
      * @throws Exception

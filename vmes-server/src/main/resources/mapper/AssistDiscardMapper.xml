@@ -39,7 +39,7 @@
             (replace(uuid(), '-', ''),'assistDiscard','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','supplierId','供应商id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','auditId','审核人id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistDiscard','sysCode','外协报废单号(系统生成)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDiscard','sysCode','报废单号',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','custCode','外协报废单号(用户自定义单号)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','type','报废类型(1:外协件 2:外协原材料)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDiscard','amount','报废金额',7, '1','1','1','0',now(), 'admin'),
