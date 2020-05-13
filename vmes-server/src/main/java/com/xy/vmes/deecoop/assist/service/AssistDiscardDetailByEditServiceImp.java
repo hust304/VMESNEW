@@ -3,6 +3,7 @@ package com.xy.vmes.deecoop.assist.service;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.deecoop.assist.dao.AssistDiscardDetailEditByProductMapper;
+import com.xy.vmes.deecoop.assist.dao.AssistDiscardDetailEditMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.AssistDiscardDetailByEditService;
 import com.xy.vmes.service.ColumnService;
@@ -25,12 +26,15 @@ public class AssistDiscardDetailByEditServiceImp implements AssistDiscardDetailB
     @Autowired
     private AssistDiscardDetailEditByProductMapper assistDiscardDetailMapper;
     @Autowired
+    private AssistDiscardDetailEditMapper assistDiscardDetailEditMapper;
+
+    @Autowired
     private ColumnService columnService;
     @Autowired
     private SystemToolService systemToolService;
 
-    public List<Map> findAssistDiscardDetailEditByProduct(PageData pd, Pagination pg) throws Exception{
-        List<Map> mapList = new ArrayList<Map>();
+    private List<Map> findAssistDiscardDetailEditByProduct(PageData pd, Pagination pg) throws Exception{
+        List<Map> mapList = new ArrayList();
         if (pd == null) {return mapList;}
 
         if (pg == null) {
@@ -42,7 +46,20 @@ public class AssistDiscardDetailByEditServiceImp implements AssistDiscardDetailB
         return mapList;
     }
 
-    public ResultModel listPageAssistDiscardDetailEditByProduct(PageData pd) throws Exception{
+    private List<Map> findAssistDiscardDetailEdit(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return assistDiscardDetailEditMapper.findAssistDiscardDetailEdit(pd);
+        } else if (pg != null) {
+            return assistDiscardDetailEditMapper.findAssistDiscardDetailEdit(pd, pg);
+        }
+
+        return mapList;
+    }
+
+    public ResultModel listPageAssistDiscardDetailEditByProduct(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
         List<Column> columnList = columnService.findColumnList("assistDiscardDetailEditByProduct");
         if (columnList == null || columnList.size() == 0) {
@@ -93,6 +110,49 @@ public class AssistDiscardDetailByEditServiceImp implements AssistDiscardDetailB
             }
         }
 
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
+    public ResultModel listPageAssistDiscardDetailEdit(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("assistDiscardDetailEdit");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.findAssistDiscardDetailEdit(pd, pg);
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

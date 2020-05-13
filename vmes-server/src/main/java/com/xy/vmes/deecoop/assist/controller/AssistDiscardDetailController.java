@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
 /**
 * 说明：vmes_assist_discard_detail:外协报废明细Controller
 * @author 陈刚 自动生成
@@ -59,6 +58,21 @@ public class AssistDiscardDetailController {
         return model;
     }
 
+    /**
+     * 外协-外协件报废-报废列表(成品报废编辑)功能
+     * @author 陈刚
+     * @date 2020-05-07
+     */
+    @PostMapping("/assist/assistDiscardDetail/listPageAssistDiscardDetailEdit")
+    public ResultModel listPageAssistDiscardDetailEdit() throws Exception {
+        logger.info("################/assist/assistRetreatDetail/listPageAssistDiscardDetailEdit 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = discardDetailByEditService.listPageAssistDiscardDetailEdit(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreatDetail/listPageAssistDiscardDetailEdit 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 
