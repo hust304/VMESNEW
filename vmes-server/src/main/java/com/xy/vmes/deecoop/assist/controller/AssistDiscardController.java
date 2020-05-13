@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -425,6 +426,109 @@ public class AssistDiscardController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDiscard/updateAssistDiscard 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 审核通过:外协报废(原材料, 成品)
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistDiscard/auditPassAssistDiscard")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassAssistDiscard() throws Exception {
+        logger.info("################/assist/assistDiscard/auditPassAssistDiscard 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        //外协报废单id
+        String discardId = pageData.getString("id");
+        if (discardId == null || discardId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协报废单id为空或空字符串！");
+            return model;
+        }
+        //type:报废类型(1:外协件 2:外协原材料)
+        String type = pageData.getString("type");
+        if (type == null || type.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("报废类型(type)为空或空字符串！");
+            return model;
+        }
+
+        AssistDiscard editDiscard = new AssistDiscard();
+        editDiscard.setId(discardId);
+
+        //state:状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
+        editDiscard.setState("3");
+        editDiscard.setAuditId(cuser);
+        discardService.update(editDiscard);
+
+        //明细状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
+        discardDetailService.updateStateByDetail("3", discardId);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改外协订单状态
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistDiscard/auditPassAssistDiscard 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 审核不通过:外协报废(原材料, 成品)
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistDiscard/auditDisagreeAssistDiscard")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditDisagreeAssistDiscard() throws Exception {
+        logger.info("################/assist/assistDiscard/auditDisagreeAssistDiscard 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        //外协报废单id
+        String discardId = pageData.getString("id");
+        if (discardId == null || discardId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协报废单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退回原因为空或空字符串，退回原因为必填不可为空！");
+            return model;
+        }
+
+        AssistDiscard editDiscard = new AssistDiscard();
+        editDiscard.setId(discardId);
+
+        String msgTemp = "审核退回：{0}";
+        String remarkStr = MessageFormat.format(msgTemp, remark);
+        editDiscard.setRemark(remarkStr);
+
+        //state:状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
+        editDiscard.setState("0");
+        //审核人ID
+        editDiscard.setAuditId(cuser);
+        discardService.update(editDiscard);
+
+        //明细状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
+        discardDetailService.updateStateByDetail("0", discardId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistDiscard/auditDisagreeAssistDiscard 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

@@ -38,7 +38,7 @@
             (replace(uuid(), '-', ''),'assistRetreat','companyId','企业id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','supplierId','供应商id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','auditId','审核人id',3, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistRetreat','sysCode','退货单号(系统生成)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreat','sysCode','退货单号',4, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','custCode','退货单号(用户自定义单号)',5, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','type','退货类型(1:外协件 2:外协原材料)',6, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','amount','退货金额',7, '1','1','1','0',now(), 'admin'),

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -424,6 +425,118 @@ public class AssistRetreatController {
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistRetreat/updateAssistRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 审核通过:外协退货(原材料, 成品)
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistRetreat/auditPassAssistRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditPassAssistRetreat() throws Exception {
+        logger.info("################/assist/assistRetreat/auditPassAssistRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        //外协退货单id
+        String retreatId = pageData.getString("id");
+        if (retreatId == null || retreatId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协退货单id为空或空字符串！");
+            return model;
+        }
+        //type:退货类型(1:外协件 2:外协原材料)
+        String type = pageData.getString("type");
+        if (type == null || type.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退货类型(type)为空或空字符串！");
+            return model;
+        }
+
+        AssistRetreat editRetreat = new AssistRetreat();
+        editRetreat.setId(retreatId);
+
+        //state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        String state = "2";
+        //type:退货类型(1:外协件 2:外协原材料)
+        if ("1".equals(type)) {
+            state = "3";
+        } else if ("2".equals(type)) {
+            state = "2";
+        }
+
+        editRetreat.setState(state);
+        editRetreat.setAuditId(cuser);
+        retreatService.update(editRetreat);
+
+        //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        retreatDetailService.updateStateByDetail(state, retreatId);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //修改外协订单状态
+
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreat/auditPassAssistRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 审核不通过:外协订单
+     *
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistRetreat/auditDisagreeAssistRetreat")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel auditDisagreeAssistRetreat() throws Exception {
+        logger.info("################/assist/assistRetreat/auditDisagreeAssistRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        //外协退货单id
+        String retreatId = pageData.getString("id");
+        if (retreatId == null || retreatId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("外协退货单id为空或空字符串！");
+            return model;
+        }
+
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("退回原因为空或空字符串，退回原因为必填不可为空！");
+            return model;
+        }
+
+        AssistRetreat editRetreat = new AssistRetreat();
+        editRetreat.setId(retreatId);
+
+        String msgTemp = "审核退回：{0}";
+        String remarkStr = MessageFormat.format(msgTemp, remark);
+        editRetreat.setRemark(remarkStr);
+
+        //state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        editRetreat.setState("0");
+        //审核人ID
+        editRetreat.setAuditId(cuser);
+        retreatService.update(editRetreat);
+
+        //明细状态状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
+        retreatDetailService.updateStateByDetail("0", retreatId);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistRetreat/auditDisagreeAssistRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
