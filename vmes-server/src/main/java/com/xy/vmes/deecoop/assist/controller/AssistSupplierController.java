@@ -97,8 +97,8 @@ public class AssistSupplierController {
                 e.printStackTrace();
             }
         }
-        //四舍五入到2位小数
-        price = price.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        //四舍五入到4位小数
+        price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
 
         //lossRatio:损耗率
         BigDecimal lossRatio = BigDecimal.valueOf(0D);
