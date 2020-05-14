@@ -56,13 +56,16 @@ public class AssistSignDetail implements Serializable {
 	//(检验)退货数量
 	@TableField("retreat_count")
 	private BigDecimal retreatCount;
+	//(检验)报废数量
+	@TableField("discard_count")
+	private BigDecimal discardCount;
 	//(检验)让步接收数量
 	@TableField("receive_count")
 	private BigDecimal receiveCount;
+
 	//(检验入库)入库单明细id
 	@TableField("quality_inDtl_id")
 	private String qualityInDtlId;
-
 	//(检验让步接收入库)入库单明细id
 	@TableField("receive_inDtl_id")
 	private String receiveInDtlId;
@@ -75,10 +78,10 @@ public class AssistSignDetail implements Serializable {
 	//(实际)检验合格数(签收数-不合格数)
 	@TableField("quality_fine_count")
 	private BigDecimal qualityFineCount;
+
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
-
 	//创建时间
 	@TableField("cdate")
 	private Date cdate;
@@ -91,6 +94,7 @@ public class AssistSignDetail implements Serializable {
 	//备注
 	@TableField("remark")
 	private String remark;
+
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -246,7 +250,12 @@ public class AssistSignDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public BigDecimal getDiscardCount() {
+		return discardCount;
+	}
+	public void setDiscardCount(BigDecimal discardCount) {
+		this.discardCount = discardCount;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

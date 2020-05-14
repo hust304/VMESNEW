@@ -352,7 +352,7 @@
     <select id="findWarehouseProductBySimple" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         <!--concat(warehouseProduct.warehouse_id,'-',warehouseProduct.product_id,'-',warehouseProduct.company_id) id,-->
-            replace(uuid(), '-', '') id,
+            md5(uuid()) id,
             warehouseProduct.company_id companyId,
             warehouseProduct.warehouse_id warehouseId,
             warehouseProduct.product_id productId,

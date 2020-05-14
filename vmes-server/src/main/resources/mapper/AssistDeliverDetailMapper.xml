@@ -74,9 +74,10 @@
             (replace(uuid(), '-', ''),'assistDeliverDetail','outUserName','出库制单人',32, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','outCdate','出库制单日期',33, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistDeliverDetail','outTypeName','出库类型',34, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistDeliverDetail','outState','出库状态id',35, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowDeliver', '是否显示发货详情', 35, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowOut', '是否显示出库详情', 36, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowDeliver', '是否显示发货详情', 36, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistDeliverDetail', 'isShowOut', '是否显示出库详情', 37, '1', '1', '1', '0', now(), 'admin'),
     </insert>
 
     <update id="updateStateByDetail" parameterType="com.yvan.PageData" >
