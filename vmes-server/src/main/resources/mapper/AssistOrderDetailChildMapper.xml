@@ -118,7 +118,7 @@
     </select>
 
     <!-- 自动创建，可以修改 -->
-    <select id="getDataListPage"  parameterType="com.yvan.PageData"  resultType="java.util.Map">
+    <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
         id id,
         order_id orderId,
@@ -151,6 +151,46 @@
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
         </if>
+    </select>
+
+    <!-- 根据(外协订单id) 汇总查询取外协件原材料 -->
+    <select id="findCheckAssistOrderChild" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            orderChild.id orderDtlChildId,
+            orderChild.order_id orderId,
+            orderChild.count orderCount,
+            round(ifnull(assist.order_count, 0),2) assistCount,
+
+            planDtl.parent_id planId,
+            orderDtl.plan_detail_id planDtlId
+        from vmes_assist_order_detail_child orderChild
+            left join vmes_assist_order_detail orderDtl on orderChild.order_id = orderDtl.parent_id
+            left join vmes_assist_plan_detail planDtl on orderDtl.plan_detail_id = planDtl.id
+            left join (
+                select
+                    temp.order_id,
+                    temp.orderDtl_child_id,
+                    sum(temp.order_count) order_count
+                from (
+                    <!--按(外协订单)汇总 (原材料)报废 findAssistDiscardProductByOrder (companyId supplierId orderId)-->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardProductByOrder"></include>
+                    union all
+                    <!--按(外协订单)汇总 (外协件:成品)报废 findAssistDiscardByOrder (companyId supplierId orderId)-->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardByOrder"></include>
+                    union all
+                    <!--(外协件:成品)签收(检验) findAssistSignByOrder(orderId) (汇总sign_fine_count:收货合格数(签收数-退货数-报废))-->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignByOrder"></include>
+                    union all
+                    <!--(原材料)退货(检验) findAssistRetreatProductByOrder(companyId supplierId orderId) (汇总sign_fine_count:收货合格数(签收数-报废数))-->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductByOrder"></include>
+                ) temp
+                group by temp.order_id,temp.orderDtl_child_id
+            ) assist on orderChild.id = assist.orderDtl_child_id and orderChild.order_id = assist.order_id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and orderChild.order_id = #{orderId}
+            </if>
+        </where>
     </select>
 
 

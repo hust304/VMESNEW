@@ -97,6 +97,19 @@ public interface AssistOrderDetailChildService {
     AssistOrderDetailChild findOrderDetailChild(PageData object) throws Exception;
     AssistOrderDetailChild findOrderDetailChildById(String id) throws Exception;
     List<AssistOrderDetailChild> findOrderDetailChildList(PageData object) throws Exception;
+
+    /**
+     * 根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
+     * 查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
+     *
+     * @param companyId  企业id
+     * @param supplierId 供应商id
+     * @param orderId    外协订单id
+     * @return
+     */
+    List<Map<String, Object>> findCheckAssistOrderChild(String companyId, String supplierId, String orderId);
+
+    String finishOrderByAssistOrderChild(List<Map<String, Object>> mapList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

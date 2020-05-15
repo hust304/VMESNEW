@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.assist.controller;
 
-import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
@@ -34,8 +33,14 @@ public class AssistSignController {
     private AssistSignService assistSignService;
     @Autowired
     private AssistSignDetailService assistSignDetailService;
+
+    @Autowired
+    private AssistOrderService assistOrderService;
     @Autowired
     private AssistOrderDetailService assistOrderDetailService;
+    @Autowired
+    private AssistOrderDetailChildService assistOrderChildService;
+
     @Autowired
     private AssistPlanDetailService assistPlanDetailService;
 
@@ -50,6 +55,8 @@ public class AssistSignController {
     private RoleMenuService roleMenuService;
     @Autowired
     private CoderuleService coderuleService;
+    @Autowired
+    private PurchaseByFinanceBillService purchaseByFinanceBillService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -204,86 +211,64 @@ public class AssistSignController {
         assistSignService.save(addSign);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//TODO(1)        //反写 (采购订单明细,采购订单)状态
-//        //根据(采购订单明细id) 查询
-//        Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
-//        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
-//            String detailIds = orderDtlIds.trim();
-//            detailIds = StringUtil.stringTrimSpace(detailIds);
-//            detailIds = "'" + detailIds.replace(",", "','") + "'";
-//
-//            //获取外协订单明细(订单数量, 签收合格数量)
-//            //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
-//            PageData findMap = new PageData();
-//            findMap.put("orderDtlIds", detailIds);
-//            orderDetailMap = assistOrderDetailService.findCheckAssistOrderDetailMap(findMap);
-//        }
-//
-//        //遍历当前签收明细List
-//        //planId 采购计划id
-//        Map<String, String> planIdMap = new HashMap<>();
-//        if (signDtlList != null && signDtlList.size() > 0) {
-//            for (AssistSignDetail signDetail : signDtlList) {
-//                AssistOrderDetail editOrderDtl = new AssistOrderDetail();
-//
-//                //orderDetailId 采购订单明细ID
-//                String orderDetailId = signDetail.getOrderDetailId();
-//                editOrderDtl.setId(orderDetailId);
-//
-//                Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
-//                if (valueMap == null) {continue;}
-//
-//                //orderCount 订单数量
-//                BigDecimal detailCount = BigDecimal.valueOf(0D);
-//                if (valueMap.get("orderCount") != null) {
-//                    detailCount = (BigDecimal)valueMap.get("orderCount");
-//                }
-//
-//                //signFineCount 收货合格数(签收数-(检验)退货数)
-//                BigDecimal signFineCount = BigDecimal.valueOf(0D);
-//                if (valueMap.get("signFineCount") != null) {
-//                    signFineCount = (BigDecimal)valueMap.get("signFineCount");
-//                }
-//
-//                //采购单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收(无此状态) 4:已完成 -1:已取消)
-//                if (signFineCount.doubleValue() >= detailCount.doubleValue()) {
-//                    editOrderDtl.setState("4");
-//                    assistOrderDetailService.update(editOrderDtl);
-//
-//                    //planDtlId 采购计划明细id
-//                    String planDtlId = (String)valueMap.get("planDtlId");
-//                    if (planDtlId != null && planDtlId.trim().length() > 0) {
-//                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
-//                        editPlanDtl.setId(planDtlId);
-//                        //外协计划明细状态 (0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-//                        editPlanDtl.setState("4");
-//                        assistPlanDetailService.update(editPlanDtl);
-//                    }
-//                }
-//
-//                //planId 采购计划id
-//                if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
-//                    String planId = (String)valueMap.get("planId");
-//                    planIdMap.put(planId.trim(), planId.trim());
-//                }
-//            }
-//        }
-//
-//        //反写外协订单状态
-//        AssistOrder editOrder = new AssistOrder();
-//        editOrder.setId(orderId);
-//        assistOrderDetailService.updateParentStateByDetailList(editOrder, null);
-//        //反写 (采购计划明细,采购计划)状态
-//        if (planIdMap != null) {
-//            for (Iterator iterator = planIdMap.keySet().iterator(); iterator.hasNext();) {
-//                String planId = (String)iterator.next();
-//                if (planId != null && planId.trim().length() > 0) {
-//                    AssistPlan editPlan = new AssistPlan();
-//                    editPlan.setId(planId);
-//                    assistPlanDetailService.updateParentStateByDetailList(editPlan, null);
-//                }
-//            }
-//        }
+        //根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
+        //查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
+        List<Map<String, Object>> orderChildList = assistOrderChildService.findCheckAssistOrderChild(companyId, supplierId, orderId);
+        String finishOrderId = assistOrderChildService.finishOrderByAssistOrderChild(orderChildList);
+
+        if (finishOrderId != null && finishOrderId.trim().length() > 0) {
+            AssistOrder editOrder = new AssistOrder();
+            editOrder.setId(finishOrderId);
+            //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+            editOrder.setState("4");
+            assistOrderService.update(editOrder);
+
+            //明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+            assistOrderDetailService.updateStateByDetail("4", finishOrderId);
+
+            Map<String, String> planMap = new HashMap<>();
+            Map<String, String> planDtlMap = new HashMap<>();
+            if (orderChildList != null && orderChildList.size() > 0) {
+                for (Map<String, Object> objectMap : orderChildList) {
+                    //planId 外协计划id
+                    String planId = (String)objectMap.get("planId");
+                    if (planId != null && planId.trim().length() > 0) {
+                        planMap.put(planId, planId);
+                    }
+
+                    //planDtlId 外协计划明细id
+                    String planDtlId = (String)objectMap.get("planDtlId");
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        planDtlMap.put(planDtlId, planDtlId);
+                    }
+                }
+            }
+
+            //外协计划明细
+            if (planDtlMap != null) {
+                for (Iterator iterator = planDtlMap.keySet().iterator(); iterator.hasNext();) {
+                    String planDtlId = (String)iterator.next();
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
+                        editPlanDtl.setId(planDtlId);
+                        //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        editPlanDtl.setState("4");
+                        assistPlanDetailService.update(editPlanDtl);
+                    }
+                }
+            }
+
+            if (planMap != null) {
+                for (Iterator iterator = planMap.keySet().iterator(); iterator.hasNext();) {
+                    String planId = (String)iterator.next();
+                    if (planId != null && planId.trim().length() > 0) {
+                        AssistPlan editPlan = new AssistPlan();
+                        editPlan.setId(planId);
+                        assistPlanDetailService.updateParentStateByDetailList(editPlan, null);
+                    }
+                }
+            }
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //质检属性:1:免检 (1:免检 2:检验) --推送入库单
@@ -367,56 +352,60 @@ public class AssistSignController {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        //生成免检:收货账单(采购)
-//        //获取该签收单(免检)明细
-//        //List<Map<String, String>> notQualityList //质检属性:1:免检 (1:免检 2:检验)
-//        BigDecimal amountSum = BigDecimal.valueOf(0D);
-//        if (notQualityList != null && notQualityList.size() > 0) {
-//            for (Map<String, String> objectMap : notQualityList) {
-//                // arriveCount:签收数量
-//                BigDecimal arriveCount = BigDecimal.valueOf(0D);
-//                String arriveCountStr = objectMap.get("arriveCount");
-//                if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
-//                    try {
-//                        arriveCount = new BigDecimal(arriveCountStr);
-//                    } catch (NumberFormatException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//                //price: 单价(采购订单明细)
-//                BigDecimal price = BigDecimal.valueOf(0D);
-//                String priceStr = objectMap.get("price");
-//                if (priceStr != null && priceStr.trim().length() > 0) {
-//                    try {
-//                        price = new BigDecimal(priceStr);
-//                    } catch (NumberFormatException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//                //amount 签收金额 = 签收数量 * 单价
-//                BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * arriveCount.doubleValue());
-//                amountSum = BigDecimal.valueOf(amountSum.doubleValue() + amount.doubleValue());
-//            }
-//        }
-//
-//        if (amountSum.doubleValue() > 0) {
-//            //四舍五入到2位小数
-//            amountSum = amountSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-//            //生成采购付款单(vmes_finance_bill)
-//            purchaseByFinanceBillService.addFinanceBillByPurchase(addSign.getId(),
-//                    companyId,
-//                    supplierId,
-//                    cuser,
-//                    //type单据类型(0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购))
-//                    "6",
-//                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
-//                    "2",
-//                    null,
-//                    amountSum,
-//                    addSign.getSysCode());
-//        }
+        //生成免检:收货账单(外协)
+        //获取该签收单(免检)明细
+        //List<Map<String, String>> notQualityList //质检属性:1:免检 (1:免检 2:检验)
+        BigDecimal amountSum = BigDecimal.valueOf(0D);
+        if (notQualityList != null && notQualityList.size() > 0) {
+            for (Map<String, String> objectMap : notQualityList) {
+                // arriveCount:签收数量
+                BigDecimal arriveCount = BigDecimal.valueOf(0D);
+                String arriveCountStr = objectMap.get("arriveCount");
+                if (arriveCountStr != null && arriveCountStr.trim().length() > 0) {
+                    try {
+                        arriveCount = new BigDecimal(arriveCountStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //price: 单价(采购订单明细)
+                BigDecimal price = BigDecimal.valueOf(0D);
+                String priceStr = objectMap.get("price");
+                if (priceStr != null && priceStr.trim().length() > 0) {
+                    try {
+                        price = new BigDecimal(priceStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //amount 签收金额 = 签收数量 * 单价
+                BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * arriveCount.doubleValue());
+                amountSum = BigDecimal.valueOf(amountSum.doubleValue() + amount.doubleValue());
+            }
+        }
+
+        if (amountSum.doubleValue() > 0) {
+            //四舍五入到2位小数
+            amountSum = amountSum.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            //生成采购付款单(vmes_finance_bill)
+            //单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协) 14:收货账单(外协))
+            //销售(客户)  : 0:收款单(销售) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 8:应收单(销售)
+            //采购(供应商): 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购)
+            //外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协) 14:收货账单(外协)
+            purchaseByFinanceBillService.addFinanceBillByAssist(addSign.getId(),
+                    companyId,
+                    supplierId,
+                    cuser,
+                    //外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协) 14:收货账单(外协)
+                    "11",
+                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "2",
+                    null,
+                    amountSum,
+                    addSign.getSysCode());
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

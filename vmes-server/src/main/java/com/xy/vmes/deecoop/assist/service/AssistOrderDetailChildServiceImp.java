@@ -15,6 +15,8 @@ import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -185,6 +187,58 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
     }
     public List<AssistOrderDetailChild> findOrderDetailChildList(PageData object) throws Exception {
         return this.findDataList(object, null);
+    }
+
+    /**
+     * 根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
+     * 查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
+     *
+     * @param companyId  企业id
+     * @param supplierId 供应商id
+     * @param orderId    外协订单id
+     * @return
+     */
+    public List<Map<String, Object>> findCheckAssistOrderChild(String companyId, String supplierId, String orderId) {
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("supplierId", supplierId);
+        findMap.put("orderId", orderId);
+        return assistOrderDetailChildMapper.findCheckAssistOrderChild(findMap);
+    }
+
+    public String finishOrderByAssistOrderChild(List<Map<String, Object>> mapList) {
+        String orderId = null;
+        if (mapList != null && mapList.size() > 0) {
+            String tempStr = (String)mapList.get(0).get("orderId");
+            if (tempStr != null && tempStr.trim().length() > 0) {
+                orderId = tempStr.trim();
+            }
+
+            boolean isFinish = true;
+            //遍历查询结构体
+            for (Map<String, Object> objectMap : mapList) {
+                //orderCount 原材料订单数量
+                BigDecimal orderCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("orderCount") != null) {
+                    orderCount = (BigDecimal)objectMap.get("orderCount");
+                }
+
+                //assistCount 原材料(成品签收检验,成品报废,原材料报废,原材料退回检验)
+                BigDecimal assistCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("assistCount") != null) {
+                    assistCount = (BigDecimal)objectMap.get("assistCount");
+                }
+
+                if (orderCount.doubleValue() > assistCount.doubleValue()) {
+                    isFinish = false;
+                    break;
+                }
+            }
+
+            if (isFinish) {return orderId;}
+        }
+
+        return orderId;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
