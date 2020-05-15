@@ -109,6 +109,15 @@ public interface AssistOrderDetailChildService {
      */
     List<Map<String, Object>> findCheckAssistOrderChild(String companyId, String supplierId, String orderId);
 
+    /**
+     * 返回完成的外协订单id
+     * 1. 遍历查询结果集
+     * 2. 比较 orderCount(原材料订单数量) assistCount 原材料(成品签收检验,成品报废,原材料报废,原材料退回检验)
+     * 3. 全部原材料 (原材料订单数量 <= 原材料(成品签收检验,成品报废,原材料报废,原材料退回检验))
+     *
+     * @param mapList
+     * @throws Exception
+     */
     String finishOrderByAssistOrderChild(List<Map<String, Object>> mapList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -164,7 +164,8 @@
             planDtl.parent_id planId,
             orderDtl.plan_detail_id planDtlId
         from vmes_assist_order_detail_child orderChild
-            left join vmes_assist_order_detail orderDtl on orderChild.order_id = orderDtl.parent_id
+            left join vmes_assist_order_detail_child child on orderChild.id = child.id
+            left join vmes_assist_order_detail orderDtl on child.order_dtl_id = orderDtl.id
             left join vmes_assist_plan_detail planDtl on orderDtl.plan_detail_id = planDtl.id
             left join (
                 select

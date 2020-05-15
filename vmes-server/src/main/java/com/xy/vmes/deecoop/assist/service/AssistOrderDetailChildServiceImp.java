@@ -206,15 +206,20 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
         return assistOrderDetailChildMapper.findCheckAssistOrderChild(findMap);
     }
 
+    /**
+     * 返回完成的外协订单id
+     * 1. 遍历查询结果集
+     * 2. 比较 orderCount(原材料订单数量) assistCount 原材料(成品签收检验,成品报废,原材料报废,原材料退回检验)
+     * 3. 全部原材料 (原材料订单数量 <= 原材料(成品签收检验,成品报废,原材料报废,原材料退回检验))
+     *
+     * @param mapList
+     * @throws Exception
+     */
     public String finishOrderByAssistOrderChild(List<Map<String, Object>> mapList) {
         String orderId = null;
         if (mapList != null && mapList.size() > 0) {
-            String tempStr = (String)mapList.get(0).get("orderId");
-            if (tempStr != null && tempStr.trim().length() > 0) {
-                orderId = tempStr.trim();
-            }
-
             boolean isFinish = true;
+
             //遍历查询结构体
             for (Map<String, Object> objectMap : mapList) {
                 //orderCount 原材料订单数量
@@ -235,7 +240,14 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
                 }
             }
 
-            if (isFinish) {return orderId;}
+            if (isFinish) {
+                String tempStr = (String)mapList.get(0).get("orderId");
+                if (tempStr != null && tempStr.trim().length() > 0) {
+                    orderId = tempStr.trim();
+                }
+
+                return orderId;
+            }
         }
 
         return orderId;
