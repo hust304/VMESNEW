@@ -115,13 +115,13 @@ public interface AssistOrderDetailService {
      */
     String findParentStateByDetail(List<AssistOrderDetail> dtlList);
 
-    /**
-     * 获取外协订单明细(订单数量, 签收合格数量)
-     * 查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
-     * @param findMap
-     * @return
-     */
-    Map<String, Map<String, Object>> findCheckAssistOrderDetailMap(PageData findMap);
+//    /**
+//     * 获取外协订单明细(订单数量, 签收合格数量)
+//     * 查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
+//     * @param findMap
+//     * @return
+//     */
+//    Map<String, Map<String, Object>> findCheckAssistOrderDetailMap(PageData findMap);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
     /**

@@ -13,7 +13,7 @@ import java.util.Map;
  * 创建时间：2020-05-04
  */
 public interface AssistOrderDetailQueryBySignService {
-    List<Map<String, Object>> findCheckAssistOrderDetaiBySign(PageData pd);
+    //List<Map<String, Object>> findCheckAssistOrderDetaiBySign(PageData pd);
     List<Map> listAssistOrderDetaiQueryBySign(PageData pd, Pagination pg) throws Exception;
     ResultModel listPageAssistOrderDetaiQueryBySign(PageData pd) throws Exception;
 }

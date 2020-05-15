@@ -320,28 +320,28 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         return null;
     }
 
-    public Map<String, Map<String, Object>> findCheckAssistOrderDetailMap(PageData findMap) {
-        Map<String, Map<String, Object>> detailMap = new HashMap<>();
-        if (findMap == null || findMap.size() == 0) {return detailMap;}
-
-        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
-        try {
-            //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
-            mapList = orderDetailQueryBySignService.findCheckAssistOrderDetaiBySign(findMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (mapList != null && mapList.size() > 0) {
-            for (Map<String, Object> objectMap : mapList) {
-                //orderDtlId: 外协订单明细id
-                String orderDtlId = (String)objectMap.get("orderDtlId");
-                detailMap.put(orderDtlId, objectMap);
-            }
-        }
-
-        return detailMap;
-    }
+//    public Map<String, Map<String, Object>> findCheckAssistOrderDetailMap(PageData findMap) {
+//        Map<String, Map<String, Object>> detailMap = new HashMap<>();
+//        if (findMap == null || findMap.size() == 0) {return detailMap;}
+//
+//        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+//        try {
+//            //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
+//            mapList = orderDetailQueryBySignService.findCheckAssistOrderDetaiBySign(findMap);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (mapList != null && mapList.size() > 0) {
+//            for (Map<String, Object> objectMap : mapList) {
+//                //orderDtlId: 外协订单明细id
+//                String orderDtlId = (String)objectMap.get("orderDtlId");
+//                detailMap.put(orderDtlId, objectMap);
+//            }
+//        }
+//
+//        return detailMap;
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {

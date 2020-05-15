@@ -19,7 +19,7 @@ import java.util.Map;
 @Repository
 public interface AssistOrderDetailQueryBySignMapper {
     //外协订单明细(订单数量,签收(检验完成数量))
-    List<Map<String, Object>> findCheckAssistOrderDetaiBySign(PageData pd);
+    //List<Map<String, Object>> findCheckAssistOrderDetaiBySign(PageData pd);
     List<Map> listAssistOrderDetaiQueryBySign(PageData pd);
     List<Map> listAssistOrderDetaiQueryBySign(PageData pd, Pagination pg);
 }

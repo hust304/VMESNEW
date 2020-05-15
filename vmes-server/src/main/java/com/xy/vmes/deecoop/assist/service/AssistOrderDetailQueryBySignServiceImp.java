@@ -24,9 +24,9 @@ public class AssistOrderDetailQueryBySignServiceImp implements AssistOrderDetail
     @Autowired
     private ColumnService columnService;
 
-    public List<Map<String, Object>> findCheckAssistOrderDetaiBySign(PageData pd) {
-        return orderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign(pd);
-    }
+//    public List<Map<String, Object>> findCheckAssistOrderDetaiBySign(PageData pd) {
+//        return orderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign(pd);
+//    }
 
     public List<Map> listAssistOrderDetaiQueryBySign(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList();
