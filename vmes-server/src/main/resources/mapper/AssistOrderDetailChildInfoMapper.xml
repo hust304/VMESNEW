@@ -117,14 +117,11 @@
                     <!--按(外协订单)汇总 findAssistDiscardProductByOrder (原材料)报废 -->
                     <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardProductByOrder"></include>
                     union all
-
                     <!--按(外协订单)汇总 findAssistDiscardByOrder (外协件:成品)报废 -->
                     <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardByOrder"></include>
                     union all
-
                     <!--(外协件:成品)签收(检验) findAssistSignDiscardByOrder 汇总 discard_count: -->
                     <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignDiscardByOrder"></include>
-                    union all
                 ) temp
                 group by temp.orderDtl_child_id
             ) discard on orderChild.id = discard.orderDtl_child_id
@@ -138,7 +135,7 @@
                 and orderChild.order_id = #{orderId}
             </if>
             <if test="orderDtlId != null and orderDtlId != ''">
-                and orderChild.order_detail_id = #{orderDtlId}
+                and orderChild.order_dtl_id = #{orderDtlId}
             </if>
         </where>
         <if test='orderStr != null and orderStr != ""' >
