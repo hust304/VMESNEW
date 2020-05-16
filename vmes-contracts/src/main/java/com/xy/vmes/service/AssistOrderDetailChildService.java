@@ -119,8 +119,21 @@ public interface AssistOrderDetailChildService {
      * @throws Exception
      */
     String finishOrderByAssistOrderChild(List<Map<String, Object>> mapList);
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * 外协订单明细子表(外协件)详情查询
+     * 外协订单明细(外协件)详情查询
+     *
+     * @param pd
+     * @param pg
+     * @return
+     * @throws Exception
+     */
+    List<Map> listAssistOrderDetailChildInfo(PageData pd, Pagination pg) throws Exception;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
@@ -128,8 +141,9 @@ public interface AssistOrderDetailChildService {
     * @throws Exception
     */
     ResultModel listPageAssistOrderDetailChild(PageData pd) throws Exception;
+    ResultModel listPageAssistOrderDetailChildInfo(PageData pd) throws Exception;
 
-    void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception;
+
 
 }
 

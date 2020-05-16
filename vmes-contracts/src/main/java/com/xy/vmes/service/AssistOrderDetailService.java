@@ -115,6 +115,16 @@ public interface AssistOrderDetailService {
      */
     String findParentStateByDetail(List<AssistOrderDetail> dtlList);
 
+    /**
+     * 外协订单明细(外协件)详情查询
+     *
+     * @param pd
+     * @param pg
+     * @return
+     * @throws Exception
+     */
+    List<Map> listAssistOrderDetailInfo(PageData pd, Pagination pg) throws Exception;
+
 //    /**
 //     * 获取外协订单明细(订单数量, 签收合格数量)
 //     * 查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
@@ -142,7 +152,8 @@ public interface AssistOrderDetailService {
     * @throws Exception
     */
     ResultModel listPageAssistOrderDetail(PageData pd) throws Exception;
-
+    //外协订单明细(外协件)详情查询
+    ResultModel listPageAssistOrderDetailInfo(PageData pd) throws Exception;
 
 }
 

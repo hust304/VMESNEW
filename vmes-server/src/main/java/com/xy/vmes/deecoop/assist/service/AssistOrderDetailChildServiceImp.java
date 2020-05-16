@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.service;
 
+import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildInfoMapper;
 import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildMapper;
 import com.xy.vmes.entity.AssistOrderDetail;
 import com.xy.vmes.entity.AssistOrderDetailChild;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
+import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.springmvc.ResultModel;
@@ -30,6 +32,11 @@ import com.yvan.Conv;
 public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildService {
     @Autowired
     private AssistOrderDetailChildMapper assistOrderDetailChildMapper;
+    @Autowired
+    private AssistOrderDetailChildInfoMapper assistOrderDetailChildInfoMapper;
+
+    @Autowired
+    private SystemToolService systemToolService;
     @Autowired
     private ColumnService columnService;
 
@@ -252,8 +259,42 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
 
         return orderId;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * 外协订单明细子表(外协件)详情查询
+     * 外协订单明细(外协件)详情查询
+     *
+     * @param pd
+     * @param pg
+     * @return
+     * @throws Exception
+     */
+    public List<Map> listAssistOrderDetailChildInfo(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return assistOrderDetailChildInfoMapper.listAssistOrderDetailChildInfo(pd);
+        } else if (pg != null) {
+            return assistOrderDetailChildInfoMapper.listAssistOrderDetailChildInfo(pd, pg);
+        }
+
+        return mapList;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception {
+        PageData pd = new PageData();
+        pd.put("assistProductId",assistOrderDetail.getAssistProductId());
+        pd.put("orderCount",assistOrderDetail.getOrderCount());
+        pd.put("orderDtlId",assistOrderDetail.getId());
+        pd.put("orderId",assistOrderDetail.getParentId());
+        pd.put("cuser",assistOrderDetail.getCuser());
+        pd.put("uuser",assistOrderDetail.getCuser());
+        assistOrderDetailChildMapper.insertAssistOrderDetailChild(pd);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *
     * @param pd    查询参数对象PageData
@@ -303,17 +344,67 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
         return model;
     }
 
-    @Override
-    public void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception {
-        PageData pd = new PageData();
-        pd.put("assistProductId",assistOrderDetail.getAssistProductId());
-        pd.put("orderCount",assistOrderDetail.getOrderCount());
-        pd.put("orderDtlId",assistOrderDetail.getId());
-        pd.put("orderId",assistOrderDetail.getParentId());
-        pd.put("cuser",assistOrderDetail.getCuser());
-        pd.put("uuser",assistOrderDetail.getCuser());
-        assistOrderDetailChildMapper.insertAssistOrderDetailChild(pd);
+    public ResultModel listPageAssistOrderDetailChildInfo(PageData pd) throws Exception{
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("assistOrderDetailChildInfo");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.listAssistOrderDetailChildInfo(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
+            String prodColumnKey = pd.getString("prodColumnKey");
+
+            for(int i=0; i < varList.size(); i++){
+                Map<String, Object> objectMap = varList.get(i);
+
+                String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
+                objectMap.put("prodInfo", prodInfo);
+            }
+        }
+
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
     }
+
 }
 
 

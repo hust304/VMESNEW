@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_order_detail_child:外协订单明细子表 Mapper.xml
+外协订单明细(外协件)详情查询
+创建人：陈刚
+创建时间：2020-05-16
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildInfoMapper">
+    <insert id="assistOrderDetailChildInfo" >
+        delete from vmes_column where model_code = 'assistOrderDetailChildInfo' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','orderId','外协订单id',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','orderDtlId','外协订单明细id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','productId','原材料id(系统货品表id)',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','unitId','单位id',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','ratio','用料比例',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','count','原材料数量(单据单位)',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','cuser','创建用户id',7, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','cdate','创建时间',8, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','uuser','修改用户id',9, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','remark','备注',11, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildInfo','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productCode', '货品编码', 13, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productName', '货品名称', 14, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productSpec', '规格型号', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productGenre', '货品属性id', 16, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productGenreName', '货品属性', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productType', '货品类型id', 18, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'productProperty', '自定义属性', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'unitName', '单位', 20, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'deliverCount', '发货数', 21, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'signCount', '消耗数量', 22, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'discardCount', '报废数', 23, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildInfo', 'retreatCount', '退料数', 24, '1', '1', '1', '0', now(), 'admin'),
+    </insert>
+
+    <select id="listAssistOrderDetailChildInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            orderChild.id id,
+            orderChild.order_id orderId,
+            orderChild.order_dtl_id orderDtlId,
+            orderChild.product_id productId,
+            orderChild.unit_id unitId,
+
+            round(ifnull(orderChild.ratio, 0),2) ratio,
+            round(ifnull(orderChild.count, 0),2) count,
+            orderChild.cuser cuser,
+            orderChild.cdate cdate,
+            orderChild.uuser uuser,
+
+            orderChild.udate udate,
+            orderChild.remark remark,
+            orderChild.isdisable isdisable,
+
+            <!--货品表(原材料信息)-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.property productProperty,
+            unitName.name unitName,
+
+            round(ifnull(deliver.deliverCount, 0),2) deliverCount,
+            round(ifnull(assistSign.order_count, 0),2) signCount,
+            round(ifnull(discard.order_count, 0),2) discardCount,
+            round(ifnull(retreat.order_count, 0),2) retreatCount
+
+        from vmes_assist_order_detail_child orderChild
+            left join vmes_product product on orderChild.product_id = product.id
+            left join vmes_dictionary unitName on orderChild.unit_id = unitName.id
+
+            <!--按(外协订单)汇总 原材料发货 -->
+            left join (
+                select
+                    b.orderDtl_child_id,
+                    sum(b.count) deliverCount
+                from vmes_assist_deliver_detail a
+                left join vmes_assist_deliver_detail_child b on a.id = b.deliver_dtl_id
+                <where>
+                    <if test="orderId != null and orderId != ''">
+                        and a.order_id = #{orderId}
+                    </if>
+                    <if test="orderDtlId != null and orderDtlId != ''">
+                        and a.order_detail_id = #{orderDtlId}
+                    </if>
+                    <!--state:状态(0:待发货 1:已发货 -1:已取消)-->
+                    and a.state = '1'
+                </where>
+                group by b.orderDtl_child_id
+            ) deliver on orderChild.id = deliver.orderDtl_child_id
+
+            <!--(外协件:成品)签收(检验) findAssistSignfineByOrder 汇总sign_fine_count:收货合格数(签收数-退货数-报废) -->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignfineByOrder"></include>
+            ) assistSign on orderChild.id = assistSign.orderDtl_child_id
+
+            <!--外协模块报废汇总 -->
+            left join (
+                select
+                    temp.orderDtl_child_id,
+                    sum(temp.order_count) order_count
+                from (
+                    <!--按(外协订单)汇总 findAssistDiscardProductByOrder (原材料)报废 -->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardProductByOrder"></include>
+                    union all
+
+                    <!--按(外协订单)汇总 findAssistDiscardByOrder (外协件:成品)报废 -->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardByOrder"></include>
+                    union all
+
+                    <!--(外协件:成品)签收(检验) findAssistSignDiscardByOrder 汇总 discard_count: -->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignDiscardByOrder"></include>
+                    union all
+                ) temp
+                group by temp.orderDtl_child_id
+            ) discard on orderChild.id = discard.orderDtl_child_id
+
+            <!--(原材料)退货(检验) findAssistRetreatProductByOrder 汇总 sign_fine_count:收货合格数(签收数-报废数) -->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductByOrder"></include>
+            ) retreat on orderChild.id = retreat.orderDtl_child_id
+
+    </select>
+
+</mapper>

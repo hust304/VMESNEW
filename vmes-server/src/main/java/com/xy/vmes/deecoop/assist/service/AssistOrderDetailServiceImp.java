@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.service;
 
+import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailInfoMapper;
 import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailMapper;
 import com.xy.vmes.entity.AssistOrder;
 import com.xy.vmes.entity.AssistOrderDetail;
@@ -12,11 +13,9 @@ import com.xy.vmes.common.util.StringUtil;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.AssistOrderService;
 import com.xy.vmes.service.ColumnService;
-import com.yvan.ExcelUtil;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.common.util.Common;
-import com.yvan.platform.RestException;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletResponse;
 
 /**
 * 说明：vmes_assist_order_detail:外协订单明细 实现类
@@ -38,6 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
     @Autowired
     private AssistOrderDetailMapper assistOrderDetailMapper;
+    @Autowired
+    private AssistOrderDetailInfoMapper assistOrderDetailInfoMapper;
 
     @Autowired
     private AssistOrderService orderService;
@@ -320,6 +319,27 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         return null;
     }
 
+    /**
+     * 外协订单明细(外协件)详情查询
+     *
+     * @param pd
+     * @param pg
+     * @return
+     * @throws Exception
+     */
+    public List<Map> listAssistOrderDetailInfo(PageData pd, Pagination pg) throws Exception {
+        List<Map> mapList = new ArrayList<>();
+        if (pd == null) {return mapList;}
+
+        if (pg == null) {
+            return assistOrderDetailInfoMapper.listAssistOrderDetailInfo(pd);
+        } else if (pg != null) {
+            return assistOrderDetailInfoMapper.listAssistOrderDetailInfo(pd, pg);
+        }
+
+        return mapList;
+    }
+
 //    public Map<String, Map<String, Object>> findCheckAssistOrderDetailMap(PageData findMap) {
 //        Map<String, Map<String, Object>> detailMap = new HashMap<>();
 //        if (findMap == null || findMap.size() == 0) {return detailMap;}
@@ -432,7 +452,63 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         return model;
     }
 
+    public ResultModel listPageAssistOrderDetailInfo(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Column> columnList = columnService.findColumnList("assistOrderDetailInfo");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+
+        //设置查询排序方式
+        //pd.put("orderStr", "a.cdate asc");
+        String orderStr = pd.getString("orderStr");
+        if (orderStr != null && orderStr.trim().length() > 0) {
+            pd.put("orderStr", orderStr);
+        }
+
+        //是否需要分页 true:需要分页 false:不需要分页
+        Map result = new HashMap();
+        String isNeedPage = pd.getString("isNeedPage");
+        Pagination pg = HttpUtils.parsePagination(pd);
+        if ("false".equals(isNeedPage)) {
+            pg = null;
+        } else {
+            result.put("pageData", pg);
+        }
+
+        List<Map> varList = this.listAssistOrderDetailInfo(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                //endArriveCount (完成检验)签收数
+                BigDecimal endArriveCount = (BigDecimal)mapObject.get("endArriveCount");
+
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //arriveCount 签收数
+                BigDecimal arriveCount = (BigDecimal)mapObject.get("arriveCount");
+
+                //signInCount 检验中: 签收数 - (完成检验)签收数
+                BigDecimal signInCount = BigDecimal.valueOf(arriveCount.doubleValue() - endArriveCount.doubleValue());
+                signInCount = signInCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("signInCount", signInCount.toString());
+            }
+        }
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+        return model;
+    }
+
 }
-
-
 

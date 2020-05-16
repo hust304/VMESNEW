@@ -78,6 +78,17 @@ public class AssistOrderDetailController {
         return model;
     }
 
+    //外协订单明细(外协件)详情查询
+    @PostMapping("/assist/assistOrderDetail/listPageAssistOrderDetailInfo")
+    public ResultModel listPageAssistOrderDetailInfo() throws Exception {
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetailInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistOrderDetailService.listPageAssistOrderDetailInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetail/listPageAssistOrderDetailInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
 
 }
 

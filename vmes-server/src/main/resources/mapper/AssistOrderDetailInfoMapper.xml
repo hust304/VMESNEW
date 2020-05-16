@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_order_detail:外协订单明细 Mapper.xml
+外协订单明细(外协件)详情查询
+创建人：陈刚
+创建时间：2020-05-16
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistOrderDetailInfoMapper">
+    <insert id="assistOrderDetailInfo" >
+        delete from vmes_column where model_code = 'assistOrderDetailInfo' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','id','id',0, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','parentId','外协订单id',1, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','planDetailId','计划明细id',2, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','assistProductId','外协件id',3, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','orderUnit','单位id(单据单位)',4, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','orderCount','订单订购数量',5, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','lossRatio','损耗率',6, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','price','单价',7, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','amount','金额',8, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','expectDate','约定交期(yyyy-MM-dd)',9, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','state','状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)',10, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','cuser','创建用户id',11, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','cdate','创建时间',12, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','uuser','修改用户id',13, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','udate','修改时间',14, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','remark','备注',15, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','isdisable','是否启用(0:已禁用 1:启用)',16, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','productId','(外协件)货品id',17, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','assistProductName','外协件',18, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','craftCode','工艺编号',19, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','craftName','工艺名称',20, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','orderUnitName','单位',21, '1','1','1','0',now(), 'admin'),
+        (replace(uuid(), '-', ''),'assistOrderDetailInfo','stateName','状态',22, '1','1','1','0',now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'endArriveCount', '(签收完成)签收数', 23, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'endSignFineCount', '(签收完成)收货合格', 24, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'endQualityFineCount', '(签收完成)检验合格数', 25, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'arriveCount', '签收数', 26, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'qualityCount', '实检数', 27, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'badCount', '不合格', 28, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'discardCount', '报废数', 29, '1', '1', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'retreatCount', '退货数', 30, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'receiveCount', '让步接收', 31, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'signFineCount', '收货合格', 32, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'qualityFineCount', '检验合格数', 33, '1', '0', '1', '0', now(), 'admin'),
+
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'qualityFineRatio', '合格率', 34, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'signFineRatio', '完成率', 35, '1', '0', '1', '0', now(), 'admin'),
+        (replace(uuid(), '-', ''), 'assistOrderDetailInfo', 'signInCount', '检验中', 36, '1', '0', '1', '0', now(), 'admin'),
+
+
+    </insert>
+
+    <select id="listAssistOrderDetailInfo" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            detail.id id,
+            detail.parent_id parentId,
+            detail.plan_detail_id planDetailId,
+            detail.assist_product_id assistProductId,
+            detail.order_unit orderUnit,
+
+            round(ifnull(detail.order_count, 0),2) orderCount,
+            round(ifnull(detail.loss_ratio, 0),2) lossRatio,
+            round(ifnull(detail.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
+            round(ifnull(detail.amount, 0),2) amount,
+            DATE_FORMAT(detail.expect_date,'%Y-%m-%d') expectDate,
+
+            detail.state state,
+            detail.cuser cuser,
+            detail.cdate cdate,
+            detail.uuser uuser,
+            detail.udate udate,
+
+            detail.remark remark,
+            detail.isdisable isdisable,
+
+            <!--外协件信息-->
+            assistProd.product_name assistProductName,
+            assistProd.product_id productId,
+            orderUnitName.name orderUnitName,
+            craft.sys_code craftCode,
+            craft.name craftName,
+
+            <!--签收明细(签收检验完成)汇总 -->
+            round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
+            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
+            round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+
+            <!--签收明细汇总 -->
+            round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
+            round(ifnull(signDetail.quality_count, 0), 2) qualityCount,
+            round(ifnull(signDetail.bad_count, 0), 2) badCount,
+            round(ifnull(signDetail.retreat_count, 0), 2) discardCount,
+            round(ifnull(signDetail.discard_count, 0), 2) retreatCount,
+            round(ifnull(signDetail.receive_count, 0), 2) receiveCount,
+            round(ifnull(signDetail.sign_fine_count, 0), 2) signFineCount,
+            round(ifnull(signDetail.quality_fine_count, 0), 2) qualityFineCount,
+
+            <!--java 类实现(qualityFineRatio,signFineRatio) -->
+            '' qualityFineRatio,
+            '' signFineRatio,
+            '' signInCount
+
+        from vmes_assist_order_detail detail
+            left join vmes_assist_product assistProd on detail.assist_product_id = assistProd.id
+            left join vmes_assist_craft craft on assistProd.craft_id = craft.id
+            left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and detail.order_unit = orderUnit.unit)
+            left join vmes_dictionary orderUnitName on detail.order_unit = orderUnitName.id
+
+            <!--(外协订单明细id)外协签收明细汇总 (签收完成)vmes_assist_sign_detail-->
+            left join (
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count,
+                    sum(sign_fine_count) sign_fine_count,
+                    sum(quality_fine_count) quality_fine_count
+                from vmes_assist_sign_detail
+                <where>
+                    <if test="orderId != null and orderId != ''">
+                        and order_id = #{orderId}
+                    </if>
+                    <if test="orderDtlId != null and orderDtlId != ''">
+                        and order_detail_id = #{orderDtlId}
+                    </if>
+                    <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
+                    and state = '2'
+                </where>
+                group by order_detail_id
+            ) signDetailEnd on detail.id = signDetailEnd.order_detail_id
+
+            <!--(外协订单明细id)外协签收明细汇总 (全部签收)vmes_assist_sign_detail-->
+            left join (
+                select
+                    order_detail_id,
+                    sum(arrive_count) arrive_count,
+                    sum(quality_count) quality_count,
+                    sum(bad_count) bad_count,
+                    sum(retreat_count) retreat_count,
+                    sum(discard_count) discard_count,
+                    sum(receive_count) receive_count,
+                    sum(sign_fine_count) sign_fine_count,
+                    sum(quality_fine_count) quality_fine_count
+                from vmes_assist_sign_detail
+                <where>
+                    <if test="orderId != null and orderId != ''">
+                        and order_id = #{orderId}
+                    </if>
+                    <if test="orderDtlId != null and orderDtlId != ''">
+                        and order_detail_id = #{orderDtlId}
+                    </if>
+                    <![CDATA[ and state <> '-1' ]]>
+                </where>
+                group by order_detail_id
+            ) signDetail on detail.id = signDetail.order_detail_id
+
+        <where>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and detail.id = #{orderDtlId}
+            </if>
+            <if test="orderId != null and orderId != ''">
+                and detail.parent_id = #{orderId}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+
+</mapper>
