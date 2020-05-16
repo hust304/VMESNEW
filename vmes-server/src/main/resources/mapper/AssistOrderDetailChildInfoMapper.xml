@@ -133,7 +133,17 @@
             left join (
                 <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductByOrder"></include>
             ) retreat on orderChild.id = retreat.orderDtl_child_id
-
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and orderChild.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and orderChild.order_detail_id = #{orderDtlId}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
     </select>
 
 </mapper>
