@@ -52,6 +52,21 @@ public class AssistOrderDetailChildController {
         return model;
     }
 
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2020-04-24
+     */
+    @PostMapping("/assist/assistOrderDetailChild/listPageAssistOrderDetailChildInfo")
+    public ResultModel listPageAssistOrderDetailChildInfo() throws Exception {
+        logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildInfo 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistOrderDetailChildService.listPageAssistOrderDetailChildInfo(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 }
 
 
