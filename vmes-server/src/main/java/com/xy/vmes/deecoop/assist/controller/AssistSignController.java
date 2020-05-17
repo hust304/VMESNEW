@@ -213,7 +213,7 @@ public class AssistSignController {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
         //查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
-        List<Map<String, Object>> orderChildList = assistOrderChildService.findCheckAssistOrderChild(companyId, supplierId, orderId);
+        List<Map<String, Object>> orderChildList = assistOrderChildService.findCheckAssistOrderChild(orderId);
         String finishOrderId = assistOrderChildService.finishOrderByAssistOrderChild(orderChildList);
 
         if (finishOrderId != null && finishOrderId.trim().length() > 0) {

@@ -64,7 +64,7 @@
             select
                 order_detail_id,
                 sum(sign_fine_count) sign_fine_count,
-                sum(discard_count) discard_count,
+                sum(discard_count) discard_count
 
             from vmes_assist_sign_detail
             <where>

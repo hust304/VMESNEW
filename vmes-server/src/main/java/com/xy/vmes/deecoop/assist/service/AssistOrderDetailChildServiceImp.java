@@ -200,15 +200,11 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
      * 根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
      * 查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
      *
-     * @param companyId  企业id
-     * @param supplierId 供应商id
      * @param orderId    外协订单id
      * @return
      */
-    public List<Map<String, Object>> findCheckAssistOrderChild(String companyId, String supplierId, String orderId) {
+    public List<Map<String, Object>> findCheckAssistOrderChild(String orderId) {
         PageData findMap = new PageData();
-        findMap.put("companyId", companyId);
-        findMap.put("supplierId", supplierId);
         findMap.put("orderId", orderId);
         return assistOrderDetailChildMapper.findCheckAssistOrderChild(findMap);
     }
