@@ -439,6 +439,8 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
                 mapObject.put("badCount", tempBigDecimal.toString());
                 //retreatCount 退货数
                 mapObject.put("retreatCount", tempBigDecimal.toString());
+                //discardCount 报废数
+                mapObject.put("discardCount", tempBigDecimal.toString());
                 //receiveCount 让步接收
                 mapObject.put("receiveCount", tempBigDecimal.toString());
             }
@@ -581,6 +583,20 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             editSignDetail.setRetreatCount(retreatCount);
 
+            //报废数 discardCount
+            BigDecimal discardCount = BigDecimal.valueOf(0D);
+            String discardCountStr = objectMap.get("discardCount");
+            if (discardCountStr != null && discardCountStr.trim().length() > 0) {
+                try {
+                    discardCount = new BigDecimal(discardCountStr);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            //四舍五入到2位小数
+            discardCount = discardCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+            editSignDetail.setDiscardCount(discardCount);
+
             //receiveCount (检验)让步接收数量
             BigDecimal receiveCount = BigDecimal.valueOf(0D);
             String receiveCountStr = objectMap.get("receiveCount");
@@ -604,21 +620,21 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             //(检验)退货数量 retreatCount
             retreatCount = editSignDetail.getRetreatCount();
 
-            //signFineCount 收货合格数(签收数:检验数量-退货数)
+            //signFineCount 收货合格数(签收数:检验数量-退货数-报废)
             BigDecimal signFineCount = BigDecimal.valueOf(0D);
             //qualityFineCount (实际)检验合格数 (检验数量 - 不合格数量)
             BigDecimal qualityFineCount = BigDecimal.valueOf(0D);
 
             //qualityType 检验方式 (1:全检 2:抽检)
             if ("1".equals(qualityType)) {
-                //1:全检:收货合格数 := 检验数量-退货数
-                signFineCount = BigDecimal.valueOf(qualityCount.doubleValue() - retreatCount.doubleValue());
+                //1:全检:收货合格数 := 检验数量-退货数-报废数
+                signFineCount = BigDecimal.valueOf(qualityCount.doubleValue() - retreatCount.doubleValue() - discardCount.doubleValue());
 
                 //1:全检:(实际)检验合格数 := 检验数量 - 不合格数量
                 qualityFineCount = BigDecimal.valueOf(qualityCount.doubleValue() - badCount.doubleValue());
             } else if ("2".equals(qualityType) && qualityCount.doubleValue() != 0) {
-                //2:抽检:收货合格数 := 签收数量 - 退货数量
-                signFineCount = BigDecimal.valueOf(arriveCount.doubleValue() - retreatCount.doubleValue());
+                //2:抽检:收货合格数 := 签收数量 - 退货数量 - 报废数
+                signFineCount = BigDecimal.valueOf(arriveCount.doubleValue() - retreatCount.doubleValue() - discardCount.doubleValue());
 
                 //2:抽检:(实际)检验合格数 := (签收数量 - 不合格数量)
                 qualityFineCount = BigDecimal.valueOf(arriveCount.doubleValue() - badCount.doubleValue());
@@ -1183,33 +1199,11 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
         //货品id
         String productId = (String)signDetailMap.get("productId");
 
-//        //p2nFormula 单位换算公式:计价单位转换计量单位:
-//        String p2nFormula = new String();
-//        if (signDetailMap.get("p2nFormula") != null) {
-//            p2nFormula = signDetailMap.get("p2nFormula").toString().trim();
-//        }
-
-//        //p2nIsScale 是否需要四舍五入(Y:需要四舍五入 N:无需四舍五入)
-//        String p2nIsScale = new String();
-//        if (signDetailMap.get("p2nIsScale") != null) {
-//            p2nIsScale = signDetailMap.get("p2nIsScale").toString().trim();
-//        }
-
-//        //小数位数 (最小:0位 最大:4位)
-//        Integer p2nDecimalCount = Integer.valueOf(2);
-//        if (signDetailMap.get("p2nDecimalCount") != null) {
-//            p2nDecimalCount = (Integer)signDetailMap.get("p2nDecimalCount");
-//        }
-
         //签收数量
         BigDecimal arriveCount = BigDecimal.valueOf(0D);
         if (signDetailMap.get("arriveCount") != null) {
             arriveCount = (BigDecimal)signDetailMap.get("arriveCount");
         }
-
-//        //(计量单位)签收数量 -> 单位换算公式(p2nFormula)
-//        BigDecimal p2n_arriveCount = EvaluateUtil.countFormulaP2N(arriveCount, p2nFormula);
-//        p2n_arriveCount = StringUtil.scaleDecimal(p2n_arriveCount, p2nIsScale, p2nDecimalCount);
 
         if (arriveCount != null && arriveCount.doubleValue() > 0) {
             Map<String, Object> inValueMap = new HashMap<>();
