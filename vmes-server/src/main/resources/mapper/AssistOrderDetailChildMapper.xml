@@ -178,11 +178,11 @@
                     <!--按(外协订单)汇总 (外协件:成品)报废 findAssistDiscardByOrder -->
                     <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardByOrder"></include>
                     union all
-                    <!--(外协件:成品)签收(检验) findAssistSignByOrder(orderId) (汇总sign_fine_count:收货合格数(签收数-退货数-报废))-->
-                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignByOrder"></include>
+                    <!--(外协件:成品)签收(检验) findAssistSignfineByOrder(orderId) (汇总sign_fine_count:收货合格数(签收数-退货数-报废))-->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignfineByOrder"></include>
                     union all
-                    <!--(原材料)退货(检验) findAssistRetreatProductSignByOrder (order_count:退货数量)-->
-                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductSignByOrder"></include>
+                    <!--(原材料)退货(检验) findAssistRetreatProductByOrder sign_fine_count:收货合格数(签收数-报废数)-->
+                    <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductByOrder"></include>
                 ) temp
                 group by temp.orderDtl_child_id
             ) assist on orderChild.id = assist.orderDtl_child_id
