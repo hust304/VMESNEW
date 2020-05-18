@@ -654,6 +654,75 @@ public class PurchaseByFinanceBillController {
         return model;
     }
 
+    //(添加)扣款单:
+    //质量-外协检验-成品签收检验
+    @PostMapping("/purchase/purchasePayment/addFinanceBillByAssist")
+    @Transactional(rollbackFor=Exception.class)
+    public ResultModel addFinanceBillByAssist() throws Exception {
+        logger.info("################/purchase/purchasePayment/addFinanceBillByAssist ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        ResultModel model = new ResultModel();
+        PageData pageData = HttpUtils.parsePageData();
+
+        String cuser = pageData.getString("cuser");
+        String signId = pageData.getString("signId");
+        if (signId == null || signId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("签收单id为空或空字符串！");
+            return model;
+        }
+
+        String companyId = pageData.getString("currentCompanyId");
+        if (companyId == null || companyId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        //供应商id
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        BigDecimal amount = BigDecimal.valueOf(0D);
+        String amountStr = pageData.getString("amount");
+        if (amountStr != null && amountStr.trim().length() > 0) {
+            try {
+                amount = new BigDecimal(amountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //四舍五入到2位小数
+        amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+        //单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协))
+        //销售(客户)  : 0:收款单(销售) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 8:应收单(销售)
+        //采购(供应商): 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购)
+        //外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协)
+        //sysCode 签收单号
+        String sysCode = pageData.getString("sysCode");
+        purchaseByFinanceBillService.addFinanceBillByAssist(signId,
+                companyId,
+                supplierId,
+                cuser,
+                //单据类型 外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协)
+                "13",
+                //state 状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                "1",
+                null,
+                amount,
+                sysCode);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/purchase/purchasePayment/addFinanceBillByAssist 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //结账:采购付款

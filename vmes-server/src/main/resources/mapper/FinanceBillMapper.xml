@@ -326,6 +326,12 @@
 
     <!-- model_code:purchaseByFinanceBill (采购-采购应付款-应付款) -->
     <!-- model_code:FinanceBill (销售-应收款管理-收款单) -->
+<!--
+单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协))
+销售(客户)  : 0:收款单(销售) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 8:应收单(销售)
+采购(供应商): 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购)
+外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协)
+-->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         customer.id customerId,
@@ -363,6 +369,9 @@
             when bill.type='8' then '应收单'
             when bill.type='9' then '退款单'
             when bill.type='10' then '应付单'
+            when bill.type='11' then '收货账单(外协)'
+            when bill.type='12' then '退款单(外协)'
+            when bill.type='13' then '扣款单(外协)'
         else null end typeName,
 
         bill.remark
