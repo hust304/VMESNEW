@@ -43,7 +43,7 @@ public class AssistToolServiceImp implements AssistToolService {
     public String checkDeleteAssistProduct(String assistProductId) throws Exception {
         if (assistProductId == null || assistProductId.trim().length() == 0) {return new String();}
 
-        String msgTemp = "外协件({0}) 正在使用中禁止删除！";
+        String msgTemp = "外协件({0}) 正在使用中禁止删除或禁用！";
         String msgStr = new String();
         AssistProduct productObj = assistProductService.findAssistProductById(assistProductId);
         if (productObj != null && productObj.getProductName() != null) {

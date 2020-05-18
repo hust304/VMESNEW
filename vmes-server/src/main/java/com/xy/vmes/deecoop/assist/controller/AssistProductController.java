@@ -335,7 +335,6 @@ public class AssistProductController {
             return model;
         }
 
-
         //删除 外协件原材料
         Map columnMap = new HashMap();
         columnMap.put("parent_id", parentId);
@@ -379,6 +378,14 @@ public class AssistProductController {
         if (msgStr.trim().length() > 0) {
             model.putCode(Integer.valueOf(1));
             model.putMsg(msgStr);
+            return model;
+        }
+
+        //验证(外协件id) 是否允许删除
+        String delMsg = assistToolService.checkDeleteAssistProduct(id);
+        if (delMsg != null && delMsg.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(delMsg);
             return model;
         }
 
