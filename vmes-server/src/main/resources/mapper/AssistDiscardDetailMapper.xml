@@ -120,6 +120,12 @@
                 </choose>
             </if>
 
+            <if test='parentId != null and parentId != ""' >
+                and parent_id = #{parentId}
+            </if>
+            <if test="assistProductId != null and assistProductId != ''" >
+                and assist_product_id = #{assistProductId}
+            </if>
 
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""'>
