@@ -6,6 +6,7 @@ import com.xy.vmes.service.AssistProductBySupplierService;
 import com.xy.vmes.service.AssistProductDetailService;
 import com.xy.vmes.service.AssistProductService;
 
+import com.xy.vmes.service.AssistToolService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -40,6 +41,8 @@ public class AssistProductController {
     private AssistProductDetailService assistProductDetailService;
     @Autowired
     private AssistProductBySupplierService assistProductBySupplierService;
+    @Autowired
+    private AssistToolService assistToolService;
 
     /**
     * @author 陈刚 自动创建，可以修改
@@ -323,6 +326,15 @@ public class AssistProductController {
             model.putMsg("外协件id为空或空字符串！");
             return model;
         }
+
+        //验证(外协件id) 是否允许删除
+        String delMsg = assistToolService.checkDeleteAssistProduct(parentId);
+        if (delMsg != null && delMsg.trim().length() > 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg(delMsg);
+            return model;
+        }
+
 
         //删除 外协件原材料
         Map columnMap = new HashMap();
