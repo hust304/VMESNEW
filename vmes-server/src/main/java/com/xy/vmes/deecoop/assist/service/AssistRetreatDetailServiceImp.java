@@ -1,14 +1,12 @@
 package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistRetreatDetailMapper;
-import com.xy.vmes.entity.AssistRetreat;
-import com.xy.vmes.entity.AssistRetreatDetail;
+import com.xy.vmes.entity.*;
 import com.xy.vmes.service.*;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.common.util.StringUtil;
-import com.xy.vmes.entity.Column;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -32,6 +30,15 @@ import com.yvan.Conv;
 public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService {
     @Autowired
     private AssistRetreatDetailMapper assistRetreatDetailMapper;
+
+    @Autowired
+    private AssistOrderService assistOrderService;
+    @Autowired
+    private AssistOrderDetailService assistOrderDetailService;
+    @Autowired
+    private AssistOrderDetailChildService assistOrderChildService;
+    @Autowired
+    private AssistPlanDetailService planDetailService;
 
     @Autowired
     private AssistRetreatService retreatService;
@@ -398,87 +405,66 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
             }
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        //修改外协订单
-//        //根据(外协订单明细id) 查询
-//        String orderDtlIds = (String)retreatDetailMap.get("orderDetailId");
-//        Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
-//        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
-//            String detailIds = orderDtlIds.trim();
-//            detailIds = StringUtil.stringTrimSpace(detailIds);
-//            detailIds = "'" + detailIds.replace(",", "','") + "'";
-//
-//            //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
-//            findMap = new PageData();
-//            findMap.put("orderDtlIds", detailIds);
-//            orderDetailMap = orderDetailService.findCheckAssistOrderDetailMap(findMap);
-//        }
-//
-//        //遍历当前签收明细List
-//        //planId 外协计划id
-//        Map<String, String> planIdMap = new HashMap<>();
-//        if (retreatDetailMap != null && retreatDetailMap.size() > 0) {
-//            AssistOrderDetail editOrderDtl = new AssistOrderDetail();
-//
-//            //orderDetailId 外协订单明细ID
-//            String orderDetailId = (String)retreatDetailMap.get("orderDetailId");
-//            editOrderDtl.setId(orderDetailId);
-//
-//            Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
-//            if (valueMap != null) {
-//                //orderCount 订单数量
-//                BigDecimal orderCount = BigDecimal.valueOf(0D);
-//                if (valueMap.get("orderCount") != null) {
-//                    orderCount = (BigDecimal)valueMap.get("orderCount");
-//                }
-//
-//                //signFineCount 收货合格数(签收数-(检验)退货数)
-//                BigDecimal signFineCount = BigDecimal.valueOf(0D);
-//                if (valueMap.get("signFineCount") != null) {
-//                    signFineCount = (BigDecimal)valueMap.get("signFineCount");
-//                }
-//
-//                //外协单明细状态(0:待提交 1:待审核 2:采购中 3:部分签收 4:已完成 -1:已取消)
-//                if (signFineCount.doubleValue() >= orderCount.doubleValue()) {
-//                    editOrderDtl.setState("4");
-//                    orderDetailService.update(editOrderDtl);
-//
-//                    //planDtlId 外协计划明细id
-//                    String planDtlId = (String)valueMap.get("planDtlId");
-//                    if (planDtlId != null && planDtlId.trim().length() > 0) {
-//                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
-//                        editPlanDtl.setId(planDtlId);
-//                        //外协计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-//                        editPlanDtl.setState("4");
-//                        planDetailService.update(editPlanDtl);
-//                    }
-//
-//                    //planId 外协计划id
-//                    if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
-//                        String planId = (String)valueMap.get("planId");
-//                        planIdMap.put(planId.trim(), planId.trim());
-//                    }
-//                }
-//            }
-//        }
-//
-//        //反写外协订单状态
-//        String orderId = (String)retreatDetailMap.get("orderId");
-//        AssistOrder editOrder = new AssistOrder();
-//        editOrder.setId(orderId);
-//        orderDetailService.updateParentStateByDetailList(editOrder, null);
-//        //反写 (外协计划明细,外协计划)状态
-//        if (planIdMap != null) {
-//            for (Iterator iterator = planIdMap.keySet().iterator(); iterator.hasNext();) {
-//                String planId = (String)iterator.next();
-//                if (planId != null && planId.trim().length() > 0) {
-//                    //planService.updateState(planId);
-//                    AssistPlan editPlan = new AssistPlan();
-//                    editPlan.setId(planId);
-//                    planDetailService.updateParentStateByDetailList(editPlan, null);
-//                }
-//            }
-//        }
+        //修改外协订单////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
+        //查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
+        String orderId = pageData.getString("orderId");
+        List<Map<String, Object>> orderChildList = assistOrderChildService.findCheckAssistOrderChild(orderId);
+        String finishOrderId = assistOrderChildService.finishOrderByAssistOrderChild(orderChildList);
+
+        if (finishOrderId != null && finishOrderId.trim().length() > 0) {
+            AssistOrder editOrder = new AssistOrder();
+            editOrder.setId(finishOrderId);
+            //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+            editOrder.setState("4");
+            assistOrderService.update(editOrder);
+
+            //明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+            assistOrderDetailService.updateStateByDetail("4", finishOrderId);
+
+            Map<String, String> planMap = new HashMap<>();
+            Map<String, String> planDtlMap = new HashMap<>();
+            if (orderChildList != null && orderChildList.size() > 0) {
+                for (Map<String, Object> objectMap : orderChildList) {
+                    //planId 外协计划id
+                    String planId = (String)objectMap.get("planId");
+                    if (planId != null && planId.trim().length() > 0) {
+                        planMap.put(planId, planId);
+                    }
+
+                    //planDtlId 外协计划明细id
+                    String planDtlId = (String)objectMap.get("planDtlId");
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        planDtlMap.put(planDtlId, planDtlId);
+                    }
+                }
+            }
+
+            //外协计划明细
+            if (planDtlMap != null) {
+                for (Iterator iterator = planDtlMap.keySet().iterator(); iterator.hasNext();) {
+                    String planDtlId = (String)iterator.next();
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
+                        editPlanDtl.setId(planDtlId);
+                        //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        editPlanDtl.setState("4");
+                        planDetailService.update(editPlanDtl);
+                    }
+                }
+            }
+
+            if (planMap != null) {
+                for (Iterator iterator = planMap.keySet().iterator(); iterator.hasNext();) {
+                    String planId = (String)iterator.next();
+                    if (planId != null && planId.trim().length() > 0) {
+                        AssistPlan editPlan = new AssistPlan();
+                        editPlan.setId(planId);
+                        planDetailService.updateParentStateByDetailList(editPlan, null);
+                    }
+                }
+            }
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Map<String, Map<String, Object>> businessByInMap = new HashMap<>();
@@ -795,85 +781,65 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
 //            }
         }
 
-//        //修改外协订单////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        //根据(外协订单明细id) 查询
-//        Map<String, Map<String, Object>> orderDetailMap = new HashMap<>();
-//        if (orderDtlIds != null && orderDtlIds.trim().length() > 0) {
-//            String detailIds = orderDtlIds.trim();
-//            detailIds = StringUtil.stringTrimSpace(detailIds);
-//            detailIds = "'" + detailIds.replace(",", "','") + "'";
-//
-//            //查询SQL:AssistOrderDetailQueryBySignMapper.findCheckAssistOrderDetaiBySign
-//            PageData findMap = new PageData();
-//            findMap.put("orderDtlIds", detailIds);
-//            orderDetailMap = orderDetailService.findCheckAssistOrderDetailMap(findMap);
-//        }
+        //修改外协订单////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
+        //查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
+        List<Map<String, Object>> orderChildList = assistOrderChildService.findCheckAssistOrderChild(orderId);
+        String finishOrderId = assistOrderChildService.finishOrderByAssistOrderChild(orderChildList);
 
-//        //遍历当前签收明细List
-//        //planId 外协计划id
-//        Map<String, String> planIdMap = new HashMap<>();
-//        if (signDetailList != null && signDetailList.size() > 0) {
-//            for (AssistRetreatDetail signDetail : signDetailList) {
-//                AssistOrderDetail editOrderDtl = new AssistOrderDetail();
-//
-//                //orderDetailId 外协订单明细ID
-//                String orderDetailId = signDetail.getOrderDetailId();
-//                editOrderDtl.setId(orderDetailId);
-//
-//                Map<String, Object> valueMap = orderDetailMap.get(orderDetailId);
-//                if (valueMap != null) {
-//                    //orderCount 订单数量
-//                    BigDecimal orderCount = BigDecimal.valueOf(0D);
-//                    if (valueMap.get("orderCount") != null) {
-//                        orderCount = (BigDecimal)valueMap.get("orderCount");
-//                    }
-//
-//                    //signFineCount 收货合格数(签收数-(检验)退货数)
-//                    BigDecimal signFineCount = BigDecimal.valueOf(0D);
-//                    if (valueMap.get("signFineCount") != null) {
-//                        signFineCount = (BigDecimal)valueMap.get("signFineCount");
-//                    }
-//
-//                    //外协订单明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
-//                    if (signFineCount.doubleValue() >= orderCount.doubleValue()) {
-//                        editOrderDtl.setState("4");
-//                        orderDetailService.update(editOrderDtl);
-//
-//                        //planDtlId 外协计划明细id
-//                        String planDtlId = (String)valueMap.get("planDtlId");
-//                        if (planDtlId != null && planDtlId.trim().length() > 0) {
-//                            AssistPlanDetail editPlanDtl = new AssistPlanDetail();
-//                            editPlanDtl.setId(planDtlId);
-//                            //外协计划明细状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
-//                            editPlanDtl.setState("4");
-//                            planDetailService.update(editPlanDtl);
-//                        }
-//
-//                        //planId 外协计划id
-//                        if (valueMap.get("planId") != null && valueMap.get("planId").toString().trim().length() > 0) {
-//                            String planId = (String)valueMap.get("planId");
-//                            planIdMap.put(planId.trim(), planId.trim());
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        //反写外协订单状态
-//        AssistOrder editOrder = new AssistOrder();
-//        editOrder.setId(orderId);
-//        orderDetailService.updateParentStateByDetailList(editOrder, null);
-//        //反写 (外协计划明细,外协计划)状态
-//        if (planIdMap != null) {
-//            for (Iterator iterator = planIdMap.keySet().iterator(); iterator.hasNext();) {
-//                String planId = (String)iterator.next();
-//                if (planId != null && planId.trim().length() > 0) {
-//                    AssistPlan editPlan = new AssistPlan();
-//                    editPlan.setId(planId);
-//                    planDetailService.updateParentStateByDetailList(editPlan, null);
-//                }
-//            }
-//        }
+        if (finishOrderId != null && finishOrderId.trim().length() > 0) {
+            AssistOrder editOrder = new AssistOrder();
+            editOrder.setId(finishOrderId);
+            //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+            editOrder.setState("4");
+            assistOrderService.update(editOrder);
+
+            //明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+            assistOrderDetailService.updateStateByDetail("4", finishOrderId);
+
+            Map<String, String> planMap = new HashMap<>();
+            Map<String, String> planDtlMap = new HashMap<>();
+            if (orderChildList != null && orderChildList.size() > 0) {
+                for (Map<String, Object> objectMap : orderChildList) {
+                    //planId 外协计划id
+                    String planId = (String)objectMap.get("planId");
+                    if (planId != null && planId.trim().length() > 0) {
+                        planMap.put(planId, planId);
+                    }
+
+                    //planDtlId 外协计划明细id
+                    String planDtlId = (String)objectMap.get("planDtlId");
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        planDtlMap.put(planDtlId, planDtlId);
+                    }
+                }
+            }
+
+            //外协计划明细
+            if (planDtlMap != null) {
+                for (Iterator iterator = planDtlMap.keySet().iterator(); iterator.hasNext();) {
+                    String planDtlId = (String)iterator.next();
+                    if (planDtlId != null && planDtlId.trim().length() > 0) {
+                        AssistPlanDetail editPlanDtl = new AssistPlanDetail();
+                        editPlanDtl.setId(planDtlId);
+                        //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                        editPlanDtl.setState("4");
+                        planDetailService.update(editPlanDtl);
+                    }
+                }
+            }
+
+            if (planMap != null) {
+                for (Iterator iterator = planMap.keySet().iterator(); iterator.hasNext();) {
+                    String planId = (String)iterator.next();
+                    if (planId != null && planId.trim().length() > 0) {
+                        AssistPlan editPlan = new AssistPlan();
+                        editPlan.setId(planId);
+                        planDetailService.updateParentStateByDetailList(editPlan, null);
+                    }
+                }
+            }
+        }
 
         //生成(正常接收Map, 让步接收Map) ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //正常接收Map
@@ -1105,7 +1071,6 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
 
         return model;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

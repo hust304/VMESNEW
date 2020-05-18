@@ -215,7 +215,7 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
         }
         addRetreat.setSupplierId(supplierId);
         //退货类型(1:外协件 2:外协原材料)
-        addRetreat.setType("1");
+        addRetreat.setType(type);
         //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
         addRetreat.setState("3");
         //退货完成日期 retreatDate
@@ -286,23 +286,23 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
         retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
         addRetreatDtl.setOrderCount(retreatCount);
 
-        //price:单价(外协件)
-        BigDecimal price = BigDecimal.valueOf(0D);
-        String priceStr = objectMap.get("price");
-        if (priceStr != null && priceStr.trim().length() > 0) {
-            try {
-                price = new BigDecimal(priceStr);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-        //四舍五入到4位小数
-        price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-        addRetreatDtl.setPrice(price);
+//        //price:单价(外协件)
+//        BigDecimal price = BigDecimal.valueOf(0D);
+//        String priceStr = objectMap.get("price");
+//        if (priceStr != null && priceStr.trim().length() > 0) {
+//            try {
+//                price = new BigDecimal(priceStr);
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        //四舍五入到4位小数
+//        price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//        addRetreatDtl.setPrice(price);
 
-        //amount:金额(外协件)
-        BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * retreatCount.doubleValue());
-        addRetreatDtl.setAmount(amount);
+//        //amount:金额(外协件)
+//        BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * retreatCount.doubleValue());
+//        addRetreatDtl.setAmount(amount);
 
         assistRetreatDetailService.save(addRetreatDtl);
 
