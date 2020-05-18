@@ -98,6 +98,12 @@ public class AssistSignDetail implements Serializable {
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
+	//外协退货明细id
+	@TableField("retreat_dtl_id")
+	private String retreatDtlId;
+	//外协报废明细id
+	@TableField("discard_dtl_id")
+	private String discardDtlId;
 
 
 	public void setId(String id) {
@@ -255,6 +261,18 @@ public class AssistSignDetail implements Serializable {
 	}
 	public void setDiscardCount(BigDecimal discardCount) {
 		this.discardCount = discardCount;
+	}
+	public String getRetreatDtlId() {
+		return retreatDtlId;
+	}
+	public void setRetreatDtlId(String retreatDtlId) {
+		this.retreatDtlId = retreatDtlId;
+	}
+	public String getDiscardDtlId() {
+		return discardDtlId;
+	}
+	public void setDiscardDtlId(String discardDtlId) {
+		this.discardDtlId = discardDtlId;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

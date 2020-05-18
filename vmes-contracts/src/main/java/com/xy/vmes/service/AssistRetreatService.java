@@ -99,6 +99,15 @@ public interface AssistRetreatService {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
+     * 生成外协退货单-外协质量检验(成品签收检验)
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param objectMap  质量检验jsonMap
+     */
+    String createRetreatByQuality(String cuser, String companyId, Map<String, String> objectMap) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
     * 分页查询
     * @param pd    查询参数对象PageData
     * @return      返回对象ResultModel

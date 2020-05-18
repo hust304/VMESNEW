@@ -43,6 +43,11 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
     private AssistOrderDetailChildService assistOrderChildService;
 
     @Autowired
+    private AssistRetreatService assistRetreatService;
+    @Autowired
+    private AssistDiscardService assistDiscardService;
+
+    @Autowired
     private AssistPlanDetailService planDetailService;
 
     @Autowired
@@ -647,11 +652,18 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
             qualityFineCount = qualityFineCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             editSignDetail.setQualityFineCount(qualityFineCount);
 
-//            //添加外协退货单
-//            if (retreatCount != null && retreatCount.doubleValue() != 0) {
-//                String retreatDtlId = retreatService.createRetreatByQuality(cuser, companyId, objectMap);
-//                editSignDetail.setRetreatDtlId(retreatDtlId);
-//            }
+            //添加外协退货单
+            if (retreatCount != null && retreatCount.doubleValue() != 0) {
+                String retreatDtlId = assistRetreatService.createRetreatByQuality(cuser, companyId, objectMap);
+                editSignDetail.setRetreatDtlId(retreatDtlId);
+            }
+
+            //添加外协报废单 (报废数 discardCount)
+            if (discardCount != null && discardCount.doubleValue() != 0) {
+                //type:报废类型(1:外协件 2:外协原材料)
+                String discardDtlId = assistDiscardService.createDiscardByQuality(cuser, companyId, "1", objectMap);
+                editSignDetail.setDiscardDtlId(discardDtlId);
+            }
 
             this.update(editSignDetail);
 

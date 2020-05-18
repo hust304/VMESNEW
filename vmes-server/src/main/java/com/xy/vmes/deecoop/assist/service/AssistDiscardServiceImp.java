@@ -2,18 +2,24 @@ package com.xy.vmes.deecoop.assist.service;
 
 import com.xy.vmes.deecoop.assist.dao.AssistDiscardMapper;
 import com.xy.vmes.entity.AssistDiscard;
+import com.xy.vmes.entity.AssistDiscardDetail;
+import com.xy.vmes.service.AssistDiscardDetailService;
 import com.xy.vmes.service.AssistDiscardService;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.service.CoderuleService;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 import com.yvan.Conv;
 
@@ -27,6 +33,11 @@ import com.yvan.Conv;
 public class AssistDiscardServiceImp implements AssistDiscardService {
     @Autowired
     private AssistDiscardMapper assistDiscardMapper;
+    @Autowired
+    private AssistDiscardDetailService assistDiscardDetailService;
+
+    @Autowired
+    private CoderuleService coderuleService;
     @Autowired
     private ColumnService columnService;
 
@@ -185,6 +196,119 @@ public class AssistDiscardServiceImp implements AssistDiscardService {
     public List<AssistDiscard> findAssistDiscardList(PageData object) throws Exception {
         return this.findDataList(object, null);
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 生成外协报废单-外协质量检验(成品,原材料)报废
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param type       报废类型(1:外协件 2:外协原材料)
+     * @param objectMap  质量检验jsonMap
+     */
+    public String createDiscardByQuality(String cuser, String companyId, String type, Map<String, String> objectMap) throws Exception {
+        AssistDiscard addDiscard = new AssistDiscard();
+        addDiscard.setCuser(cuser);
+        addDiscard.setCompanyId(companyId);
+
+        String supplierId = new String();
+        if (objectMap.get("supplierId") != null) {
+            supplierId = objectMap.get("supplierId").trim();
+        }
+        addDiscard.setSupplierId(supplierId);
+        //退货类型(1:外协件 2:外协原材料)
+        addDiscard.setType(type);
+        ////状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)
+        addDiscard.setState("3");
+        //报废完成日期 discardDate
+        addDiscard.setDiscardDate(new Date());
+
+        //报废金额 amount
+        //addDiscard.setAmount(BigDecimal.valueOf(0D));
+        addDiscard.setAuditId(Common.SYS_COMPANYAPPLICATION_ADMIN_USER_ID);
+
+        String code = coderuleService.createCoderCdateOnShortYearByDate(
+                companyId,
+                "vmes_assist_discard",
+                "R",
+                Common.CODE_RULE_LENGTH_3);
+        addDiscard.setSysCode(code);
+        this.save(addDiscard);
+
+        AssistDiscardDetail addDiscardDtl = new AssistDiscardDetail();
+        addDiscardDtl.setParentId(addDiscardDtl.getId());
+        addDiscardDtl.setState(addDiscardDtl.getState());
+        addDiscardDtl.setCuser(addDiscardDtl.getCuser());
+
+        //orderId:外协订单ID
+        String orderId = objectMap.get("orderId").trim();
+        addDiscardDtl.setOrderId(orderId);
+        //orderDtlId:订单明细ID
+        String orderDtlId = objectMap.get("orderDtlId").trim();
+        addDiscardDtl.setOrderDtlId(orderDtlId);
+
+        //type:报废类型(1:外协件 2:外协原材料)
+        if ("1".equals(type)) {
+            //assistProductId:外协件ID(外协件)
+            String assistProductId = objectMap.get("assistProductId").trim();
+            addDiscardDtl.setAssistProductId(assistProductId);
+        } else if ("2".equals(type)) {
+            //deliverDtlChildId:发货明细子表id(原材料)
+            String deliverDtlChildId = objectMap.get("deliverDtlChildId").trim();
+            addDiscardDtl.setDeliverDtlChildId(deliverDtlChildId);
+
+            //deliverDtlId:外协发货明细ID
+            String deliverDtlId = objectMap.get("deliverDtlId").trim();
+            addDiscardDtl.setDeliverDtlId(deliverDtlId);
+
+            //deliverId:外协发货ID
+            String deliverId = objectMap.get("deliverId").trim();
+            addDiscardDtl.setDeliverId(deliverId);
+        }
+
+        //orderUnit:订单单位ID
+        String orderUnit = objectMap.get("orderUnit").trim();
+        addDiscardDtl.setOrderUnit(orderUnit);
+        //productId:原材料ID(系统货品表id)
+        String productId = objectMap.get("productId").trim();
+        addDiscardDtl.setProductId(productId);
+
+        //orderCount:退货数量(订单单位)
+        //count:退货数量: retreatCount (检验)退货数量
+        BigDecimal retreatCount = BigDecimal.valueOf(0D);
+        String retreatCountStr = objectMap.get("retreatCount");
+        if (retreatCountStr != null && retreatCountStr.trim().length() > 0) {
+            try {
+                retreatCount = new BigDecimal(retreatCountStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        //四舍五入到2位小数
+        retreatCount = retreatCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+        addDiscardDtl.setOrderCount(retreatCount);
+
+//        //price:单价(外协件)
+//        BigDecimal price = BigDecimal.valueOf(0D);
+//        String priceStr = objectMap.get("price");
+//        if (priceStr != null && priceStr.trim().length() > 0) {
+//            try {
+//                price = new BigDecimal(priceStr);
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        //四舍五入到4位小数
+//        price = price.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//        addRetreatDtl.setPrice(price);
+//
+//        //amount:金额(外协件)
+//        BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * retreatCount.doubleValue());
+//        addRetreatDtl.setAmount(amount);
+
+        assistDiscardDetailService.save(addDiscardDtl);
+
+        return addDiscardDtl.getId();
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

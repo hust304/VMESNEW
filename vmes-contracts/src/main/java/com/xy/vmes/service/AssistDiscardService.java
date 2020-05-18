@@ -98,7 +98,16 @@ public interface AssistDiscardService {
     List<AssistDiscard> findAssistDiscardList(PageData object) throws Exception;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 生成外协报废单-外协质量检验(成品,原材料)报废
+     * @param cuser      用户id
+     * @param companyId  企业id
+     * @param type       报废类型(1:外协件 2:外协原材料)
+     * @param objectMap  质量检验jsonMap
+     */
+    String createDiscardByQuality(String cuser, String companyId, String type, Map<String, String> objectMap) throws Exception;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询
     * @param pd    查询参数对象PageData
