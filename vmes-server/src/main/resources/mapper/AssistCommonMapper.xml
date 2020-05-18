@@ -136,7 +136,7 @@
     <sql id="findAssistRetreatProductSignByOrder">
         select
             deliverChild.orderDtl_child_id,
-            round((ifnull(deliverChild.ratio, 0) * ifnull(retreatDtl.order_count, 0)),2) order_count
+            round(ifnull(retreatDtl.order_count, 0), 2) order_count
         from (
             select
                 a.deliver_dtl_child_id,
@@ -165,7 +165,7 @@
     <sql id="findAssistRetreatProductByOrder">
         select
             deliverChild.orderDtl_child_id,
-            round((ifnull(deliverChild.ratio, 0) * ifnull(retreatDtl.sign_fine_count, 0)),2) order_count
+            round(ifnull(retreatDtl.sign_fine_count, 0),2) order_count
         from (
             select
                 a.deliver_dtl_child_id,
