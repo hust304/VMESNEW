@@ -654,7 +654,7 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
 
             //添加外协退货单
             if (retreatCount != null && retreatCount.doubleValue() != 0) {
-                String retreatDtlId = assistRetreatService.createRetreatByQuality(cuser, companyId, objectMap);
+                String retreatDtlId = assistRetreatService.createRetreatByQuality(cuser, companyId, "1", objectMap);
                 editSignDetail.setRetreatDtlId(retreatDtlId);
             }
 

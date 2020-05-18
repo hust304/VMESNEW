@@ -201,9 +201,10 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
      * 生成外协退货单-采购质量检验(退货)
      * @param cuser      用户id
      * @param companyId  企业id
+     * @param type       退货类型(1:外协件 2:外协原材料)
      * @param objectMap  质量检验jsonMap
      */
-    public String createRetreatByQuality(String cuser, String companyId, Map<String, String> objectMap) throws Exception {
+    public String createRetreatByQuality(String cuser, String companyId, String type, Map<String, String> objectMap) throws Exception {
         AssistRetreat addRetreat = new AssistRetreat();
         addRetreat.setCuser(cuser);
         addRetreat.setCompanyId(companyId);
@@ -244,9 +245,25 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
         String orderDtlId = objectMap.get("orderDtlId").trim();
         addRetreatDtl.setOrderDtlId(orderDtlId);
 
-        //assistProductId:外协件ID(外协件)
-        String assistProductId = objectMap.get("assistProductId").trim();
-        addRetreatDtl.setAssistProductId(assistProductId);
+        //type:报废类型(1:外协件 2:外协原材料)
+        if ("1".equals(type)) {
+            //assistProductId:外协件ID(外协件)
+            String assistProductId = objectMap.get("assistProductId").trim();
+            addRetreatDtl.setAssistProductId(assistProductId);
+        } else if ("2".equals(type)) {
+            //deliverDtlChildId:发货明细子表id(原材料)
+            String deliverDtlChildId = objectMap.get("deliverDtlChildId").trim();
+            addRetreatDtl.setDeliverDtlChildId(deliverDtlChildId);
+
+            //deliverDtlId:外协发货明细ID
+            String deliverDtlId = objectMap.get("deliverDtlId").trim();
+            addRetreatDtl.setDeliverDtlId(deliverDtlId);
+
+            //deliverId:外协发货ID
+            String deliverId = objectMap.get("deliverId").trim();
+            addRetreatDtl.setDeliverId(deliverId);
+        }
+
         //productId:原材料ID(系统货品表id)
         String productId = objectMap.get("productId").trim();
         addRetreatDtl.setProductId(productId);

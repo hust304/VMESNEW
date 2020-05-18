@@ -36,6 +36,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
     @Autowired
     private AssistRetreatService retreatService;
     @Autowired
+    private AssistDiscardService assistDiscardService;
+    @Autowired
     private WarehouseInCreateService warehouseInCreateService;
 
     @Autowired
@@ -759,45 +761,13 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
             qualityFineCount = qualityFineCount.setScale(Common.SYS_PRICE_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
             editRetreatDetail.setQualityFineCount(qualityFineCount);
 
-//            //添加外协报废单
-//            if (retreatCount != null && retreatCount.doubleValue() != 0) {
-//                String retreatDtlId = retreatService.createRetreatByQuality(cuser, companyId, objectMap);
-//                editSignDetail.setRetreatDtlId(retreatDtlId);
-//            }
+            //添加外协报废单
+            if (discardCount != null && discardCount.doubleValue() != 0) {
+                //type:报废类型(1:外协件 2:外协原材料)
+                assistDiscardService.createDiscardByQuality(cuser, companyId, "2", objectMap);
+            }
 
             this.update(editRetreatDetail);
-
-//            //price 单价(外协订单明细)
-//            BigDecimal price = BigDecimal.valueOf(0D);
-//            String priceStr = objectMap.get("price");
-//            if (priceStr != null && priceStr.trim().length() > 0) {
-//                try {
-//                    price = new BigDecimal(priceStr);
-//                } catch (NumberFormatException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-
-//            //amount 签收金额 = 收货合格数(signFineCount) * 单价(外协订单明细)
-//            BigDecimal amount = BigDecimal.valueOf(price.doubleValue() * signFineCount.doubleValue());
-//            //四舍五入到2位小数
-//            amount = amount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-
-//            //生成外协付款单(vmes_finance_bill)
-//            //外协签收单号
-//            signCode = objectMap.get("signCode");
-//            purchaseByFinanceBillService.addFinanceBillByAssist(editSignDetail.getId(),
-//                    companyId,
-//                    supplierId,
-//                    cuser,
-//                    //type: 单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协))
-//                    //11:收货账单(外协) 12:退款单(外协)
-//                    "11",
-//                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
-//                    "2",
-//                    null,
-//                    amount,
-//                    signCode);
 
             //外协退货单id
             String parentId = objectMap.get("parentId");
