@@ -1,11 +1,8 @@
 package com.xy.vmes.deecoop.assist.controller;
 
-import com.xy.vmes.entity.AssistDiscard;
-import com.xy.vmes.entity.AssistDiscardDetail;
-import com.xy.vmes.service.AssistDiscardDetailService;
-import com.xy.vmes.service.AssistDiscardService;
+import com.xy.vmes.entity.*;
+import com.xy.vmes.service.*;
 
-import com.xy.vmes.service.CoderuleService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
 import com.yvan.YvanUtil;
@@ -20,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
 * 说明：vmes_assist_discard:外协报废单Controller
@@ -39,6 +33,16 @@ public class AssistDiscardController {
     private AssistDiscardService discardService;
     @Autowired
     private AssistDiscardDetailService discardDetailService;
+
+    @Autowired
+    private AssistPlanDetailService planDetailService;
+    @Autowired
+    private AssistOrderService assistOrderService;
+    @Autowired
+    private AssistOrderDetailService assistOrderDetailService;
+    @Autowired
+    private AssistOrderDetailChildService assistOrderChildService;
+
     @Autowired
     private CoderuleService coderuleService;
 
@@ -474,6 +478,83 @@ public class AssistDiscardController {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //修改外协订单状态
+        Map<String, String> orderMap = new HashMap<>();
+        PageData findMap = new PageData();
+        findMap.put("parentId", discardId);
+
+        //SQL: AssistDiscardDetailMapper.getDataListPage
+        List<Map> varList = discardDetailService.getDataListPage(findMap, null);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String orderId = (String)mapObject.get("orderId");
+                if (orderId != null && orderId.trim().length() > 0) {
+                    orderMap.put(orderId, orderId);
+                }
+            }
+        }
+
+        for (Iterator iterator_1 = orderMap.keySet().iterator(); iterator_1.hasNext();) {
+            String orderId = (String)iterator_1.next();
+
+            //根据(外协订单id) 汇总查询取外协件原材料(成品签收检验,原材料退货检验,原材料报废,成品报废,) 验证外协订单状态
+            //查询SQL:AssistOrderDetailChildMapper.findCheckAssistOrderChild
+            List<Map<String, Object>> orderChildList = assistOrderChildService.findCheckAssistOrderChild(orderId);
+            String finishOrderId = assistOrderChildService.finishOrderByAssistOrderChild(orderChildList);
+
+            if (finishOrderId != null && finishOrderId.trim().length() > 0) {
+                AssistOrder editOrder = new AssistOrder();
+                editOrder.setId(finishOrderId);
+                //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+                editOrder.setState("4");
+                assistOrderService.update(editOrder);
+
+                //明细状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+                assistOrderDetailService.updateStateByDetail("4", finishOrderId);
+
+                Map<String, String> planMap = new HashMap<>();
+                Map<String, String> planDtlMap = new HashMap<>();
+                if (orderChildList != null && orderChildList.size() > 0) {
+                    for (Map<String, Object> objectMap : orderChildList) {
+                        //planId 外协计划id
+                        String planId = (String)objectMap.get("planId");
+                        if (planId != null && planId.trim().length() > 0) {
+                            planMap.put(planId, planId);
+                        }
+
+                        //planDtlId 外协计划明细id
+                        String planDtlId = (String)objectMap.get("planDtlId");
+                        if (planDtlId != null && planDtlId.trim().length() > 0) {
+                            planDtlMap.put(planDtlId, planDtlId);
+                        }
+                    }
+                }
+
+                //外协计划明细
+                if (planDtlMap != null) {
+                    for (Iterator iterator = planDtlMap.keySet().iterator(); iterator.hasNext();) {
+                        String planDtlId = (String)iterator.next();
+                        if (planDtlId != null && planDtlId.trim().length() > 0) {
+                            AssistPlanDetail editPlanDtl = new AssistPlanDetail();
+                            editPlanDtl.setId(planDtlId);
+                            //状态(0:待提交 1:待审核 2:待执行 3:执行中 4:已完成 -1:已取消)
+                            editPlanDtl.setState("4");
+                            planDetailService.update(editPlanDtl);
+                        }
+                    }
+                }
+
+                if (planMap != null) {
+                    for (Iterator iterator = planMap.keySet().iterator(); iterator.hasNext();) {
+                        String planId = (String)iterator.next();
+                        if (planId != null && planId.trim().length() > 0) {
+                            AssistPlan editPlan = new AssistPlan();
+                            editPlan.setId(planId);
+                            planDetailService.updateParentStateByDetailList(editPlan, null);
+                        }
+                    }
+                }
+            }
+        }
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDiscard/auditPassAssistDiscard 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");

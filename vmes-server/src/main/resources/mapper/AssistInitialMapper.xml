@@ -214,8 +214,8 @@
 采购(供应商): 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购)
 外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协)
 -->
-            DELETE FROM vmes_finance_bill WHERE customer_id in (
-            where company_id = #{currentCompanyId} and type in ('11','12','13')
+            DELETE FROM vmes_finance_bill
+            WHERE company_id = #{currentCompanyId} and type in ('11','12','13')
 
         </if>
     </delete>
