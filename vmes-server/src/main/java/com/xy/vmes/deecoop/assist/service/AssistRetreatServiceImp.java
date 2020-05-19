@@ -211,7 +211,7 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
 
         String supplierId = new String();
         if (objectMap.get("supplierId") != null) {
-            supplierId = objectMap.get("supplierId").trim();
+            supplierId = objectMap.get("supplierId");
         }
         addRetreat.setSupplierId(supplierId);
         //退货类型(1:外协件 2:外协原材料)
@@ -239,36 +239,36 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
         addRetreatDtl.setCuser(addRetreat.getCuser());
 
         //orderId:外协订单ID
-        String orderId = objectMap.get("orderId").trim();
+        String orderId = objectMap.get("orderId");
         addRetreatDtl.setOrderId(orderId);
         //orderDtlId:订单明细ID
-        String orderDtlId = objectMap.get("orderDtlId").trim();
+        String orderDtlId = objectMap.get("orderDtlId");
         addRetreatDtl.setOrderDtlId(orderDtlId);
 
         //type:报废类型(1:外协件 2:外协原材料)
         if ("1".equals(type)) {
             //assistProductId:外协件ID(外协件)
-            String assistProductId = objectMap.get("assistProductId").trim();
+            String assistProductId = objectMap.get("assistProductId");
             addRetreatDtl.setAssistProductId(assistProductId);
         } else if ("2".equals(type)) {
             //deliverDtlChildId:发货明细子表id(原材料)
-            String deliverDtlChildId = objectMap.get("deliverDtlChildId").trim();
+            String deliverDtlChildId = objectMap.get("deliverDtlChildId");
             addRetreatDtl.setDeliverDtlChildId(deliverDtlChildId);
 
             //deliverDtlId:外协发货明细ID
-            String deliverDtlId = objectMap.get("deliverDtlId").trim();
+            String deliverDtlId = objectMap.get("deliverDtlId");
             addRetreatDtl.setDeliverDtlId(deliverDtlId);
 
             //deliverId:外协发货ID
-            String deliverId = objectMap.get("deliverId").trim();
+            String deliverId = objectMap.get("deliverId");
             addRetreatDtl.setDeliverId(deliverId);
         }
 
         //productId:原材料ID(系统货品表id)
-        String productId = objectMap.get("productId").trim();
+        String productId = objectMap.get("productId");
         addRetreatDtl.setProductId(productId);
         //orderUnit:订单单位ID
-        String orderUnit = objectMap.get("orderUnit").trim();
+        String orderUnit = objectMap.get("orderUnit");
         addRetreatDtl.setOrderUnit(orderUnit);
 
         //orderCount:退货数量(订单单位)
