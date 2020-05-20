@@ -25,9 +25,19 @@ public interface SaleAnalysisMapper {
 
     List<Map> getProductReturnRate(PageData pd);
 
-    List<Map> getSalesVolumeByCustomer(PageData pd);
+    List<Map> getSalesVolumeNumberByCustomer(PageData pd);
+
+    List<Map> getSalesVolumeNumberByEmployee(PageData pd);
 
     List<Map> getSalesByEmployee(PageData pd);
 
     List<Map> getSalesTrendByEmployee(PageData pd);
+
+    List<Map> getSalesTrendQueryByDMY(PageData pd);
+
+    List<Map> getSalesProductQueryByDMY(PageData pd);
+
+    List<Map> getSalesCustomerQueryByDMY(PageData pd);
+
+    List<Map> getSalesEmployeeQueryByDMY(PageData pd);
 }

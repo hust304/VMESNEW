@@ -25,4 +25,44 @@ public interface SaleAnalysisService {
     ResultModel salesTrendByEmployeeQuery(PageData pd) throws Exception;
 
     ResultModel accountsReceivableQuery(PageData pd) throws Exception;
+
+    ResultModel salesTrendQueryByDMY(PageData pd) throws Exception;
+
+    ResultModel salesTrendProductByDate(PageData pd) throws Exception;
+
+    ResultModel salesTrendCustomerByDate(PageData pd) throws Exception;
+
+    ResultModel salesTrendEmployeeByDate(PageData pd) throws Exception;
+
+    ResultModel salesProductQueryByDMY(PageData pd) throws Exception;
+
+    ResultModel salesProductVolumeByDMY(PageData pd) throws Exception;
+
+    ResultModel salesProductNumberByDMY(PageData pd) throws Exception;
+
+    ResultModel salesProductProportion(PageData pd) throws Exception;
+
+    ResultModel salesProductCustomer(PageData pd) throws Exception;
+
+    ResultModel salesProductEmployee(PageData pd) throws Exception;
+
+    ResultModel salesCustomerQueryByDMY(PageData pd) throws Exception;
+
+    ResultModel salesCustomerVolumeByDMY(PageData pd) throws Exception;
+
+    ResultModel salesCustomerNumberByDMY(PageData pd) throws Exception;
+
+    ResultModel salesCustomerProportion(PageData pd) throws Exception;
+
+    ResultModel salesCustomerProduct(PageData pd) throws Exception;
+
+    ResultModel salesEmployeeQueryByDMY(PageData pd) throws Exception;
+
+    ResultModel salesEmployeeVolumeByDMY(PageData pd) throws Exception;
+
+    ResultModel salesEmployeeNumberByDMY(PageData pd) throws Exception;
+
+    ResultModel salesEmployeeProportion(PageData pd) throws Exception;
+
+    ResultModel salesEmployeeProduct(PageData pd) throws Exception;
 }
