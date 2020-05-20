@@ -45,7 +45,7 @@
             planDtl.parent_id parentId,
             planDtl.assist_product_id assistProductId,
             planDtl.order_unit orderUnit,
-            planDtl.count count,
+            round(ifnull(planDtl.count, 0),2) count,
             DATE_FORMAT(planDtl.plan_date,'%Y-%m-%d') planDate,
             planDtl.state state,
             planDtl.isdisable isdisable,
