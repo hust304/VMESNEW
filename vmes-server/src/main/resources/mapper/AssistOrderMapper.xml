@@ -160,9 +160,14 @@
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and assistOrder.company_id = #{currentCompanyId}
             </if>
+
             <if test="state != null and state != ''">
                 and assistOrder.state = #{state}
             </if>
+            <if test="inStates != null and inStates != ''">
+                and assistOrder.state in (${inStates})
+            </if>
+
             <if test="sysCode != null and sysCode != ''" >
                 and assistOrder.sys_code = #{sysCode}
             </if>
