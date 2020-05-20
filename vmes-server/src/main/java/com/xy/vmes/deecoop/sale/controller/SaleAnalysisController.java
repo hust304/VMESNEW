@@ -186,5 +186,369 @@ public class SaleAnalysisController {
 
 
 
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesTrendQueryByDMY")
+    public ResultModel salesTrendQueryByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesTrendQueryByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesTrendQueryByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesTrendQueryByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesTrendProductByDate")
+    public ResultModel salesTrendProductByDate() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesTrendProductByDate 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesTrendProductByDate(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesTrendProductByDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesTrendCustomerByDate")
+    public ResultModel salesTrendCustomerByDate() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesTrendCustomerByDate 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesTrendCustomerByDate(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesTrendCustomerByDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesTrendEmployeeByDate")
+    public ResultModel salesTrendEmployeeByDate() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesTrendEmployeeByDate 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesTrendEmployeeByDate(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesTrendEmployeeByDate 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesProductQueryByDMY")
+    public ResultModel salesProductQueryByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesProductQueryByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesProductQueryByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesProductQueryByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesProductVolumeByDMY")
+    public ResultModel salesProductVolumeByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesProductVolumeByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesProductVolumeByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesProductVolumeByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesProductNumberByDMY")
+    public ResultModel salesProductNumberByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesProductNumberByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesProductNumberByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesProductNumberByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesProductProportion")
+    public ResultModel salesProductProportion() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesProductProportion 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesProductProportion(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesProductProportion 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesProductCustomer")
+    public ResultModel salesProductCustomer() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesProductCustomer 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesProductCustomer(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesProductCustomer 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesProductEmployee")
+    public ResultModel salesProductEmployee() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesProductEmployee 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesProductEmployee(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesProductEmployee 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesCustomerQueryByDMY")
+    public ResultModel salesCustomerQueryByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesCustomerQueryByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesCustomerQueryByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesCustomerQueryByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesCustomerVolumeByDMY")
+    public ResultModel salesCustomerVolumeByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesCustomerVolumeByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesCustomerVolumeByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesCustomerVolumeByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesCustomerNumberByDMY")
+    public ResultModel salesCustomerNumberByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesCustomerNumberByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesCustomerNumberByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesCustomerNumberByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesCustomerProportion")
+    public ResultModel salesCustomerProportion() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesCustomerProportion 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesCustomerProportion(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesCustomerProportion 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesCustomerProduct")
+    public ResultModel salesCustomerProduct() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesCustomerProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesCustomerProduct(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesCustomerProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesEmployeeQueryByDMY")
+    public ResultModel salesEmployeeQueryByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesEmployeeQueryByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesEmployeeQueryByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesEmployeeQueryByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesEmployeeVolumeByDMY")
+    public ResultModel salesEmployeeVolumeByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesEmployeeVolumeByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesEmployeeVolumeByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesEmployeeVolumeByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesEmployeeNumberByDMY")
+    public ResultModel salesEmployeeNumberByDMY() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesEmployeeNumberByDMY 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesEmployeeNumberByDMY(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesEmployeeNumberByDMY 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesEmployeeProportion")
+    public ResultModel salesEmployeeProportion() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesEmployeeProportion 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesEmployeeProportion(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesEmployeeProportion 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/salesEmployeeProduct")
+    public ResultModel salesEmployeeProduct() throws Exception {
+        logger.info("################/sale/saleAnalysis/salesEmployeeProduct 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.salesEmployeeProduct(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/salesEmployeeProduct 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
 
 }

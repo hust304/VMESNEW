@@ -178,6 +178,90 @@ public class DateFormat {
         return date;
     }
 
+
+
+    /**
+     * 获取当前年月日
+     * @return yyyy-MM-dd
+     */
+    public static String getCurrentYearMonthDay() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String currentYearMonthDay = sdf.format(new Date());
+        return currentYearMonthDay;
+    }
+
+
+    /**
+     * 获取给定年月的下一个年月日
+     * @param yearMonthDay      yyyy-MM-dd
+     * @return yyyy-MM
+     */
+    public static String getNextYearMonthDay(String yearMonthDay) {
+        String yearStr = yearMonthDay.substring(0,4);
+        String monthStr = yearMonthDay.substring(5,7);
+        String dayStr = yearMonthDay.substring(8,10);
+        int year = Integer.parseInt(yearStr);
+        int month = Integer.parseInt(monthStr);
+        int day = Integer.parseInt(dayStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month-1, day);
+        calendar.add(Calendar.DATE, 1);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String nextYearMonthDay = sdf.format(calendar.getTime());
+
+        return nextYearMonthDay;
+    }
+
+
+    /**
+     * 获取给定年月的上一个年月日
+     * @param yearMonthDay      yyyy-MM-dd
+     * @return yyyy-MM
+     */
+    public static String getLastYearMonthDay(String yearMonthDay) {
+        String yearStr = yearMonthDay.substring(0,4);
+        String monthStr = yearMonthDay.substring(5,7);
+        String dayStr = yearMonthDay.substring(8,10);
+        int year = Integer.parseInt(yearStr);
+        int month = Integer.parseInt(monthStr);
+        int day = Integer.parseInt(dayStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month-1, day);
+        calendar.add(Calendar.DATE, -1);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String lastYearMonthDay = sdf.format(calendar.getTime());
+
+        return lastYearMonthDay;
+    }
+
+
+    /**
+     * 获取给定年月日的上一个月相同的年月日
+     * @param yearMonthDay      yyyy-MM-dd
+     * @return yyyy-MM
+     */
+    public static String getLastMonthSameDay(String yearMonthDay) {
+        String yearStr = yearMonthDay.substring(0,4);
+        String monthStr = yearMonthDay.substring(5,7);
+        String dayStr = yearMonthDay.substring(8,10);
+        int year = Integer.parseInt(yearStr);
+        int month = Integer.parseInt(monthStr);
+        int day = Integer.parseInt(dayStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month-1, day);
+        calendar.add(Calendar.MONTH, -1);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String lastMonthSameDay = sdf.format(calendar.getTime());
+
+        return lastMonthSameDay;
+    }
+
+
+
     /**
      * 获取给定年月的上一个年月
      * @param yearMonth      yyyy-MM
@@ -295,6 +379,7 @@ public class DateFormat {
         return nextYear+"";
     }
 
+
     /**
      * 获取给定年的上一个年
      * @param year     yyyy
@@ -305,6 +390,16 @@ public class DateFormat {
         return lastYear+"";
     }
 
+    /**
+     * 获取给定年的下一个年
+     * @param year     yyyy
+     * @return yyyy
+     */
+    public static String getLastTenYear(String year) {
+        int nextYear = Integer.parseInt(year)-10;
+        return nextYear+"";
+    }
+
 
     /**
      * 获取期间内的所有年月
@@ -312,34 +407,62 @@ public class DateFormat {
      * @param endYearMonth      yyyy-MM
      * @return yyyy-MM
      */
-    public static List<String> getAllYearMonth(String startYearMonth, String endYearMonth) {
-        List<String> retrunList = new ArrayList<String>();
-        BigDecimal start = BigDecimal.valueOf(Double.parseDouble(startYearMonth.replace("-","."))).setScale(2);
-        System.out.println("start："+start.toString());
+    public static List<String> getAllYearMonth(String startYearMonth, String endYearMonth) throws Exception {
+        return getAllYearMonthDay(startYearMonth,endYearMonth,"yyyy-MM");
+    }
 
-        BigDecimal end = BigDecimal.valueOf(Double.parseDouble(endYearMonth.replace("-","."))).setScale(2);
-        System.out.println("end："+end.toString());
-        BigDecimal elem = start;
-        while (elem.compareTo(start)>=0&&elem.compareTo(end)<=0){
-            String elemStr = elem + "";
-            retrunList.add(elemStr.replace(".","-"));
-            String yearStr = elemStr.substring(0,4);
-            String monthStr = elemStr.substring(5,7);
-            int year = Integer.parseInt(yearStr);
-            int month = Integer.parseInt(monthStr);
+    /**
+     * 获取期间内的所有年月
+     * @param startYear      yyyy
+     * @param endYear     yyyy
+     * @return yyyy-MM
+     */
+    public static List<String> getAllYear(String startYear, String endYear) throws Exception {
+        return getAllYearMonthDay(startYear,endYear,"yyyy");
+    }
+
+    /**
+     * 获取期间内的所有年月日
+     * @param startYearMonthDay      yyyy-MM-dd
+     * @param endYearMonthDay      yyyy-MM-dd
+     * @return yyyy-MM
+     */
+    public static List<String> getAllYearMonthDay(String startYearMonthDay, String endYearMonthDay) throws Exception {
+        return getAllYearMonthDay(startYearMonthDay,endYearMonthDay,"yyyy-MM-dd");
+    }
+
+    /**
+     * 获取期间内的所有年月日
+     * @param startDate      yyyy-MM-dd
+     * @param endDate      yyyy-MM-dd
+     * @return yyyy-MM
+     */
+    public static List<String> getAllYearMonthDay(String startDate, String endDate,String format) throws Exception {
+        int calendarType = Calendar.MONTH;
+        if("yyyy-MM-dd".equals(format)){
+            calendarType = Calendar.DATE;
+        }else if("yyyy".equals(format)){
+            calendarType = Calendar.YEAR;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        List<String> retrunList = new ArrayList<String>();
+        Date start = sdf.parse(startDate);
+        Date end = sdf.parse(endDate);
+        Date elem = start;
+        while (elem.before(end)){
+            retrunList.add(sdf.format(elem));
             Calendar calendar = Calendar.getInstance();
-            calendar.set(year, month-1, 1);
-            calendar.add(Calendar.MONTH, 1);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-            String next = sdf.format(calendar.getTime());
-            elem = BigDecimal.valueOf(Double.parseDouble(next.replace("-","."))).setScale(2);
+            calendar.setTime(elem);
+            calendar.add(calendarType, 1);
+            elem = calendar.getTime();
         }
 
         return retrunList;
     }
 
 
-    public static void main(String args[]) throws ParseException {
+
+    public static void main(String args[]) throws Exception {
 //        //Date date = DateFormat.dateString2Date("201902", "yyyyMM");
 //
 //        String dateStr = DateFormat.getAddDay("201901", DateFormat.DEFAULT_MONTH, -1, "yyyyMM");
@@ -372,8 +495,23 @@ public class DateFormat {
 //        System.out.println("startYearMonth_YearOnYear: " + startYearMonth_YearOnYear);
 //        String endYearMonth_YearOnYear = getEndYearMonth_YearOnYear(currentYearMonth);
 //        System.out.println("endYearMonth_YearOnYear: " + endYearMonth_YearOnYear);
-//        List<String> allYearMonthList = getAllYearMonth("2019-01","2020-10");
+//        List<String> allYearMonthList = getAllYearMonthDay("2010","2020","yyyy");
 //        for(String ele : allYearMonthList){
+//            System.out.println(ele);
+//        }
+
+//        List<String> allYearList = getAllYear("2010","2020");
+//        for(String ele : allYearList){
+//            System.out.println(ele);
+//        }
+//
+//        List<String> allYearMonthList = getAllYearMonth("2019-01","2020-05");
+//        for(String ele : allYearMonthList){
+//            System.out.println(ele);
+//        }
+//
+//        List<String> allYearMonthDayList = getAllYearMonthDay("2020-01-01","2020-03-01");
+//        for(String ele : allYearMonthDayList){
 //            System.out.println(ele);
 //        }
 

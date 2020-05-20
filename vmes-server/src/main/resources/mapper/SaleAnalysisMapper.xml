@@ -113,13 +113,16 @@
 
 
 
-    <select id="getSalesVolumeByCustomer" parameterType="com.yvan.PageData" resultType="java.util.Map">
+    <select id="getSalesVolumeNumberByCustomer" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         customer.id id,
+        concat(product.name,'/',product.spec) productName,
         customer.name name,
+        round(sum(ifnull(saleOrderDetail.order_count,0)),2) number,
         round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) volume
         from vmes_sale_order saleOrder
         left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+        left join vmes_product product on saleOrderDetail.product_id = product.id
         left join vmes_customer customer on saleOrder.customer_id = customer.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
@@ -131,6 +134,11 @@
             <if test="endDate != null and endDate != ''" >
                 <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
             </if>
+
+            <if test="productId != null and productId != ''" >
+                and saleOrderDetail.product_id = #{productId}
+            </if>
+
             and saleOrder.state > '1'
             and saleOrderDetail.state > '1'
             and customer.id is not null
@@ -149,12 +157,16 @@
     <select id="getSalesVolumeNumberByProduct" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
         product.id id,
+        makeUser.user_name employeeName,
+        customer.name customerName,
         concat(product.name,'/',product.spec) name,
         round(sum(ifnull(saleOrderDetail.order_count,0)),2) number,
         round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) volume
         from vmes_sale_order saleOrder
         left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+        left join vmes_user makeUser on saleOrder.make_id = makeUser.id
         left join vmes_product product on saleOrderDetail.product_id = product.id
+        left join vmes_customer customer on saleOrder.customer_id = customer.id
         <where>
             <if test="currentCompanyId != null and currentCompanyId != ''" >
                 and saleOrder.company_id = #{currentCompanyId}
@@ -165,6 +177,32 @@
             <if test="endDate != null and endDate != ''" >
                 <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
             </if>
+
+
+            <if test="customerId != null and customerId != ''" >
+                and saleOrder.customer_id = #{customerId}
+            </if>
+
+            <if test="employeeId != null and employeeId != ''" >
+                and saleOrder.make_id = #{employeeId}
+            </if>
+
+
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and product.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and product.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''"><!-- 关键词检索 -->
+                and product.spec LIKE CONCAT(CONCAT(#{spec}),'%')
+            </if>
+            <if test="property != null and property != ''"><!-- 关键词检索 -->
+                and product.property LIKE CONCAT(CONCAT(#{property}),'%')
+            </if>
+
+
+
             and saleOrder.state > '1'
             and saleOrderDetail.state > '1'
             and product.id is not null
@@ -179,6 +217,50 @@
             order by ${orderStr}
         </if>
     </select>
+
+
+
+    <select id="getSalesVolumeNumberByEmployee" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+        makeUser.id id,
+        makeUser.user_name name,
+        round(sum(ifnull(saleOrderDetail.order_count,0)),2) number,
+        round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) volume
+        from vmes_sale_order saleOrder
+        left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+        left join vmes_user makeUser on saleOrder.make_id = makeUser.id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="startDate != null and startDate != ''" >
+                <![CDATA[  and saleOrder.cdate > #{startDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''" >
+                <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
+            </if>
+
+            <if test="productId != null and productId != ''" >
+                and saleOrderDetail.product_id = #{productId}
+            </if>
+
+            and saleOrder.state > '1'
+            and saleOrderDetail.state > '1'
+            and makeUser.id is not null
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+        group by makeUser.id
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
 
     <select id="getProductReturnRate" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
@@ -198,6 +280,23 @@
             <if test="endDate != null and endDate != ''" >
                 <![CDATA[  and retreat.cdate < #{endDate} ]]>
             </if>
+
+
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and product.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and product.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''"><!-- 关键词检索 -->
+                and product.spec LIKE CONCAT(CONCAT(#{spec}),'%')
+            </if>
+            <if test="property != null and property != ''"><!-- 关键词检索 -->
+                and product.property LIKE CONCAT(CONCAT(#{property}),'%')
+            </if>
+
+
+
             and retreat.state > '1'
             and retreatDetail.state > '1'
             and product.id is not null
@@ -288,5 +387,281 @@
 
 
 
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getSalesTrendQueryByDMY" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+
+        <choose>
+            <when test="format != null and format != ''">
+                DATE_FORMAT(saleOrderDetail.cdate,#{format}) date,
+            </when>
+            <otherwise>
+                DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m') date,
+            </otherwise>
+        </choose>
+
+        round(sum(ifnull(saleOrderDetail.order_count,0)),2) salesNumber,
+        round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) salesVolume,
+        count(distinct saleOrder.id) ordersNum
+        from vmes_sale_order saleOrder
+        left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="startDate != null and startDate != ''" >
+                <![CDATA[  and saleOrder.cdate > #{startDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''" >
+                <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
+            </if>
+            and saleOrder.state > '1'
+            and saleOrderDetail.state > '1'
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+
+        <choose>
+            <when test="format != null and format != ''">
+                group by DATE_FORMAT(saleOrderDetail.cdate,#{format})
+            </when>
+            <otherwise>
+                group by DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m')
+            </otherwise>
+        </choose>
+
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getSalesProductQueryByDMY" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+
+        <choose>
+            <when test="format != null and format != ''">
+                DATE_FORMAT(saleOrderDetail.cdate,#{format}) date,
+            </when>
+            <otherwise>
+                DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m') date,
+            </otherwise>
+        </choose>
+        product.id id,
+        concat(product.name,'/',product.spec) name,
+        round(sum(ifnull(saleOrderDetail.order_count,0)),2) salesNumber,
+        round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) salesVolume,
+        round(max(saleOrderDetail.product_price),4) maxPrice,
+        round(min(saleOrderDetail.product_price),4) minPrice,
+        count(distinct saleOrder.id) ordersNum
+        from vmes_sale_order saleOrder
+        left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+        left join vmes_product product on saleOrderDetail.product_id = product.id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="startDate != null and startDate != ''" >
+                <![CDATA[  and saleOrder.cdate > #{startDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''" >
+                <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
+            </if>
+
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and product.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and product.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''"><!-- 关键词检索 -->
+                and product.spec LIKE CONCAT(CONCAT(#{spec}),'%')
+            </if>
+            <if test="property != null and property != ''"><!-- 关键词检索 -->
+                and product.property LIKE CONCAT(CONCAT(#{property}),'%')
+            </if>
+
+
+            and saleOrder.state > '1'
+            and saleOrderDetail.state > '1'
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+
+        <choose>
+            <when test="format != null and format != ''">
+                group by DATE_FORMAT(saleOrderDetail.cdate,#{format}),saleOrderDetail.product_id
+            </when>
+            <otherwise>
+                group by DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m'),saleOrderDetail.product_id
+            </otherwise>
+        </choose>
+
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getSalesCustomerQueryByDMY" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+
+        <choose>
+            <when test="format != null and format != ''">
+                DATE_FORMAT(saleOrderDetail.cdate,#{format}) date,
+            </when>
+            <otherwise>
+                DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m') date,
+            </otherwise>
+        </choose>
+        customer.id id,
+        customer.name name,
+        round(sum(ifnull(saleOrderDetail.order_count,0)),2) salesNumber,
+        round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) salesVolume,
+        count(distinct saleOrder.id) ordersNum
+        from vmes_sale_order saleOrder
+        left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+        left join vmes_customer customer on saleOrder.customer_id = customer.id
+        left join vmes_product product on saleOrderDetail.product_id = product.id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="startDate != null and startDate != ''" >
+                <![CDATA[  and saleOrder.cdate > #{startDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''" >
+                <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
+            </if>
+
+
+            <if test="customerName != null and customerName != ''"><!-- 关键词检索 -->
+                and customer.name LIKE CONCAT(CONCAT(#{customerName}),'%')
+            </if>
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and product.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and product.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''"><!-- 关键词检索 -->
+                and product.spec LIKE CONCAT(CONCAT(#{spec}),'%')
+            </if>
+            <if test="property != null and property != ''"><!-- 关键词检索 -->
+                and product.property LIKE CONCAT(CONCAT(#{property}),'%')
+            </if>
+
+
+            and saleOrder.state > '1'
+            and saleOrderDetail.state > '1'
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+
+        <choose>
+            <when test="format != null and format != ''">
+                group by DATE_FORMAT(saleOrderDetail.cdate,#{format}),customer.id
+            </when>
+            <otherwise>
+                group by DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m'),customer.id
+            </otherwise>
+        </choose>
+
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
+
+
+
+    <!-- 自动创建，可以修改 -->
+    <select id="getSalesEmployeeQueryByDMY" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+
+        <choose>
+            <when test="format != null and format != ''">
+                DATE_FORMAT(saleOrderDetail.cdate,#{format}) date,
+            </when>
+            <otherwise>
+                DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m') date,
+            </otherwise>
+        </choose>
+        makeUser.id id,
+        makeUser.user_name name,
+        round(sum(ifnull(saleOrderDetail.order_count,0)),2) salesNumber,
+        round(sum(ifnull(saleOrderDetail.product_price*saleOrderDetail.order_count,0)),2) salesVolume,
+        count(distinct saleOrder.id) ordersNum
+        from vmes_sale_order saleOrder
+        left join vmes_sale_order_detail saleOrderDetail on saleOrderDetail.parent_id = saleOrder.id
+        left join vmes_user makeUser on saleOrder.make_id = makeUser.id
+        left join vmes_product product on saleOrderDetail.product_id = product.id
+        <where>
+            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                and saleOrder.company_id = #{currentCompanyId}
+            </if>
+            <if test="startDate != null and startDate != ''" >
+                <![CDATA[  and saleOrder.cdate > #{startDate} ]]>
+            </if>
+            <if test="endDate != null and endDate != ''" >
+                <![CDATA[  and saleOrder.cdate < #{endDate} ]]>
+            </if>
+
+
+            <if test="employeeName != null and employeeName != ''"><!-- 关键词检索 -->
+                and makeUser.user_name LIKE CONCAT(CONCAT(#{employeeName}),'%')
+            </if>
+            <if test="code != null and code != ''"><!-- 关键词检索 -->
+                and product.code LIKE CONCAT(CONCAT(#{code}),'%')
+            </if>
+            <if test="name != null and name != ''"><!-- 关键词检索 -->
+                and product.name LIKE CONCAT(CONCAT(#{name}),'%')
+            </if>
+            <if test="spec != null and spec != ''"><!-- 关键词检索 -->
+                and product.spec LIKE CONCAT(CONCAT(#{spec}),'%')
+            </if>
+            <if test="property != null and property != ''"><!-- 关键词检索 -->
+                and product.property LIKE CONCAT(CONCAT(#{property}),'%')
+            </if>
+
+
+            and saleOrder.state > '1'
+            and saleOrderDetail.state > '1'
+            <!--queryStr 自定义sql查询语句-->
+            <if test="queryStr != null and queryStr != ''" >
+                and ${queryStr}
+            </if>
+        </where>
+
+        <choose>
+            <when test="format != null and format != ''">
+                group by DATE_FORMAT(saleOrderDetail.cdate,#{format}),makeUser.id
+            </when>
+            <otherwise>
+                group by DATE_FORMAT(saleOrderDetail.cdate,'%Y-%m'),makeUser.id
+            </otherwise>
+        </choose>
+
+
+        <if test="orderStr != null and orderStr != ''" >
+            order by ${orderStr}
+        </if>
+    </select>
 
 </mapper>
