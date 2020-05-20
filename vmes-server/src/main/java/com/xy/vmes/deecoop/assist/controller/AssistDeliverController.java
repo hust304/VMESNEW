@@ -36,8 +36,8 @@ public class AssistDeliverController {
     @Autowired
     private AssistDeliverDetailChildService deliverDetailChildService;
 
-//    @Autowired
-//    private AssistOrderService orderService;
+    @Autowired
+    private AssistOrderService orderService;
     @Autowired
     private AssistOrderDetailService orderDtlService;
 
@@ -314,29 +314,36 @@ public class AssistDeliverController {
         deliverService.update(editDeliver);
         deliverDetailService.updateStateByDetail("1", deliverId);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //2. 变更订单状态
-        List<AssistDeliverDetail> deliverDtlList = deliverDetailService.findDeliverDetailListByParentId(deliverId);
-        String orderDtlIds = deliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
-        //获取外协订单(原材料)Map结构体
-        //Map<外协订单明细id, List<Map<String, Object>>>
-        //Sql查询语句: AssistOrderDetailChildByAssistDeliverMapper.checkAssistOrderDetailChildByDeliver
-        Map<String, List<Map<String, Object>>> valueMap = deliverDetailService.findOrderDetailChildMap(orderDtlIds);
-        for (Iterator iterator = valueMap.keySet().iterator(); iterator.hasNext();) {
-            String mapKey_orderDtlId = iterator.next().toString().trim();
-            boolean isAllDeliver = deliverDetailService.isAllDeliverByOrderDetail(mapKey_orderDtlId, valueMap);
-            if (isAllDeliver) {
-                AssistOrderDetail editOrderDtl = new AssistOrderDetail();
-                editOrderDtl.setId(mapKey_orderDtlId);
-                //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
-                editOrderDtl.setState("3");
-                orderDtlService.update(editOrderDtl);
-            }
-        }
-
+        //修改订单状态//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         AssistOrder editOrder = new AssistOrder();
         editOrder.setId(orderId);
-        orderDtlService.updateParentStateByDetailList(editOrder, null);
+        //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+        editOrder.setState("3");
+        orderService.update(editOrder);
+        orderDtlService.updateStateByDetail(editOrder.getState(), orderId);
+
+//        //2. 变更订单状态
+//        List<AssistDeliverDetail> deliverDtlList = deliverDetailService.findDeliverDetailListByParentId(deliverId);
+//        String orderDtlIds = deliverDetailService.findOrderDtlIdsByDeliverDtlList(deliverDtlList);
+//        //获取外协订单(原材料)Map结构体
+//        //Map<外协订单明细id, List<Map<String, Object>>>
+//        //Sql查询语句: AssistOrderDetailChildByAssistDeliverMapper.checkAssistOrderDetailChildByDeliver
+//        Map<String, List<Map<String, Object>>> valueMap = deliverDetailService.findOrderDetailChildMap(orderDtlIds);
+//        for (Iterator iterator = valueMap.keySet().iterator(); iterator.hasNext();) {
+//            String mapKey_orderDtlId = iterator.next().toString().trim();
+//            boolean isAllDeliver = deliverDetailService.isAllDeliverByOrderDetail(mapKey_orderDtlId, valueMap);
+//            if (isAllDeliver) {
+//                AssistOrderDetail editOrderDtl = new AssistOrderDetail();
+//                editOrderDtl.setId(mapKey_orderDtlId);
+//                //状态(0:待提交 1:待审核 2:待发货 3:外协中 4:已完成 -1:已取消)
+//                editOrderDtl.setState("3");
+//                orderDtlService.update(editOrderDtl);
+//            }
+//        }
+//
+//        AssistOrder editOrder = new AssistOrder();
+//        editOrder.setId(orderId);
+//        orderDtlService.updateParentStateByDetailList(editOrder, null);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDeliver/updateAssistDeliverType 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
