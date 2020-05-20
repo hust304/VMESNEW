@@ -654,6 +654,7 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
 
             //添加外协退货单
             if (retreatCount != null && retreatCount.doubleValue() != 0) {
+                //type:退货类型(1:外协件 2:外协原材料)
                 String retreatDtlId = assistRetreatService.createRetreatByQuality(cuser, companyId, "1", objectMap);
                 editSignDetail.setRetreatDtlId(retreatDtlId);
             }
