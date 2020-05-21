@@ -277,6 +277,81 @@ public class AssistOrderDetailChildServiceImp implements AssistOrderDetailChildS
 
         return mapList;
     }
+
+    /**
+     * 获取 外协收货明细子表(原材料) 当前发货数量
+     * SQL: AssistOrderDetailChildMapper.findAssistOrderDetailChildByDeliverChild
+     *
+     * @param orderId    外协订单id
+     * @param orderDtlId 外协订单明细id
+     * @return
+     */
+    public List<Map<String, Object>> findAssistOrderDetailChildByDeliverChild(String orderId, String orderDtlId) {
+        PageData findMap = new PageData();
+        if (orderId != null && orderId.trim().length() > 0) {
+            findMap.put("orderId", orderId);
+        }
+        if (orderDtlId != null && orderDtlId.trim().length() > 0) {
+            findMap.put("orderDtlId", orderDtlId);
+        }
+        if (findMap.size() == 0) {return new ArrayList<>();}
+
+        return assistOrderDetailChildMapper.findAssistOrderDetailChildByDeliverChild(findMap);
+    }
+
+    /**
+     * 获取订单明细id(外协件)最小发货数量
+     * 1. 获取订单明细id(外协件)-所有原材料的发货数量
+     * 2. 获取订单明细id(外协件)最小发货数量 (原材料的发货数量,单件用量)
+     *
+     * @param orderDtlId
+     * @return
+     */
+    public int findMiniDeliverCountByOrderDetail(String orderDtlId) {
+        int miniDeliverCount = 0;
+        if (orderDtlId == null || orderDtlId.trim().length() == 0) {return miniDeliverCount;}
+
+        //SQL: AssistOrderDetailChildMapper.findAssistOrderDetailChildByDeliverChild
+        List<Map<String, Object>> dataList = this.findAssistOrderDetailChildByDeliverChild(null, orderDtlId);
+        if (dataList == null || dataList.size() == 0) {return miniDeliverCount;}
+
+        Map<String, BigDecimal> deliverMap = new HashMap<>();
+        for (Map<String, Object> objectMap : dataList) {
+            String id = (String)objectMap.get("id");
+
+            //原材料:单件用量
+            BigDecimal ratio = BigDecimal.valueOf(1D);
+            if (objectMap.get("ratio") != null) {
+                ratio = (BigDecimal)objectMap.get("ratio");
+            }
+
+            //原材料:当前发货数量
+            BigDecimal deliverCount = BigDecimal.valueOf(0D);
+            if (objectMap.get("deliverCount") != null) {
+                deliverCount = (BigDecimal)objectMap.get("deliverCount");
+            }
+
+            //(当前发货数量 / 单件用量) 取整
+            BigDecimal tempData = BigDecimal.valueOf(deliverCount.doubleValue() / ratio.doubleValue());
+            tempData = tempData.setScale(0, BigDecimal.ROUND_DOWN);
+
+            deliverMap.put(id, tempData);
+        }
+
+        BigDecimal miniTemp = BigDecimal.valueOf(99999D);
+        for (Iterator iterator = deliverMap.keySet().iterator(); iterator.hasNext();) {
+            String mapKey = iterator.next().toString().trim();
+            BigDecimal deliverCount = deliverMap.get(mapKey);
+            if (deliverCount.doubleValue() < miniTemp.doubleValue()) {miniTemp = deliverCount;}
+        }
+
+        if (miniTemp.doubleValue() < BigDecimal.valueOf(99999D).doubleValue()) {
+            miniTemp = miniTemp.setScale(0, BigDecimal.ROUND_DOWN);
+            miniDeliverCount = Integer.valueOf(miniTemp.intValue()).intValue();
+        }
+
+        return miniDeliverCount;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception {

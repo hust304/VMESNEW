@@ -128,6 +128,26 @@ public interface AssistOrderDetailChildService {
      * @throws Exception
      */
     List<Map> listAssistOrderDetailChildInfo(PageData pd, Pagination pg) throws Exception;
+
+    /**
+     * 获取 外协收货明细子表(原材料) 当前发货数量
+     * SQL: AssistOrderDetailChildMapper.findAssistOrderDetailChildByDeliverChild
+     *
+     * @param orderId    外协订单id
+     * @param orderDtlId 外协订单明细id
+     * @return
+     */
+    List<Map<String, Object>> findAssistOrderDetailChildByDeliverChild(String orderId, String orderDtlId);
+
+    /**
+     * 获取订单明细id(外协件)最小发货数量
+     * 1. 获取订单明细id(外协件)-所有原材料的发货数量
+     * 2. 获取订单明细id(外协件)最小发货数量 (原材料的发货数量,单件用量)
+     *
+     * @param orderDtlId
+     * @return
+     */
+    int findMiniDeliverCountByOrderDetail(String orderDtlId);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void insertAssistOrderDetailChild(AssistOrderDetail assistOrderDetail) throws Exception;
 

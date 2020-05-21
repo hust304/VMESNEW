@@ -190,4 +190,25 @@
             left join vmes_assist_deliver_detail_child deliverChild on retreatDtl.deliver_dtl_child_id = deliverChild.id
     </sql>
 
+    <!--================================================================================================================ -->
+    <!--外协收货明细子表(原材料) 汇总  -->
+    <sql id="findAssistDeliverDetailChildByOrder">
+        select
+            b.orderDtl_child_id,
+            sum(b.count) deliverCount
+        from vmes_assist_deliver_detail a
+            left join vmes_assist_deliver_detail_child b on a.id = b.deliver_dtl_id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and a.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and a.order_detail_id = #{orderDtlId}
+            </if>
+            <!--state:状态(0:待发货 1:已发货 -1:已取消)-->
+            and a.state = '1'
+        </where>
+        group by b.orderDtl_child_id
+    </sql>
+
 </mapper>
