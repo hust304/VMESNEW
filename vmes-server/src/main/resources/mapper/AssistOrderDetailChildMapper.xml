@@ -193,5 +193,32 @@
         </where>
     </select>
 
+    <!--获取:外协收货明细子表(原材料) 当前发货数量  -->
+    <select id="findAssistOrderDetailChildByDeliverChild" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id id,
+            order_id orderId,
+            order_dtl_id orderDtlId,
+            product_id productId,
+            unit_id unitId,
+
+            round(ifnull(orderChild.ratio, 1),2) ratio,
+            round(orderChild.count, 2) count,
+
+            round(ifnull(deliverChild.deliverCount, 0),2) deliverCount
+        from vmes_assist_order_detail_child orderChild
+            left join (
+                <!--外协收货明细子表(原材料) 汇总 findAssistDeliverDetailChildByOrder -->
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDeliverDetailChildByOrder"></include>
+            ) deliverChild on orderChild.id = deliverChild.orderDtl_child_id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and orderChild.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and orderChild.order_dtl_id = #{orderDtlId}
+            </if>
+        </where>
+    </select>
 
 </mapper>

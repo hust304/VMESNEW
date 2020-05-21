@@ -44,6 +44,8 @@
         (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'quality', '质检属性', 22, '1', '1', '1', '0', now(), 'admin'),
         (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'purchaseQualityType', '检验方式id(1:全检 2:抽检)', 23, '1', '0', '1', '0', now(), 'admin'),
 
+        (replace(uuid(), '-', ''), 'assistOrderDetailQueryBySign', 'deliverCount', '发货数', 24, '1', '1', '1', '0', now(), 'admin'),
+
     </insert>
 
     <select id="listAssistOrderDetaiQueryBySign" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -67,20 +69,24 @@
             craft.sys_code craftCode,
             craft.name craftName,
 
-            <!--采购签收明细(签收检验完成)汇总 -->
-            round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
-            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
-            round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+<!--采购签收明细(签收检验完成)汇总 -->
+<!--
+    round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
+    round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
+    round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+-->
 
             <!--采购签收明细-->
             round(ifnull(signDtl.signCount, 0), 2) signCount,
             round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
-            <!--最大允许签收数量: 采购数量 - 收货合格数 -->
-            round((ifnull(orderDtl.order_count, 0) - ifnull(signDtl.sign_fine_count, 0)), 2) maxAarriveCount,
-            round((ifnull(signDtl.signCount, 0) - ifnull(signDetailEnd.arrive_count, 0)), 2) signInCount,
+<!--最大允许签收数量: 采购数量 - 收货合格数 -->
+<!--round((ifnull(orderDtl.order_count, 0) - ifnull(signDtl.sign_fine_count, 0)), 2) maxAarriveCount,-->
+<!--round((ifnull(signDtl.signCount, 0) - ifnull(signDetailEnd.arrive_count, 0)), 2) signInCount,-->
 
             <!--java 类实现(arriveCount) -->
             '' arriveCount,
+            '' deliverCount,
+            '' maxAarriveCount,
 
             <!--quality:质检属性 (1:免检 2:检验)-->
             <!--product.purchase_quality_type 1:全检-->
@@ -99,6 +105,7 @@
             left join vmes_dictionary orderUnitName on orderDtl.order_unit = orderUnitName.id
 
         <!--(外协订单明细id)外协签收明细汇总 vmes_assist_sign_detail-->
+        <!--
         left join (
             select
                 order_detail_id,
@@ -110,11 +117,11 @@
                 <if test="orderId != null and orderId != ''">
                     and order_id = #{parentId}
                 </if>
-                <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
                 and state = '2'
             </where>
             group by order_detail_id
         ) signDetailEnd on orderDtl.id = signDetailEnd.order_detail_id
+        -->
 
         <!--获取(已生成签收单)签收数量 根据采购订单明细id汇总查询(采购签收明细) 已生成签收单数量-->
         left join (
@@ -127,6 +134,7 @@
                 <if test="orderId != null and orderId != ''">
                     and order_id = #{orderId}
                 </if>
+                <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
                 <![CDATA[ and state <> '-1' ]]>
             </where>
             group by order_detail_id

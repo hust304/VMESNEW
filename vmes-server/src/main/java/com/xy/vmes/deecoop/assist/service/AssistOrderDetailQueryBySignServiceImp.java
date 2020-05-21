@@ -4,14 +4,17 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
 import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailQueryBySignMapper;
 import com.xy.vmes.entity.Column;
+import com.xy.vmes.service.AssistOrderDetailChildService;
 import com.xy.vmes.service.AssistOrderDetailQueryBySignService;
 import com.xy.vmes.service.ColumnService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
+import com.yvan.common.util.Common;
 import com.yvan.springmvc.ResultModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +24,8 @@ import java.util.Map;
 public class AssistOrderDetailQueryBySignServiceImp implements AssistOrderDetailQueryBySignService {
     @Autowired
     private AssistOrderDetailQueryBySignMapper orderDetailQueryBySignMapper;
+    @Autowired
+    private AssistOrderDetailChildService assistOrderDetailChildService;
     @Autowired
     private ColumnService columnService;
 
@@ -68,6 +73,33 @@ public class AssistOrderDetailQueryBySignServiceImp implements AssistOrderDetail
         }
 
         List<Map> varList = this.listAssistOrderDetaiQueryBySign(pd, pg);
+        if (varList != null && varList.size() > 0) {
+            for (Map<String, Object> mapObject : varList) {
+                String orderDtlId = (String)mapObject.get("id");
+
+                //deliverCount 发货数
+                int deliverCount = assistOrderDetailChildService.findMiniDeliverCountByOrderDetail(orderDtlId);
+                BigDecimal deliverCountBig = BigDecimal.valueOf(deliverCount);
+                deliverCountBig = deliverCountBig.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_DOWN);
+                mapObject.put("deliverCount", deliverCountBig);
+
+                //signCount 签收数
+                BigDecimal signCount = BigDecimal.valueOf(0D);
+                if (mapObject.get("signCount") != null) {
+                    signCount = (BigDecimal)mapObject.get("signCount");
+                }
+
+                //maxAarriveCount 未签收: 发货数 - 签收数
+                BigDecimal maxAarriveCount = BigDecimal.valueOf(deliverCountBig.doubleValue() - signCount.doubleValue());
+                //四舍五入到2位小数
+                maxAarriveCount = maxAarriveCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+                mapObject.put("maxAarriveCount", maxAarriveCount);
+
+                //arriveCount 当前签收
+                mapObject.put("arriveCount", maxAarriveCount);
+            }
+        }
+
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

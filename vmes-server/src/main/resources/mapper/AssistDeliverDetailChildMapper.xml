@@ -176,24 +176,4 @@
         </if>
     </select>
 
-    <select id="findAssistDeliverDetailChildByOrder" parameterType="com.yvan.PageData" resultType="java.util.Map">
-        select
-            b.orderDtl_child_id,
-            round(b.ratio, 2) ratio,
-            round(ifnull(sum(b.count), 0), 2) deliverCount
-        from vmes_assist_deliver_detail a
-            left join vmes_assist_deliver_detail_child b on a.id = b.deliver_dtl_id
-        <where>
-            <if test="orderId != null and orderId != ''">
-                and a.order_id = #{orderId}
-            </if>
-            <if test="orderDtlId != null and orderDtlId != ''">
-                and a.order_detail_id = #{orderDtlId}
-            </if>
-            <!--state:状态(0:待发货 1:已发货 -1:已取消)-->
-            and a.state = '1'
-        </where>
-        group by b.orderDtl_child_id
-    </select>
-
 </mapper>
