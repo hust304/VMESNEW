@@ -883,11 +883,11 @@ public class FinanceBillServiceImp implements FinanceBillService {
 
     public void saveFinanceHistory(Map map) throws Exception {
         FinanceHistory financeHistory = new FinanceHistory();
-        String customerId = map.get("id")==null?"":(String)map.get("id");
+        String customerId = map.get("id")==null?null:(String)map.get("id");
         financeHistory.setCustomerId(customerId);
-        String companyId = map.get("companyId")==null?"":(String)map.get("companyId");
+        String companyId = map.get("companyId")==null?null:(String)map.get("companyId");
         financeHistory.setCompanyId(companyId);
-        String period = map.get("currentPeriod")==null?"":(String)map.get("currentPeriod");
+        String period = map.get("currentPeriod")==null?null:(String)map.get("currentPeriod");
         financeHistory.setPeriod(period);
         BigDecimal beginPlus = map.get("beginPlus")==null? BigDecimal.ZERO:(BigDecimal)map.get("beginPlus");
         financeHistory.setBeginPlus(beginPlus);

@@ -65,4 +65,10 @@ public interface SaleAnalysisService {
     ResultModel salesEmployeeProportion(PageData pd) throws Exception;
 
     ResultModel salesEmployeeProduct(PageData pd) throws Exception;
+
+    ResultModel accountsReceivableQueryByCurrent(PageData pd) throws Exception;
+
+    ResultModel accountsReceivable12MonthSingle(PageData pd) throws Exception;
+
+    ResultModel accountsReceivable12MonthMuti(PageData pd) throws Exception;
 }
