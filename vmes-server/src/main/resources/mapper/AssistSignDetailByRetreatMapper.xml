@@ -45,9 +45,11 @@
             (replace(uuid(), '-', ''),'assistSignDetailByRetreat','craftCode','工艺编号',23, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetailByRetreat','craftName','工艺名称',24, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','retreatCount','退货数',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','retreatUserCount','退货数',25, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetailByRetreat','maxRetreatCount','最大退货',26, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistSignDetailByRetreat','editRetreatCount','本次退货',27, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','price','单价',28, '1','1','1','0',now(), 'admin'),
     </insert>
 
     <select id="findAssistSignDetailByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
@@ -76,6 +78,9 @@
             round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
             round(ifnull(signDtl.quality_fine_count, 0), 2) qualityFineCount,
 
+            <!--外协订单信息-->
+            round(ifnull(orderDtl.price, 0), <include refid="com.xy.vmes.deecoop.common.CommonMapper.SYS_PRICE_DEFAULT"></include>) price,
+
             <!--外协件信息-->
             assistProd.product_id productId,
             assistProd.product_name assistProductName,
@@ -83,7 +88,7 @@
             craft.sys_code craftCode,
             craft.name craftName,
 
-            round(ifnull(retreat.order_count, 0),2) retreatCount,
+            round(ifnull(retreat.order_count, 0),2) retreatUserCount,
             <!--maxRetreatCount:最大允许发货数量: -->
             round((ifnull(signDtl.sign_fine_count, 0) - ifnull(retreat.order_count, 0)) ,2) maxRetreatCount
 
@@ -92,6 +97,8 @@
             left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
             left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and signDtl.order_unit = orderUnit.unit)
             left join vmes_dictionary orderUnitName on signDtl.order_unit = orderUnitName.id
+            left join vmes_assist_order_detail orderDtl on signDtl.order_detail_id = orderDtl.id
+
 
             <!--外协退货单-->
             left join (
@@ -121,12 +128,19 @@
                     )
                 </where>
                 group by order_dtl_id
-            ) retreat on detail.id = retreat.order_dtl_id
+            ) retreat on signDtl.order_detail_id = retreat.order_dtl_id
 
         <where>
-            <if test="orderId != null and orderId != ''" >
-                and detail.parent_id = #{orderId}
+            <if test="signId != null and signId != ''" >
+                and signDtl.parent_id = #{signId}
             </if>
+            <if test="orderId != null and orderId != ''" >
+                and signDtl.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''" >
+                and signDtl.order_detail_id = #{orderDtlId}
+            </if>
+
         </where>
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}

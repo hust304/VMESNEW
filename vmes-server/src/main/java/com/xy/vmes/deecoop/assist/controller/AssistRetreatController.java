@@ -118,6 +118,13 @@ public class AssistRetreatController {
             addRetreat.setType(type);
         }
 
+        //attribute 退货属性(1:系统生成 2:用户生成)
+        String attribute = new String("2");
+        if (pageData.getString("attribute") != null) {
+            attribute = pageData.getString("attribute").trim();
+        }
+        addRetreat.setAttribute(attribute);
+
         //amount:金额(外协订单)
         BigDecimal amount = retreatDetailService.findTotalAmount(retreatDtlList);
         if (amount != null && amount.doubleValue() != 0) {
@@ -483,7 +490,10 @@ public class AssistRetreatController {
 
         //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
         retreatDetailService.updateStateByDetail(state, retreatId);
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //出库单
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //推送(外协)退款单
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //修改外协订单状态
         PageData findMap = new PageData();

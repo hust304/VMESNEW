@@ -50,12 +50,13 @@
             (replace(uuid(), '-', ''),'assistRetreat','udate','修改时间',13, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','remark','备注',14, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistRetreat','isdisable','是否启用(0:已禁用 1:启用)',15, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreat','attribute','attribute',16, '1','1','1','0',now(), 'admin'),
 
-            (replace(uuid(), '-', ''), 'assistRetreat', 'stateName', '状态', 16, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistRetreat','supplierName','供应商',17, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreat', 'auditUserName', '审核人', 18, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreat', 'creatDateStr', '创建日期', 19, '1', '1', '1', '0', now(), 'admin'),
-            (replace(uuid(), '-', ''), 'assistRetreat', 'creatUserName', '创建人', 20, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreat', 'stateName', '状态', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistRetreat','supplierName','供应商',18, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreat', 'auditUserName', '审核人', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreat', 'creatDateStr', '创建日期', 20, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistRetreat', 'creatUserName', '创建人', 21, '1', '1', '1', '0', now(), 'admin'),
 
     </insert>
 
@@ -134,6 +135,7 @@
             retreat.remark remark,
 
             retreat.isdisable isdisable,
+            retreat.attribute attribute,
 
             CASE
                 WHEN retreat.state = '0' THEN '待提交'

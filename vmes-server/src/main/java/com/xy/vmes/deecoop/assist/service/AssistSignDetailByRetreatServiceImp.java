@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 说明：vmes_assist_order_detail:外协订单明细子表 实现类
+ * 说明：vmes_assist_sign_detail:外协签收明细 实现类
  * 外协-外协件退货-生成退货(成品退货)
  *
  * 创建时间：2020-05-12

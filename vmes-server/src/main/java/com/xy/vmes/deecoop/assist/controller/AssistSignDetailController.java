@@ -1,5 +1,6 @@
 package com.xy.vmes.deecoop.assist.controller;
 
+import com.xy.vmes.service.AssistSignDetailByRetreatService;
 import com.xy.vmes.service.AssistSignDetailService;
 
 import com.yvan.HttpUtils;
@@ -24,7 +25,8 @@ public class AssistSignDetailController {
 
     @Autowired
     private AssistSignDetailService assistSignDetailService;
-
+    @Autowired
+    private AssistSignDetailByRetreatService assistSignDetailByRetreatService;
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2020-05-04
@@ -81,6 +83,22 @@ public class AssistSignDetailController {
         ResultModel model = assistSignDetailService.updateAssistSignDetailByQuality(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistSignDetail/updateAssistSignDetailByQuality 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    /**
+     * 外协-外协件退货-生成退货(成品退货)
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/assist/assistSignDetail/listPageAssistSignDetailByRetreat")
+    public ResultModel listPageAssistSignDetailByRetreat() throws Exception {
+        logger.info("################/assist/assistSignDetail/listPageAssistSignDetailByRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistSignDetailByRetreatService.listPageAssistSignDetailByRetreat(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistSignDetail/listPageAssistSignDetailByRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 
