@@ -111,6 +111,10 @@ public class AssistRetreatDetail implements Serializable {
 	@TableField("quality_fine_count")
 	private BigDecimal qualityFineCount;
 
+	//出库明细ID
+	@TableField("out_dtl_id")
+	private String outDtlId;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -292,7 +296,12 @@ public class AssistRetreatDetail implements Serializable {
 	public void setQualityFineCount(BigDecimal qualityFineCount) {
 		this.qualityFineCount = qualityFineCount;
 	}
-
+	public String getOutDtlId() {
+		return outDtlId;
+	}
+	public void setOutDtlId(String outDtlId) {
+		this.outDtlId = outDtlId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

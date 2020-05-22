@@ -134,7 +134,9 @@
             quality_inDtl_id qualityInDtlId,
             receive_inDtl_id receiveInDtlId,
             sign_fine_count signFineCount,
-            quality_fine_count qualityFineCount
+            quality_fine_count qualityFineCount,
+
+            out_dtl_id outDtlId
 
         from vmes_assist_retreat_detail
         <where>
