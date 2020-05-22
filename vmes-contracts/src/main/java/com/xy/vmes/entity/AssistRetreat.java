@@ -47,6 +47,9 @@ public class AssistRetreat implements Serializable {
 	@TableField("state")
 	private String state;
 
+	//退货属性(1:系统生成 2:用户生成)
+	@TableField("attribute")
+	private String attribute;
 	//创建用户id
 	@TableField("cuser")
 	private String cuser;
@@ -59,10 +62,10 @@ public class AssistRetreat implements Serializable {
 	//修改时间
 	@TableField("udate")
 	private Date udate;
+
 	//备注
 	@TableField("remark")
 	private String remark;
-
 	//是否启用(0:已禁用 1:启用)
 	@TableField("isdisable")
 	private String isdisable;
@@ -164,7 +167,12 @@ public class AssistRetreat implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getAttribute() {
+		return attribute;
+	}
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 

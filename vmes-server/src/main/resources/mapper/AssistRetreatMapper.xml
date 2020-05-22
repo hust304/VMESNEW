@@ -75,12 +75,13 @@
         retreat_date retreatDate,
         state state,
 
+        attribute attribute,
         cuser cuser,
         cdate cdate,
         uuser uuser,
         udate udate,
-        remark remark,
 
+        remark remark,
         isdisable isdisable
         from vmes_assist_retreat
         <where>
