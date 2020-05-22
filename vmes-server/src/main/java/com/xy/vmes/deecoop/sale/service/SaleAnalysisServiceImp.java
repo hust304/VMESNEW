@@ -7,6 +7,7 @@ import com.xy.vmes.deecoop.sale.dao.SaleAnalysisMapper;
 import com.xy.vmes.entity.Column;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.FinanceBillService;
+import com.xy.vmes.service.FinanceHistoryService;
 import com.xy.vmes.service.SaleAnalysisService;
 import com.yvan.HttpUtils;
 import com.yvan.PageData;
@@ -32,6 +33,9 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
 
     @Autowired
     private FinanceBillService financeBillService;
+
+    @Autowired
+    private FinanceHistoryService financeHistoryService;
 
     @Autowired
     private ColumnService columnService;
@@ -1320,8 +1324,284 @@ public class SaleAnalysisServiceImp implements SaleAnalysisService {
     }
 
 
+    @Override
+    public ResultModel accountsReceivableQueryByCurrent(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        Map result = new HashMap();
+
+        List<Column> columnList = columnService.findColumnList("accountsReceivableQueryByCurrent");
+        if (columnList == null || columnList.size() == 0) {
+            model.putCode("1");
+            model.putMsg("数据库没有生成TabCol，请联系管理员！");
+            return model;
+        }
+
+        //addColumn 页面上传递需要添加的栏位
+        if (pd.get("addColumn") != null) {
+            Map<String, String> addColumnMap = (Map<String, String>) pd.get("addColumn");
+            ColumnUtil.addColumnByColumnList(columnList, addColumnMap);
+        }
+
+        //获取指定栏位字符串-重新调整List<Column>
+        String fieldCode = pd.getString("fieldCode");
+        if (fieldCode != null && fieldCode.trim().length() > 0) {
+            columnList = columnService.modifyColumnByFieldCode(fieldCode, columnList);
+        }
+
+
+        pd.put("genre","df7cb67fca4148bc9632c908e4a7fdea");
+        pd.put("orderStr"," case when nowPlus-nowMinus+beginPlus-beginMinus>0 then round(ifnull(nowPlus-nowMinus+beginPlus-beginMinus,0),2) else 0.00 end desc ");
+        List<Map>  varList = financeBillService.getFinanceReceiveView(pd,null);
+
+        Map<String, Object> titleMap = ColumnUtil.findTitleMapByColumnList(columnList);
+        List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
+
+        result.put("hideTitles",titleMap.get("hideTitles"));
+        result.put("titles",titleMap.get("titles"));
+        result.put("varList",varMapList);
+        model.putResult(result);
+
+        return model;
+    }
+
+    @Override
+    public ResultModel accountsReceivable12MonthSingle(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+
+        List<String> periodData = new ArrayList();
+        List endPlusData = new ArrayList();
+        List nowPlusData = new ArrayList();
+        List nowMinusData = new ArrayList();
+        List<Map> elementData = new ArrayList();
+
+        String currentYearMonth = DateFormat.getCurrentYearMonth();
+        String currentPeriod = currentYearMonth.replace("-","");
+
+
+        Map resultMap = new HashMap();
+        resultMap.put("id",pd.getString("customerId"));
+        resultMap.put("name",null);
+        resultMap.put("periodData",periodData);
+        resultMap.put("endPlusData",endPlusData);
+        resultMap.put("nowPlusData",nowPlusData);
+        resultMap.put("nowMinusData",nowMinusData);
+        resultMap.put("elementData",elementData);
+
+        pd.put("genre","df7cb67fca4148bc9632c908e4a7fdea");
+        List<Map>  varList = financeBillService.getFinanceReceiveView(pd,null);
+        if(varList!=null&&varList.size()>0){
+            Map element = varList.get(0);
+            if(resultMap.get("name")==null){
+                resultMap.put("name",element.get("name"));
+            }
+            periodData.add(currentPeriod);
+            endPlusData.add(element.get("endPlus"));
+            nowPlusData.add(element.get("nowPlus"));
+            nowMinusData.add(element.get("nowMinus"));
+
+            Map elementNew = new HashMap();
+            elementNew.put("period",currentPeriod);
+            elementNew.put("endPlus",element.get("endPlus"));
+            elementNew.put("nowPlus",element.get("nowPlus"));
+            elementNew.put("nowMinus",element.get("nowMinus"));
+            elementData.add(elementNew);
+        }
 
 
 
+
+        String startYearMonth_YearOnYear = DateFormat.getStartYearMonth_YearOnYear(currentYearMonth);
+        List<String> yearMonthList = DateFormat.getAllYearMonth(startYearMonth_YearOnYear,currentYearMonth);
+        List<String> yearMonthListNew = new ArrayList();
+        String periods = null;
+        if(yearMonthList!=null&&yearMonthList.size()>0){
+            for(int i=yearMonthList.size()-1;i>=0;i-- ){
+                String yearMonth = yearMonthList.get(i);
+                yearMonth = yearMonth.replace("-","");
+                yearMonthListNew.add(yearMonth);
+                if(periods==null){
+                    periods = "'" + yearMonth + "'";
+                }else{
+                    periods = periods + ",'" + yearMonth + "'";
+                }
+            }
+        }
+        pd.put("queryStr"," period in ("+periods+")");
+
+        varList = financeHistoryService.getDataListPage(pd,null);
+
+        if(yearMonthListNew!=null&&yearMonthListNew.size()>0){
+            for(String period : yearMonthListNew){
+
+                Map elementNew = new HashMap();
+                elementNew.put("period",period);
+                elementNew.put("endPlus","0.00");
+                elementNew.put("nowPlus","0.00");
+                elementNew.put("nowMinus","0.00");
+
+                if(varList!=null&&varList.size()>0){
+                    for(Map element : varList){
+
+                        if(resultMap.get("name")==null){
+                            resultMap.put("name",element.get("name"));
+                        }
+
+                        if(element.get("period")!=null&&period.equals((String)element.get("period"))){
+                            elementNew.put("endPlus",element.get("endPlus"));
+                            elementNew.put("nowPlus",element.get("nowPlus"));
+                            elementNew.put("nowMinus",element.get("nowMinus"));
+                            elementData.add(elementNew);
+                        }
+                    }
+                }
+
+                periodData.add(period);
+                endPlusData.add(elementNew.get("endPlus"));
+                nowPlusData.add(elementNew.get("nowPlus"));
+                nowMinusData.add(elementNew.get("nowMinus"));
+            }
+        }
+
+        model.putResult(resultMap);
+
+        return model;
+    }
+
+
+
+    @Override
+    public ResultModel accountsReceivable12MonthMuti(PageData pd) throws Exception {
+        ResultModel model = new ResultModel();
+        List<Map> result = new ArrayList<>();
+        String idStr = pd.getString("customerIds");
+
+        Set<String> idSet = distinctIds(idStr);
+
+        String customerIds = null;
+        Map idData = new HashMap();
+        if(idSet!=null&&idSet.size()>0){
+            for(String id : idSet){
+                if(customerIds==null){
+                    customerIds = "'"+id+"'";
+                }else{
+                    customerIds = customerIds + ",'"+id+"'";
+                }
+                List<Map> elementData = new ArrayList();
+                idData.put(id,elementData);
+            }
+        }
+
+        pd.put("queryStr"," customer.id in ("+customerIds+") ");
+        pd.put("genre","df7cb67fca4148bc9632c908e4a7fdea");
+        List<Map>  varList = financeBillService.getFinanceReceiveView(pd,null);
+        if(varList!=null&&varList.size()>0){
+            for(Map element : varList){
+                if(element.get("id")!=null){
+                    String id = (String)element.get("id");
+                    Map elementNew = new HashMap();
+                    elementNew.put("id",element.get("id"));
+                    elementNew.put("name",element.get("name"));
+                    elementNew.put("period",element.get("currentPeriod"));
+                    elementNew.put("endPlus",element.get("endPlus"));
+                    if(idData.get(id)!=null){
+                        List<Map> elementData =   (List<Map>)idData.get(id);
+                        elementData.add(elementNew);
+                        idData.put(id,elementData);
+                    }
+                }
+            }
+        }
+
+
+
+
+        String currentYearMonth = DateFormat.getCurrentYearMonth();
+        String nextYearMonth = DateFormat.getNextYearMonth(currentYearMonth);
+        String startYearMonth_YearOnYear = DateFormat.getStartYearMonth_YearOnYear(currentYearMonth);
+        List<String> yearMonthList = DateFormat.getAllYearMonth(startYearMonth_YearOnYear,nextYearMonth);
+        List<String> yearMonthListNew = new ArrayList();
+        String periods = null;
+        if(yearMonthList!=null&&yearMonthList.size()>0){
+            for(int i=yearMonthList.size()-1;i>=0;i-- ){
+                String yearMonth = yearMonthList.get(i);
+                yearMonth = yearMonth.replace("-","");
+                yearMonthListNew.add(yearMonth);
+                if(periods==null){
+                    periods = "'" + yearMonth + "'";
+                }else{
+                    periods = periods + ",'" + yearMonth + "'";
+                }
+            }
+        }
+        pd.put("queryStr"," period in ("+periods+") and customer_id in ("+customerIds+") ");
+
+        varList = financeHistoryService.getDataListPage(pd,null);
+
+        if(varList!=null&&varList.size()>0){
+            for(Map element : varList){
+                if(element.get("customerId")!=null){
+                    String id = (String)element.get("customerId");
+                    Map elementNew = new HashMap();
+                    elementNew.put("id",element.get("customerId"));
+                    elementNew.put("name",element.get("name"));
+                    elementNew.put("period",element.get("period"));
+                    elementNew.put("endPlus",element.get("endPlus"));
+                    if(idData.get(id)!=null){
+                        List<Map> elementData =   (List<Map>)idData.get(id);
+                        elementData.add(elementNew);
+                        idData.put(id,elementData);
+                    }
+                }
+            }
+        }
+
+
+        if(idSet!=null&&idSet.size()>0) {
+            for (String id : idSet) {
+                if(idData.get(id)!=null){
+                    List<Map> elementData =   (List<Map>)idData.get(id);
+                    if(elementData!=null&&elementData.size()>0){
+
+
+                        List<Map> elementDataNew = new ArrayList();
+                        List endPlusData = new ArrayList();
+                        Map resultMap = new HashMap();
+                        resultMap.put("id",id);
+                        resultMap.put("name",null);
+                        resultMap.put("periodData",yearMonthListNew);
+                        resultMap.put("endPlusData",endPlusData);
+                        resultMap.put("elementData",elementDataNew);
+
+                        if(yearMonthListNew!=null&&yearMonthListNew.size()>0) {
+                            for (String period : yearMonthListNew) {
+                                Map elementNew = new HashMap();
+                                elementNew.put("id", id);
+                                elementNew.put("name", null);
+                                elementNew.put("period", period);
+                                elementNew.put("endPlus", "0.00");
+
+                                if(elementData!=null&&elementData.size()>0){
+                                    for(Map element : elementData){
+                                        if(element.get("period")!=null&&period.equals((String)element.get("period"))){
+                                            elementNew.put("name",element.get("name"));
+                                            elementNew.put("endPlus",element.get("endPlus"));
+                                            resultMap.put("name",element.get("name"));
+                                        }
+                                    }
+                                }
+                                endPlusData.add(elementNew.get("endPlus"));
+                                elementDataNew.add(elementNew);
+                            }
+                        }
+
+                        result.add(resultMap);
+                    }
+                }
+            }
+        }
+
+        model.putResult(result);
+        return model;
+    }
 
 }

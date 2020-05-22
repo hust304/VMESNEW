@@ -551,4 +551,60 @@ public class SaleAnalysisController {
     }
 
 
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/accountsReceivableQueryByCurrent")
+    public ResultModel accountsReceivableQueryByCurrent() throws Exception {
+        logger.info("################/sale/saleAnalysis/accountsReceivableQueryByCurrent 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.accountsReceivableQueryByCurrent(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/accountsReceivableQueryByCurrent 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/accountsReceivable12MonthSingle")
+    public ResultModel accountsReceivable12MonthSingle() throws Exception {
+        logger.info("################/sale/saleAnalysis/accountsReceivable12MonthSingle 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.accountsReceivable12MonthSingle(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/accountsReceivable12MonthSingle 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
+    /**
+     * @author 陈刚 自动创建，可以修改
+     * @date 2018-12-15
+     */
+    @PostMapping("/sale/saleAnalysis/accountsReceivable12MonthMuti")
+    public ResultModel accountsReceivable12MonthMuti() throws Exception {
+        logger.info("################/sale/saleAnalysis/accountsReceivable12MonthMuti 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = saleAnalysisService.accountsReceivable12MonthMuti(pd);
+
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/sale/saleAnalysis/accountsReceivable12MonthMuti 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+
+
 }

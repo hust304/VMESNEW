@@ -588,6 +588,10 @@
                     and customer.genre = #{genre}
                 </if>
 
+                <if test='customerId != null and customerId != ""'>
+                    and customer.id = #{customerId}
+                </if>
+
                 <if test='code != null and code != ""'>
                     and customer.code LIKE CONCAT(CONCAT('%', #{code}),'%')
                 </if>
@@ -651,6 +655,11 @@
                     and customer.genre = #{genre}
                 </if>
 
+                <if test='customerId != null and customerId != ""'>
+                    and customer.id = #{customerId}
+                </if>
+
+
                 <if test='code != null and code != ""'>
                     and customer.code LIKE CONCAT(CONCAT('%', #{code}),'%')
                 </if>
@@ -713,6 +722,10 @@
                 <!--客户  df7cb67fca4148bc9632c908e4a7fdea-->
                 <if test='genre != null and genre != ""'>
                     and customer.genre = #{genre}
+                </if>
+
+                <if test='customerId != null and customerId != ""'>
+                    and customer.id = #{customerId}
                 </if>
 
                 <if test='code != null and code != ""'>

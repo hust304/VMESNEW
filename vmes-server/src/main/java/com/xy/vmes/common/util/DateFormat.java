@@ -515,5 +515,32 @@ public class DateFormat {
 //            System.out.println(ele);
 //        }
 
+
+
+//        String currentYearMonth = DateFormat.getCurrentYearMonth();
+//        String startYearMonth_YearOnYear = DateFormat.getStartYearMonth_YearOnYear(currentYearMonth);
+//        List<String> yearMonthList = DateFormat.getAllYearMonth(startYearMonth_YearOnYear,currentYearMonth);
+//        List<String> yearMonthListNew = new ArrayList();
+//        String periods = null;
+//        if(yearMonthList!=null&&yearMonthList.size()>0){
+//            for(int i=yearMonthList.size()-1;i>=0;i-- ){
+//                String yearMonth = yearMonthList.get(i);
+//                yearMonth = yearMonth.replace("-","");
+//                yearMonthListNew.add(yearMonth);
+//                if(periods==null){
+//                    periods = "'" + yearMonth + "'";
+//                }else{
+//                    periods = periods + ",'" + yearMonth + "'";
+//                }
+//            }
+//
+//        }
+//
+//        for(String ele : yearMonthListNew){
+//            System.out.println(ele);
+//        }
+//
+//        System.out.println(periods);
+
     }
 }
