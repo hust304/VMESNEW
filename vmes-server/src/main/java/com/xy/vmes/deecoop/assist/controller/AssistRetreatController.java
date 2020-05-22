@@ -508,6 +508,7 @@ public class AssistRetreatController {
             return model;
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         AssistRetreat editRetreat = new AssistRetreat();
         editRetreat.setId(retreatId);
 
