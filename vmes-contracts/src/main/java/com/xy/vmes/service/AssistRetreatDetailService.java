@@ -112,6 +112,19 @@ public interface AssistRetreatDetailService {
      * @return
      */
     String findParentStateByDetailList(List<AssistRetreatDetail> detailList);
+
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param orderDtlList
+     * @return
+     */
+    Map<String, Map<String, Object>> findProductBusinessMapByOut(List<AssistRetreatDetail> orderDtlList);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 

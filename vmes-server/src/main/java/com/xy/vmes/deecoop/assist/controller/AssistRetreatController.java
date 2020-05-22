@@ -44,6 +44,12 @@ public class AssistRetreatController {
     private AssistOrderDetailChildService assistOrderChildService;
 
     @Autowired
+    private PurchaseByFinanceBillService purchaseByFinanceBillService;
+    @Autowired
+    private WarehouseOutCreateService warehouseOutCreateService;
+    @Autowired
+    private RoleMenuService roleMenuService;
+    @Autowired
     private CoderuleService coderuleService;
 
     /**
@@ -457,6 +463,36 @@ public class AssistRetreatController {
         PageData pageData = HttpUtils.parsePageData();
 
         String cuser = pageData.getString("cuser");
+        String companyID = pageData.getString("currentCompanyId");
+        if (companyID == null || companyID.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("企业id为空或空字符串！");
+            return model;
+        }
+
+        String supplierName = pageData.getString("supplierName");
+        String supplierId = pageData.getString("supplierId");
+        if (supplierId == null || supplierId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("供应商id为空或空字符串！");
+            return model;
+        }
+
+        String roleId = pageData.getString("roleId");
+        if (roleId == null || roleId.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色id为空或空字符串！");
+            return model;
+        }
+
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+        if (warehouse == null || warehouse.trim().length() == 0) {
+            model.putCode(Integer.valueOf(1));
+            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+            return model;
+        }
+
         //外协退货单id
         String retreatId = pageData.getString("id");
         if (retreatId == null || retreatId.trim().length() == 0) {
@@ -490,10 +526,78 @@ public class AssistRetreatController {
 
         //明细状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
         retreatDetailService.updateStateByDetail(state, retreatId);
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //出库单
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //推送(外协)退款单
+        //type:退货类型(1:外协件 2:外协原材料)
+        if ("1".equals(type)) {
+            //生成出库单
+            List<AssistRetreatDetail> retreatDtlList = retreatDetailService.findAssistRetreatDetailListByParentId(retreatId);
+
+            String retreatCode = pageData.getString("retreatCode");
+            if (retreatDtlList != null && retreatDtlList.size() > 0) {
+                Map<String, Map<String, Object>> businessByOutMap = retreatDetailService.findProductBusinessMapByOut(retreatDtlList);
+                if (Common.SYS_WAREHOUSE_COMPLEX.equals(warehouse)) {
+                    //复杂版仓库:warehouseByComplex:Common.SYS_WAREHOUSE_COMPLEX
+                    warehouseOutCreateService.createWarehouseOutBusinessByComplex(supplierId,
+                            supplierName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyID,
+                            //外协退货出库 75338f5acdcb40e2ac3fc5a0069229d0:assistRetreatOut
+                            Common.DICTIONARY_MAP.get("assistRetreatOut"),
+                            retreatCode,
+                            businessByOutMap);
+                } else if (Common.SYS_WAREHOUSE_SIMPLE.equals(warehouse)) {
+                    //简版仓库:warehouseBySimple:Common.SYS_WAREHOUSE_SIMPLE
+                    warehouseOutCreateService.createWarehouseOutBusinessBySimple(supplierId,
+                            supplierName,
+                            //实体库:warehouseEntity:2d75e49bcb9911e884ad00163e105f05
+                            Common.DICTIONARY_MAP.get("warehouseEntity"),
+                            cuser,
+                            companyID,
+                            //外协退货出库 75338f5acdcb40e2ac3fc5a0069229d0:assistRetreatOut
+                            Common.DICTIONARY_MAP.get("assistRetreatOut"),
+                            retreatCode,
+                            businessByOutMap);
+                }
+
+                //反写业务出库单id
+                if (businessByOutMap != null) {
+                    for (Iterator iterator = businessByOutMap.keySet().iterator(); iterator.hasNext();) {
+                        String businessId = iterator.next().toString().trim();
+                        Map<String, Object> objectMap = businessByOutMap.get(businessId);
+                        if (objectMap != null && objectMap.get("outDtlId") != null && objectMap.get("outDtlId").toString().trim().length() > 0) {
+                            String outDtlId = objectMap.get("outDtlId").toString().trim();
+
+                            AssistRetreatDetail editDetail = new AssistRetreatDetail();
+                            editDetail.setId(businessId);
+                            editDetail.setOutDtlId(outDtlId);
+                            retreatDetailService.update(editDetail);
+                        }
+                    }
+                }
+            }
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //推送(外协)退款单
+            BigDecimal totalAmount = retreatDetailService.findTotalAmount(retreatDtlList);
+//单据类型 ( 0:收款单(销售) 1:付款单(采购) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 6:收货账单(采购) 7:扣款单(采购) 8:应收单(销售) 9:退款单(采购) 10:应付单(采购) 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协))
+//销售(客户)  : 0:收款单(销售) 2:减免单(销售) 3:退款单(销售) 4:发货账单(销售) 5:退货账单(销售) 8:应收单(销售)
+//采购(供应商): 1:付款单(采购) 6:收货账单(采购) 7:扣款单(采购) 9:退款单(采购) 10:应付单(采购)
+//外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协)
+            purchaseByFinanceBillService.addFinanceBillByAssist(retreatId,
+                    companyID,
+                    supplierId,
+                    cuser,
+                    //外协(供应商): 11:收货账单(外协) 12:退款单(外协) 13:扣款单(外协)
+                    "12",
+                    //state:状态(0：待提交 1：待审核 2：已审核 -1：已取消)
+                    "2",
+                    null,
+                    totalAmount,
+                    retreatCode);
+        }
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //修改外协订单状态
         PageData findMap = new PageData();

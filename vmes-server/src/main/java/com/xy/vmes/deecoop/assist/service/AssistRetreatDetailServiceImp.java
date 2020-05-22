@@ -282,6 +282,45 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
 
         return null;
     }
+
+    /**
+     * 返回货品出库Map
+     * 业务货品出库Map<业务单id, 货品Map<String, Object>>
+     * 货品Map<String, Object>
+     *     productId: 货品id
+     *     outDtlId:  出库明细id
+     *     outCount:  出库数量
+     *
+     * @param objectList
+     * @return
+     */
+    public Map<String, Map<String, Object>> findProductBusinessMapByOut(List<AssistRetreatDetail> objectList) {
+        Map<String, Map<String, Object>> prodBusinessByOutMap = new HashMap<>();
+        if (objectList == null || objectList.size() == 0) {return prodBusinessByOutMap;}
+
+        for (AssistRetreatDetail dtlObject : objectList) {
+            //id:销售订单明细id
+            String id = dtlObject.getId();
+            String productId = dtlObject.getProductId();
+
+            //orderCount:退货数量(订单单位) := outCount 出库数量
+            BigDecimal orderCount = BigDecimal.valueOf(0D);
+            if (dtlObject.getOrderCount() != null) {
+                orderCount = dtlObject.getOrderCount();
+            }
+            //四舍五入到2位小数
+            orderCount = orderCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+            Map<String, Object> productMap = new HashMap<String, Object>();
+            productMap.put("productId", productId);
+            productMap.put("outDtlId", null);
+            productMap.put("outCount", orderCount);
+
+            prodBusinessByOutMap.put(id, productMap);
+        }
+
+        return prodBusinessByOutMap;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

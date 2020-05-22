@@ -424,10 +424,15 @@ public class Common {
             put("checkOut", "55bdf3529c3c463489670a46c2651c1e");
             //报废处理:报废出库 def4b13175dc44b08d7a0315b811700e
             put("scrapOut", "def4b13175dc44b08d7a0315b811700e");
+
             //办公用品出库 f2b0aaceff914acd8636700a111ca8f0
             put("officeOut", "f2b0aaceff914acd8636700a111ca8f0");
             //外协出库 2ed8e86f7db149ffabc95b6428947cba
             put("assistOut", "2ed8e86f7db149ffabc95b6428947cba");
+            //外协退货出库 75338f5acdcb40e2ac3fc5a0069229d0
+            put("assistRetreatOut", "75338f5acdcb40e2ac3fc5a0069229d0");
+
+
 
 //        //a804369b392c4035bc766cc536b29d35 备件库入库类型
 //        put("warehouseInTypeBySpare", "a804369b392c4035bc766cc536b29d35");
