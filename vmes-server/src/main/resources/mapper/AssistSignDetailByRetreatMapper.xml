@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_sign_detail:外协签收明细 Mapper.xml
+外协-外协件退货-生成退货(成品退货)
+
+创建人：陈刚
+创建时间：2020-05-12
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistSignDetailByRetreatMapper">
+    <insert id="assistSignDetailByRetreat" >
+        delete from vmes_column where model_code = 'assistSignDetailByRetreat';
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'id', 'id', 0, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'parentId', '签收单id', 1, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'orderId', '采购订单id', 2, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'orderDetailId', '采购订单明细id', 3, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'inDetailId', '(免检签收入库)入库单明细id', 4, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'assistProductId', '外协件id', 5, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'orderUnit', '单据单位id', 6, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'arriveCount', '签收数', 7, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'quality', '质检属性 (1:免检 2:检验)', 8, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'qualityType', '检验方式 (1:全检 2:抽检)', 9, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'qualityCount', '实检数', 10, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'badCount', '不合格', 11, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'retreatCount', '退货数', 12, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'discardCount', '报废数', 13, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'receiveCount', '让步接收', 14, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'qualityInDtlId', '(检验入库)入库单明细id', 15, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'receiveInDtlId', '(检验让步接收入库)入库单明细id', 16, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'state', '状态(1:检验中 2:已完成 -1:已取消)', 17, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'signFineCount', '收货合格数(签收数-退货数)', 18, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistSignDetailByRetreat', 'qualityFineCount', '(实际)检验合格数(签收数-不合格数)', 19, '1', '0', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','productId','(外协件)货品id',20, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','assistProductName','外协件',21, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','orderUnitName','单位',22, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','craftCode','工艺编号',23, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','craftName','工艺名称',24, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','retreatCount','退货数',25, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','maxRetreatCount','最大退货',26, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistSignDetailByRetreat','editRetreatCount','本次退货',27, '1','1','1','0',now(), 'admin'),
+    </insert>
+
+    <select id="findAssistSignDetailByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            signDtl.id id,
+            signDtl.parent_id parentId,
+            signDtl.order_id orderId,
+            signDtl.order_detail_id orderDetailId,
+            signDtl.in_detail_id inDetailId,
+
+            signDtl.assist_product_id assistProductId,
+            signDtl.order_unit orderUnit,
+            round(ifnull(signDtl.arrive_count, 0), 2) arriveCount,
+            signDtl.quality quality,
+            signDtl.quality_type qualityType,
+
+            round(ifnull(signDtl.quality_count, 0), 2) qualityCount,
+            round(ifnull(signDtl.bad_count, 0), 2) badCount,
+            round(ifnull(signDtl.retreat_count, 0), 2) retreatCount,
+            round(ifnull(signDtl.discard_count, 0), 2) discardCount,
+            round(ifnull(signDtl.receive_count, 0), 2) receiveCount,
+
+            signDtl.quality_inDtl_id qualityInDtlId,
+            signDtl.receive_inDtl_id receiveInDtlId,
+            signDtl.state state,
+            round(ifnull(signDtl.sign_fine_count, 0), 2) signFineCount,
+            round(ifnull(signDtl.quality_fine_count, 0), 2) qualityFineCount,
+
+            <!--外协件信息-->
+            assistProd.product_id productId,
+            assistProd.product_name assistProductName,
+            orderUnitName.name orderUnitName,
+            craft.sys_code craftCode,
+            craft.name craftName,
+
+            round(ifnull(retreat.order_count, 0),2) retreatCount,
+            <!--maxRetreatCount:最大允许发货数量: -->
+            round((ifnull(signDtl.sign_fine_count, 0) - ifnull(retreat.order_count, 0)) ,2) maxRetreatCount
+
+        from vmes_assist_sign_detail signDtl
+            left join vmes_assist_product assistProd on signDtl.assist_product_id = assistProd.id
+            left join vmes_assist_craft craft on assistProd.craft_id = craft.id and craft.isdisable = '1'
+            left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and signDtl.order_unit = orderUnit.unit)
+            left join vmes_dictionary orderUnitName on signDtl.order_unit = orderUnitName.id
+
+            <!--外协退货单-->
+            left join (
+                select order_dtl_id, sum(order_count) order_count
+                from vmes_assist_retreat_detail
+                <where>
+                    <if test="orderId != null and orderId != ''" >
+                        and order_id = #{orderId}
+                    </if>
+                    and parent_id in (
+                        select id
+                        from vmes_assist_retreat
+                        <where>
+                            <if test="currentCompanyId != null and currentCompanyId != ''" >
+                                and company_id = #{currentCompanyId}
+                            </if>
+                            <if test='supplierId != null and supplierId != ""' >
+                                and supplier_id = #{supplierId}
+                            </if>
+                            <!--type 退货类型(1:外协件 2:外协原材料)-->
+                            and type = '1'
+                            <!--退货属性(1:系统生成 2:用户生成)-->
+                            and attribute = '2'
+                            <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+                            <![CDATA[and state <> -1]]>
+                        </where>
+                    )
+                </where>
+                group by order_dtl_id
+            ) retreat on detail.id = retreat.order_dtl_id
+
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and detail.parent_id = #{orderId}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+</mapper>
