@@ -216,6 +216,8 @@ public class AssistRetreatServiceImp implements AssistRetreatService {
         addRetreat.setSupplierId(supplierId);
         //退货类型(1:外协件 2:外协原材料)
         addRetreat.setType(type);
+        //attribute 退货属性(1:系统生成 2:用户生成)
+        addRetreat.setAttribute("1");
         //状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)
         addRetreat.setState("3");
         //退货完成日期 retreatDate

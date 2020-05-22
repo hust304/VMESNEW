@@ -89,20 +89,25 @@
             craft.sys_code craftCode,
             craft.name craftName,
 
-            <!--签收明细(签收检验完成)汇总 -->
-            round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
-            round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
-            round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+<!--签收明细(签收检验完成)汇总 -->
+<!--
+    round(ifnull(signDetailEnd.arrive_count, 0), 2) endArriveCount,
+    round(ifnull(signDetailEnd.sign_fine_count, 0), 2) endSignFineCount,
+    round(ifnull(signDetailEnd.quality_fine_count, 0), 2) endQualityFineCount,
+-->
 
             <!--签收明细汇总 -->
             round(ifnull(signDetail.arrive_count, 0), 2) arriveCount,
             round(ifnull(signDetail.quality_count, 0), 2) qualityCount,
             round(ifnull(signDetail.bad_count, 0), 2) badCount,
-            round(ifnull(signDetail.retreat_count, 0), 2) discardCount,
-            round(ifnull(signDetail.discard_count, 0), 2) retreatCount,
+            round(ifnull(signDetail.discard_count, 0), 2) discardCount,
             round(ifnull(signDetail.receive_count, 0), 2) receiveCount,
-            round(ifnull(signDetail.sign_fine_count, 0), 2) signFineCount,
             round(ifnull(signDetail.quality_fine_count, 0), 2) qualityFineCount,
+
+            <!--外协件(成品)退货数:(检验)退货数 + (用户生成)退货数 -->
+            round((ifnull(signDetail.retreat_count, 0) + ifnull(retreatUser.order_count, 0)), 2) retreatCount,
+            <!--外协件(成品)收货合格:收货合格数(签收数-退货数-报废) - (用户生成)退货数 -->
+            round((ifnull(signDetail.sign_fine_count, 0) - ifnull(retreatUser.order_count, 0)), 2) signFineCount,
 
             <!--java 类实现(qualityFineRatio,signFineRatio) -->
             '' qualityFineRatio,
@@ -115,26 +120,28 @@
             left join vmes_product_unit orderUnit on (assistProd.product_id = orderUnit.product_id and detail.order_unit = orderUnit.unit)
             left join vmes_dictionary orderUnitName on detail.order_unit = orderUnitName.id
 
-            <!--(外协订单明细id)外协签收明细汇总 (签收完成)vmes_assist_sign_detail-->
-            left join (
-                select
-                    order_detail_id,
-                    sum(arrive_count) arrive_count,
-                    sum(sign_fine_count) sign_fine_count,
-                    sum(quality_fine_count) quality_fine_count
-                from vmes_assist_sign_detail
-                <where>
-                    <if test="orderId != null and orderId != ''">
-                        and order_id = #{orderId}
-                    </if>
-                    <if test="orderDtlId != null and orderDtlId != ''">
-                        and order_detail_id = #{orderDtlId}
-                    </if>
-                    <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
-                    and state = '2'
-                </where>
-                group by order_detail_id
-            ) signDetailEnd on detail.id = signDetailEnd.order_detail_id
+<!--(外协订单明细id)外协签收明细汇总 (签收完成)vmes_assist_sign_detail-->
+<!--
+    left join (
+        select
+            order_detail_id,
+            sum(arrive_count) arrive_count,
+            sum(sign_fine_count) sign_fine_count,
+            sum(quality_fine_count) quality_fine_count
+        from vmes_assist_sign_detail
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and order_detail_id = #{orderDtlId}
+            </if>
+
+            and state = '2'
+        </where>
+        group by order_detail_id
+    ) signDetailEnd on detail.id = signDetailEnd.order_detail_id
+-->
 
             <!--(外协订单明细id)外协签收明细汇总 (全部签收)vmes_assist_sign_detail-->
             left join (
@@ -156,10 +163,33 @@
                     <if test="orderDtlId != null and orderDtlId != ''">
                         and order_detail_id = #{orderDtlId}
                     </if>
-                    <![CDATA[ and state <> '-1' ]]>
+                    <!--state:状态(1:检验中 2:已完成 -1:已取消)-->
+                    and state = '2'
                 </where>
                 group by order_detail_id
             ) signDetail on detail.id = signDetail.order_detail_id
+
+            <!--(外协订单明细id)外协退货明细汇总 vmes_assist_retreat_detail-->
+            left join (
+                select order_dtl_id, sum(order_count) order_count
+                from vmes_assist_retreat_detail a
+                left join vmes_assist_retreat b on a.parent_id = b.id
+                <where>
+                    <if test="orderId != null and orderId != ''">
+                        and a.order_id = #{orderId}
+                    </if>
+                    <if test="orderDtlId != null and orderDtlId != ''">
+                        and a.order_dtl_id = #{orderDtlId}
+                    </if>
+                    <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+                    and a.state = '3'
+                    <!--type:退货类型(1:外协件 2:外协原材料)-->
+                    and b.type = '1'
+                    <!--attribute:退货属性(1:系统生成 2:用户生成)-->
+                    and b.attribute = '2'
+                </where>
+                group by a.order_dtl_id
+            ) retreatUser on detail.id = retreatUser.order_dtl_id
 
         <where>
             <if test="orderDtlId != null and orderDtlId != ''">

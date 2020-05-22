@@ -75,7 +75,8 @@
             unitName.name unitName,
 
             round(ifnull(deliver.deliverCount, 0),2) deliverCount,
-            round(ifnull(assistSign.order_count, 0),2) signCount,
+            <!--signCount:消耗数量 :=  收货合格数(签收数-退货数-报废) - 用户生成退货数 -->
+            round((ifnull(assistSign.order_count, 0) - ifnull(retreatUser.order_count, 0)),2) signCount,
             round(ifnull(discard.order_count, 0),2) discardCount,
             round(ifnull(retreat.order_count, 0),2) retreatCount
 
@@ -107,6 +108,10 @@
             left join (
                 <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignfineByOrder"></include>
             ) assistSign on orderChild.id = assistSign.orderDtl_child_id
+            <!--(外协件:成品)(用户生成)退货 findAssistRetreatUserByOrder 汇总-->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatUserByOrder"></include>
+            ) retreatUser on orderChild.id = retreatUser.orderDtl_child_id
 
             <!--外协模块报废汇总 -->
             left join (

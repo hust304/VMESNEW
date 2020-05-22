@@ -486,21 +486,21 @@ public class AssistOrderDetailServiceImp implements AssistOrderDetailService {
         }
 
         List<Map> varList = this.listAssistOrderDetailInfo(pd, pg);
-        if (varList != null && varList.size() > 0) {
-            for (Map<String, Object> mapObject : varList) {
-                //endArriveCount (完成检验)签收数
-                BigDecimal endArriveCount = (BigDecimal)mapObject.get("endArriveCount");
-
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //arriveCount 签收数
-                BigDecimal arriveCount = (BigDecimal)mapObject.get("arriveCount");
-
-                //signInCount 检验中: 签收数 - (完成检验)签收数
-                BigDecimal signInCount = BigDecimal.valueOf(arriveCount.doubleValue() - endArriveCount.doubleValue());
-                signInCount = signInCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
-                mapObject.put("signInCount", signInCount.toString());
-            }
-        }
+//        if (varList != null && varList.size() > 0) {
+//            for (Map<String, Object> mapObject : varList) {
+//                //endArriveCount (完成检验)签收数
+//                BigDecimal endArriveCount = (BigDecimal)mapObject.get("endArriveCount");
+//
+//                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                //arriveCount 签收数
+//                BigDecimal arriveCount = (BigDecimal)mapObject.get("arriveCount");
+//
+//                //signInCount 检验中: 签收数 - (完成检验)签收数
+//                BigDecimal signInCount = BigDecimal.valueOf(arriveCount.doubleValue() - endArriveCount.doubleValue());
+//                signInCount = signInCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+//                mapObject.put("signInCount", signInCount.toString());
+//            }
+//        }
         List<Map> varMapList = ColumnUtil.getVarMapList(varList,titleMap);
 
         result.put("hideTitles",titleMap.get("hideTitles"));

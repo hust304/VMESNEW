@@ -132,6 +132,34 @@
             left join vmes_assist_order_detail_child orderChild on signDtl.order_detail_id = orderChild.order_dtl_id
     </sql>
 
+    <!--(外协件:成品)(用户生成)退货 汇总-->
+    <sql id="findAssistRetreatUserByOrder">
+        select
+            orderChild.id orderDtl_child_id,
+            round((ifnull(orderChild.ratio, 0) * ifnull(retreatDtl.order_count, 0)),2) order_count
+        from (
+            select order_dtl_id, sum(order_count) order_count
+            from vmes_assist_retreat_detail a
+                left join vmes_assist_retreat b on a.parent_id = b.id
+            <where>
+                <if test="orderId != null and orderId != ''">
+                    and a.order_id = #{orderId}
+                </if>
+                <if test="orderDtlId != null and orderDtlId != ''">
+                    and a.order_dtl_id = #{orderDtlId}
+                </if>
+                <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+                and a.state = '3'
+                <!--type:退货类型(1:外协件 2:外协原材料)-->
+                and b.type = '1'
+                <!--attribute:退货属性(1:系统生成 2:用户生成)-->
+                and b.attribute = '2'
+            </where>
+            group by a.order_dtl_id
+        ) retreatDtl
+            left join vmes_assist_order_detail_child orderChild on retreatDtl.order_dtl_id = orderChild.order_dtl_id
+    </sql>
+
     <!--(原材料)退货(检验) 汇总 order_count:退货数量 -->
     <sql id="findAssistRetreatProductSignByOrder">
         select
