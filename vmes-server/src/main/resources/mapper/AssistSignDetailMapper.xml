@@ -268,15 +268,15 @@
     <!--======================================================================================================================-->
     <select id="checkAssistSignDetailByInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            signDtl.id
-            signDtl.in_detail_id inDetailId,
-            signDtl.quality_inDtl_id qualityInDtlId,
-            signDtl.receive_inDtl_id receiveInDtlId
-        from vmes_assist_sign_detail signDtl
+            id,
+            in_detail_id inDetailId,
+            quality_inDtl_id qualityInDtlId,
+            receive_inDtl_id receiveInDtlId
+        from vmes_assist_sign_detail
         <where>
             <!--(免检)入库单明细-->
             <if test="inParentId != null and inParentId != ''" >
-                and signDtl.in_detail_id in (
+                and in_detail_id in (
                     select id from vmes_warehouse_in_detail
                     where parent_id = #{inParentId}
                 )
@@ -284,7 +284,7 @@
 
             <!--(检验入库)入库单明细-->
             <if test="qualityInParentId != null and qualityInParentId != ''" >
-                and signDtl.quality_inDtl_id in (
+                and quality_inDtl_id in (
                     select id from vmes_warehouse_in_detail
                     where parent_id = #{qualityInParentId}
                 )
@@ -292,7 +292,7 @@
 
             <!--(检验让步接收入库)入库单明细-->
             <if test="receiveInParentId != null and receiveInParentId != ''" >
-                and signDtl.receive_inDtl_id in (
+                and receive_inDtl_id in (
                     select id from vmes_warehouse_in_detail
                     where parent_id = #{receiveInParentId}
                 )

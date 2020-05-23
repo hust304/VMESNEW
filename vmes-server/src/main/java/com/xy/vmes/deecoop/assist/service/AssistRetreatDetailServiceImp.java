@@ -326,7 +326,7 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
         return assistRetreatDetailMapper.checkAssistRetreatDetailByInDetail(pd);
     }
     public List<Map<String, Object>> checkAssistRetreatDetailByOutDetail(PageData pd) {
-        return assistRetreatDetailMapper.checkAssistRetreatDetailByInDetail(pd);
+        return assistRetreatDetailMapper.checkAssistRetreatDetailByOutDetail(pd);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
