@@ -45,6 +45,9 @@ public interface AssistRetreatDetailMapper extends BaseMapper<AssistRetreatDetai
     List<Map> getDataListPage(PageData pd);
     /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
     void updateStateByDetail(PageData pd);
+
+    List<Map<String, Object>> checkAssistRetreatDetailByInDetail(PageData pd);
+    List<Map<String, Object>> checkAssistRetreatDetailByOutDetail(PageData pd);
 }
 
 

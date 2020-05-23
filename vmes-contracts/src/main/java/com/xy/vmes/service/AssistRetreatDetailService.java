@@ -125,6 +125,9 @@ public interface AssistRetreatDetailService {
      * @return
      */
     Map<String, Map<String, Object>> findProductBusinessMapByOut(List<AssistRetreatDetail> orderDtlList);
+
+    List<Map<String, Object>> checkAssistRetreatDetailByInDetail(PageData pd);
+    List<Map<String, Object>> checkAssistRetreatDetailByOutDetail(PageData pd);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void updateStateByDetail(String state, String parentIds) throws Exception;
 

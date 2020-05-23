@@ -321,6 +321,13 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
 
         return prodBusinessByOutMap;
     }
+
+    public List<Map<String, Object>> checkAssistRetreatDetailByInDetail(PageData pd) {
+        return assistRetreatDetailMapper.checkAssistRetreatDetailByInDetail(pd);
+    }
+    public List<Map<String, Object>> checkAssistRetreatDetailByOutDetail(PageData pd) {
+        return assistRetreatDetailMapper.checkAssistRetreatDetailByInDetail(pd);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

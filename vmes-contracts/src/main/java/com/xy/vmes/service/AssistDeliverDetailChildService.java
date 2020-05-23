@@ -109,6 +109,8 @@ public interface AssistDeliverDetailChildService {
      * @return
      */
     Map<String, Map<String, Object>> findProductBusinessMapByOut(List<AssistDeliverDetailChild> orderDtlList);
+
+    List<Map<String, Object>> checkAssistDeliverDetailChildByOutDetail(PageData pd);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     * 分页查询

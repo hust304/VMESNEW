@@ -176,4 +176,20 @@
         </if>
     </select>
 
+    <!--======================================================================================================================-->
+    <select id="checkAssistDeliverDetailChildByOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            detailChild.id
+            detailChild.out_dtl_id outDtlId
+        from vmes_assist_deliver_detail_child detailChild
+        <where>
+            <if test="outParentId != null and outParentId != ''" >
+                and detailChild.out_dtl_id in (
+                    select id from vmes_assist_order_detail
+                    where parent_id = #{outParentId}
+                )
+            </if>
+        </where>
+    </select>
+
 </mapper>

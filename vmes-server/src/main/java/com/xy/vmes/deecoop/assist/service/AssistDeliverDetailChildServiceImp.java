@@ -230,6 +230,10 @@ public class AssistDeliverDetailChildServiceImp implements AssistDeliverDetailCh
 
         return prodBusinessByOutMap;
     }
+
+    public List<Map<String, Object>> checkAssistDeliverDetailChildByOutDetail(PageData pd) {
+        return deliverDetailChildMapper.checkAssistDeliverDetailChildByOutDetail(pd);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
     *

@@ -27,17 +27,24 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
     @Autowired
     private SaleRetreatDetailOnInService saleRetreatService;
     @Autowired
+    private SaleDeliverDtlOnOutDtlService saleDeliverService;
+
+    @Autowired
     private PurchaseSignDetailOnInService purchaseSignService;
     @Autowired
     private PurchaseRetreatDetailOnInService purchaseRetreatDetailService;
 
     @Autowired
-    private SaleDeliverDtlOnOutDtlService saleDeliverService;
-    @Autowired
     private PurchaseRetreatDetailOnOutService purchaseRetreatService;
-
     @Autowired
     private ProducePlanQualityDetailOnInService producePlanService;
+
+    @Autowired
+    private AssistSignDetailService assistSignService;
+    @Autowired
+    private AssistRetreatDetailService assistRetreatService;
+    @Autowired
+    private AssistDeliverDetailChildService assistDeliverService;
 
 //    /**
 //     * 获取仓库属性(复杂版仓库,简版仓库)
@@ -146,7 +153,7 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
         if (parentId == null || parentId.trim().length() == 0) {return Boolean.FALSE;}
         if (type == null || type.trim().length() == 0) {return Boolean.FALSE;}
 
-        //pid:550e0457a3d34149ba3199d90b0ae198:入库类型 12
+        //pid:550e0457a3d34149ba3199d90b0ae198:入库类型 13
         //2c4a104aedc046848455f5fa6e3da87c 生产入库 -(部门)
         //8e35209f19804e94940f076c8d71b955 生产退料 -(部门)
         //80ac00503a1d41e5926be50f93c32c54 组装入库
@@ -159,6 +166,7 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
         //type:4:供应商
         //d78ceba5beef41f5be16f0ceee775399 采购入库 -(供应商)
         //064dda15d44d4f8fa6330c5c7e46300e 外协入库 -(供应商)
+        //1b62a5615c104e3db30cbed50c0e8b02 外协退料入库
 
         //type:3:客户
         //81907167d5c8498692e6c4f3694c5cfa 销售退货入库 -(客户)
@@ -233,6 +241,58 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
 
         //8e35209f19804e94940f076c8d71b955 生产退料 -(部门)
 
+        ////////////////////////////////////////////////////////////////////////////////////
+        //外协部分
+        //064dda15d44d4f8fa6330c5c7e46300e 外协入库:assistIn
+        if (Common.DICTIONARY_MAP.get("assistIn").equals(type.trim())) {
+            //1. (免检)入库单明细
+            PageData findMap = new PageData();
+            findMap.put("inParentId", parentId);
+            //SQL查询语句: AssistSignDetailMapper.checkAssistSignDetailByInDetail
+            List<Map<String, Object>> mapList = assistSignService.checkAssistSignDetailByInDetail(findMap);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //2. (检验入库)入库单明细
+            findMap = new PageData();
+            findMap.put("qualityInParentId", parentId);
+            //SQL查询语句: AssistSignDetailMapper.checkAssistSignDetailByInDetail
+            mapList = assistSignService.checkAssistSignDetailByInDetail(findMap);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //3. (检验让步接收入库)入库单明细
+            findMap = new PageData();
+            findMap.put("receiveInParentId", parentId);
+            //SQL查询语句: AssistSignDetailMapper.checkAssistSignDetailByInDetail
+            mapList = assistSignService.checkAssistSignDetailByInDetail(findMap);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //1b62a5615c104e3db30cbed50c0e8b02 外协退料入库:assistRetreatIn
+        } else if (Common.DICTIONARY_MAP.get("assistRetreatIn").equals(type.trim())) {
+            //(检验入库)入库单明细
+            PageData findMap = new PageData();
+            findMap.put("qualityInParentId", parentId);
+            //SQL查询语句: AssistRetreatDetailMapper.checkAssistRetreatDetailByInDetail
+            List<Map<String, Object>> mapList = assistRetreatService.checkAssistRetreatDetailByInDetail(findMap);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //(检验让步接收入库)入库单明细
+            findMap = new PageData();
+            findMap.put("receiveInParentId", parentId);
+            //SQL查询语句: AssistRetreatDetailMapper.checkAssistRetreatDetailByInDetail
+            mapList = assistRetreatService.checkAssistRetreatDetailByInDetail(findMap);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+        }
+
         return Boolean.FALSE;
     }
 
@@ -250,7 +310,7 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
         if (parentId == null || parentId.trim().length() == 0) {return Boolean.FALSE;}
         if (type == null || type.trim().length() == 0) {return Boolean.FALSE;}
 
-        //pid:20c09785a7b54ec280d10c988be21929:出库类型 11
+        //pid:20c09785a7b54ec280d10c988be21929:出库类型 13
         //609fa44c031847569a1d9e2516be4b41 组装出库 -(组装区)
         //cb0a55d81e754cd3b59715d225dab087 生产领料出库 -(虚拟库)
         //fa51ae2e17a9409d822fc4c9192d652c 维修领料出库
@@ -263,8 +323,12 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
 
         //type:4:供应商
         //4cba5d3815644b26920777512a20474b 采购退货出库 -(供应商)
+        //2ed8e86f7db149ffabc95b6428947cba 外协出库
+        //75338f5acdcb40e2ac3fc5a0069229d0 外协退货出库
+
         //type:3:客户
         //9459be975cd94ada8443cdf32f52c2be 销售发货出库 -(客户)
+
 
         ////////////////////////////////////////////////////////////////////////////////////
         //销售部分
@@ -287,6 +351,29 @@ public class WarehouseToolServiceImp implements WarehouseToolService {
             findMap.put("outParentId", parentId);
             //SQL查询语句: PurchaseRetreatDetailOnOutMapper.findPurchaseRetreatDetailOnOutDetail
             List<Map> mapList = purchaseRetreatService.findPurchaseRetreatDetailOnOutDetail(findMap, null);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //外协部分
+        //2ed8e86f7db149ffabc95b6428947cba 外协出库:assistOut
+        if (Common.DICTIONARY_MAP.get("assistOut").equals(type.trim())) {
+            PageData findMap = new PageData();
+            findMap.put("outParentId", parentId);
+            //SQL查询语句: AssistDeliverDetailChildMapper.checkAssistDeliverDetailChildByOutDetail
+            List<Map<String, Object>> mapList = assistDeliverService.checkAssistDeliverDetailChildByOutDetail(findMap);
+            if (mapList != null && mapList.size() > 0) {
+                return Boolean.TRUE;
+            }
+
+            //75338f5acdcb40e2ac3fc5a0069229d0 外协退货出库:assistRetreatOut
+        } else if (Common.DICTIONARY_MAP.get("assistRetreatOut").equals(type.trim())) {
+            PageData findMap = new PageData();
+            findMap.put("outParentId", parentId);
+            //SQL查询语句: AssistRetreatDetailMapper.checkAssistRetreatDetailByOutDetail
+            List<Map<String, Object>> mapList = assistRetreatService.checkAssistRetreatDetailByOutDetail(findMap);
             if (mapList != null && mapList.size() > 0) {
                 return Boolean.TRUE;
             }

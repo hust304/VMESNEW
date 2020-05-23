@@ -313,6 +313,9 @@ public class AssistSignDetailServiceImp implements AssistSignDetailService {
         return productByInMap;
     }
 
+    public List<Map<String, Object>> checkAssistSignDetailByInDetail(PageData pd) {
+        return assistSignDetailMapper.checkAssistSignDetailByInDetail(pd);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateStateByDetail(String state, String parentIds) throws Exception {
         if (state == null || state.trim().length() == 0) {return;}

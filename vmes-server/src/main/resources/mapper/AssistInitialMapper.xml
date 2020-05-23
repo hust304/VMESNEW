@@ -120,6 +120,30 @@
                 ) and out_dtl_id is not null
             );
 
+            DELETE FROM vmes_warehouse_out WHERE id in (
+                select parent_id
+                from vmes_warehouse_out_detail
+                where id in (
+                    select out_dtl_id
+                    from vmes_assist_retreat_detail
+                    where parent_id in (
+                        select id
+                        from vmes_assist_retreat
+                        where company_id = #{currentCompanyId}
+                    ) and out_dtl_id is not null
+                )
+            );
+
+            DELETE FROM vmes_warehouse_out_detail WHERE id in (
+                select out_dtl_id
+                from vmes_assist_retreat_detail
+                where parent_id in (
+                    select id
+                    from vmes_assist_retreat
+                    where company_id = #{currentCompanyId}
+                ) and out_dtl_id is not null
+            );
+
             <!--外协计划 =========================================================================================-->
             DELETE FROM vmes_assist_plan_detail_child WHERE plan_dtl_id in (
                 select id

@@ -175,7 +175,7 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData" resultType="java.util.Map">
         select
-            detail.id id,
+            id id,
             detail.parent_id parentId,
             detail.order_id orderId,
             detail.order_dtl_id orderDtlId,
@@ -270,6 +270,47 @@
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
         </if>
+    </select>
+
+    <!--======================================================================================================================-->
+    <select id="checkAssistRetreatDetailByInDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id
+            quality_inDtl_id qualityInDtlId,
+            receive_inDtl_id receiveInDtlId
+        from vmes_assist_retreat_detail
+        <where>
+            <!--(检验入库)入库单明细-->
+            <if test="qualityInParentId != null and qualityInParentId != ''" >
+                and quality_inDtl_id in (
+                    select id from vmes_warehouse_in_detail
+                    where parent_id = #{qualityInParentId}
+                )
+            </if>
+
+            <!--(检验让步接收入库)入库单明细-->
+            <if test="receiveInParentId != null and receiveInParentId != ''" >
+                and receive_inDtl_id in (
+                    select id from vmes_warehouse_in_detail
+                    where parent_id = #{receiveInParentId}
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="checkAssistRetreatDetailByOutDetail" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            id
+            out_dtl_id outDtlId
+        from vmes_assist_retreat_detail
+        <where>
+            <if test="outParentId != null and outParentId != ''" >
+                and out_dtl_id in (
+                    select id from vmes_assist_order_detail
+                    where parent_id = #{outParentId}
+                )
+            </if>
+        </where>
     </select>
 
 
