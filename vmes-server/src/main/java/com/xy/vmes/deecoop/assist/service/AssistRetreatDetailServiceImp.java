@@ -555,8 +555,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                    Common.DICTIONARY_MAP.get("assistIn"),
+                    //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02:assistRetreatIn
+                    Common.DICTIONARY_MAP.get("assistRetreatIn"),
                     null,
                     retreatCode,
                     businessByInMap);
@@ -586,8 +586,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                    Common.DICTIONARY_MAP.get("assistIn"),
+                    //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02:assistRetreatIn
+                    Common.DICTIONARY_MAP.get("assistRetreatIn"),
                     null,
                     retreatCode,
                     businessByInMap);
@@ -992,8 +992,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                    Common.DICTIONARY_MAP.get("assistIn"),
+                    //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02:assistRetreatIn
+                    Common.DICTIONARY_MAP.get("assistRetreatIn"),
                     null,
                     retreatCode,
                     businessByInMap);
@@ -1025,8 +1025,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                    Common.DICTIONARY_MAP.get("assistIn"),
+                    //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02:assistRetreatIn
+                    Common.DICTIONARY_MAP.get("assistRetreatIn"),
                     null,
                     retreatCode,
                     businessByInMap);
@@ -1060,8 +1060,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                    Common.DICTIONARY_MAP.get("assistIn"),
+                    //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02:assistRetreatIn
+                    Common.DICTIONARY_MAP.get("assistRetreatIn"),
                     "让步接收",
                     retreatCode,
                     businessByReceiveInMap);
@@ -1091,8 +1091,8 @@ public class AssistRetreatDetailServiceImp implements AssistRetreatDetailService
                     Common.DICTIONARY_MAP.get("warehouseEntity"),
                     cuser,
                     companyId,
-                    //外协入库 064dda15d44d4f8fa6330c5c7e46300e:assistIn
-                    Common.DICTIONARY_MAP.get("assistIn"),
+                    //外协退料入库 1b62a5615c104e3db30cbed50c0e8b02:assistRetreatIn
+                    Common.DICTIONARY_MAP.get("assistRetreatIn"),
                     "让步接收",
                     retreatCode,
                     businessByReceiveInMap);
