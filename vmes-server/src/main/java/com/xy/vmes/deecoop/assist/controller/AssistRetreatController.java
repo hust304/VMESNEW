@@ -463,36 +463,6 @@ public class AssistRetreatController {
         PageData pageData = HttpUtils.parsePageData();
 
         String cuser = pageData.getString("cuser");
-        String companyID = pageData.getString("currentCompanyId");
-        if (companyID == null || companyID.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("企业id为空或空字符串！");
-            return model;
-        }
-
-        String supplierName = pageData.getString("supplierName");
-        String supplierId = pageData.getString("supplierId");
-        if (supplierId == null || supplierId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("供应商id为空或空字符串！");
-            return model;
-        }
-
-        String roleId = pageData.getString("roleId");
-        if (roleId == null || roleId.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前用户角色id为空或空字符串！");
-            return model;
-        }
-
-        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
-        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
-        if (warehouse == null || warehouse.trim().length() == 0) {
-            model.putCode(Integer.valueOf(1));
-            model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
-            return model;
-        }
-
         //外协退货单id
         String retreatId = pageData.getString("id");
         if (retreatId == null || retreatId.trim().length() == 0) {
@@ -506,6 +476,41 @@ public class AssistRetreatController {
             model.putCode(Integer.valueOf(1));
             model.putMsg("退货类型(type)为空或空字符串！");
             return model;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        String companyID = pageData.getString("currentCompanyId");
+        String supplierId = pageData.getString("supplierId");
+        String supplierName = pageData.getString("supplierName");
+        String roleId = pageData.getString("roleId");
+        //根据(用户角色id)获取仓库属性(复杂版仓库,简版仓库)
+        String warehouse = roleMenuService.findWarehouseAttribute(roleId);
+
+        //type:退货类型(1:外协件 2:外协原材料)
+        if ("1".equals(type)) {
+            if (companyID == null || companyID.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("企业id为空或空字符串！");
+                return model;
+            }
+
+            if (supplierId == null || supplierId.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("供应商id为空或空字符串！");
+                return model;
+            }
+
+            if (roleId == null || roleId.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前用户角色id为空或空字符串！");
+                return model;
+            }
+
+            if (warehouse == null || warehouse.trim().length() == 0) {
+                model.putCode(Integer.valueOf(1));
+                model.putMsg("当前用户角色无(复杂版仓库，简版仓库)菜单，请与管理员联系！");
+                return model;
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
