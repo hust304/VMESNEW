@@ -27,13 +27,14 @@
     </update>
 
     <!-- ***************************************************以上为自动生成代码禁止修改，请在下面添加业务代码************************************************* -->
-    <insert id="insertColumn" >
+    <insert id="assistOrderDetailChild" >
         delete from vmes_column where model_code = 'assistOrderDetailChild' ;
         insert into vmes_column (
         id,model_code,title_key,title_name,serial_number,
         isdisable,ishide,isedit,ismust,cdate,
         cuser
         ) VALUES
+            (replace(uuid(), '-', ''),'assistOrderDetailChild','id','id',0, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrderDetailChild','orderId','外协订单id',1, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrderDetailChild','orderDtlId','外协订单明细id',2, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrderDetailChild','productId','原材料id(系统货品表id)',3, '1','1','1','0',now(), 'admin'),
@@ -46,7 +47,15 @@
             (replace(uuid(), '-', ''),'assistOrderDetailChild','udate','修改时间',10, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrderDetailChild','remark','备注',11, '1','1','1','0',now(), 'admin'),
             (replace(uuid(), '-', ''),'assistOrderDetailChild','isdisable','是否启用(0:已禁用 1:启用)',12, '1','1','1','0',now(), 'admin'),
-            (replace(uuid(), '-', ''),'assistOrderDetailChild','id','id',0, '1','1','1','0',now(), 'admin')
+
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productCode', '货品编码', 13, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productName', '货品名称', 14, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productSpec', '规格型号', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productGenre', '货品属性id', 16, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productGenreName', '货品属性', 17, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productType', '货品类型id', 18, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'productProperty', '自定义属性', 19, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChild', 'unitName', '单位', 20, '1', '1', '1', '0', now(), 'admin')
     </insert>
 
 
@@ -120,33 +129,52 @@
     <!-- 自动创建，可以修改 -->
     <select id="getDataListPage" parameterType="com.yvan.PageData"  resultType="java.util.Map">
         select
-        id id,
-        order_id orderId,
-        order_dtl_id orderDtlId,
-        product_id productId,
-        unit_id unitId,
+            orderChild.id id,
+            orderChild.order_id orderId,
+            orderChild.order_dtl_id orderDtlId,
+            orderChild.product_id productId,
+            orderChild.unit_id unitId,
 
-        ratio ratio,
-        count count,
-        cuser cuser,
-        cdate cdate,
-        uuser uuser,
+            round(ifnull(orderChild.ratio, 0), 2) ratio,
+            round(ifnull(orderChild.count, 0), 2) count,
+            orderChild.cuser cuser,
+            orderChild.cdate cdate,
+            orderChild.uuser uuser,
 
-        udate udate,
-        remark remark,
-        isdisable isdisable
-        from vmes_assist_order_detail_child
+            orderChild.udate udate,
+            orderChild.remark remark,
+            orderChild.isdisable isdisable,
+
+            <!--货品表-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            unitName.name unitName
+
+        from vmes_assist_order_detail_child orderChild
+            left join vmes_product product on orderChild.product_id = product.id
+            left join vmes_dictionary unitName on orderChild.unit_id = unitName.id
         <where>
+            <if test="orderId != null and orderId != ''">
+                and orderChild.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and orderChild.order_dtl_id = #{orderDtlId}
+            </if>
+
             <!--queryStr 自定义sql查询语句-->
             <if test='queryStr != null and queryStr != ""' >
                 and ${queryStr}
             </if>
-            <if test='code != null and code != ""'>
-                and code LIKE CONCAT(CONCAT('%', #{code}),'%')
-            </if>
-            <if test='name != null and name != ""'>
-                and name LIKE CONCAT(CONCAT('%', #{name}),'%')
-            </if>
+
         </where>
         <if test='orderStr != null and orderStr != ""' >
             order by ${orderStr}
