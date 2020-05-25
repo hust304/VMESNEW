@@ -104,12 +104,7 @@ public class AssistSignDetail implements Serializable {
 	//外协报废明细id
 	@TableField("discard_dtl_id")
 	private String discardDtlId;
-	//外协签收单id
-	@TableField("deliver_id")
-	private String deliverId;
-	//外协订单明细id
-	@TableField("deliver_detail_id")
-	private String deliverDetailId;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -279,18 +274,7 @@ public class AssistSignDetail implements Serializable {
 	public void setDiscardDtlId(String discardDtlId) {
 		this.discardDtlId = discardDtlId;
 	}
-	public String getDeliverId() {
-		return deliverId;
-	}
-	public void setDeliverId(String deliverId) {
-		this.deliverId = deliverId;
-	}
-	public String getDeliverDetailId() {
-		return deliverDetailId;
-	}
-	public void setDeliverDetailId(String deliverDetailId) {
-		this.deliverDetailId = deliverDetailId;
-	}
+
 	/*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
