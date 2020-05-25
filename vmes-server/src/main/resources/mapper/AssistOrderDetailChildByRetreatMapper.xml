@@ -97,7 +97,7 @@
             <!--(原材料)退货(全部) findAssistRetreatProductAllByOrder-->
             left join (
                 <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductAllByOrder"></include>
-            ) retreat on orderChild.id = discard.orderDtl_child_id
+            ) retreat on orderChild.id = retreat.orderDtl_child_id
 
         <where>
             <if test="orderId != null and orderId != ''" >

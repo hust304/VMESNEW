@@ -10,11 +10,10 @@
     <!--按(外协订单)汇总 (原材料)报废 -->
     <sql id="findAssistDiscardProductByOrder">
         select
-            c.orderDtl_child_id,
+            a.orderDtl_child_id,
             sum(a.order_count) order_count
         from vmes_assist_discard_detail a
             left join vmes_assist_discard b on a.parent_id = b.id
-            left join vmes_assist_deliver_detail_child c on a.deliver_dtl_child_id = c.id
         <where>
             <if test="orderId != null and orderId != ''">
                 and a.order_id = #{orderId}
@@ -22,22 +21,21 @@
             <if test="orderDtlId != null and orderDtlId != ''">
                 and a.order_dtl_id = #{orderDtlId}
             </if>
-
             <!--state:状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)-->
-            and b.state = '3'
+            and a.state = '3'
             <!--报废类型(1:外协件 2:外协原材料)-->
+
             and b.type = '2'
         </where>
-        group by c.orderDtl_child_id
+        group by a.orderDtl_child_id
     </sql>
     <!--按(外协订单)汇总 (原材料)报废(全部) -->
     <sql id="findAssistDiscardProductAllByOrder">
         select
-            c.orderDtl_child_id,
+            a.orderDtl_child_id,
             sum(a.order_count) order_count
         from vmes_assist_discard_detail a
             left join vmes_assist_discard b on a.parent_id = b.id
-            left join vmes_assist_deliver_detail_child c on a.deliver_dtl_child_id = c.id
         <where>
             <if test="orderId != null and orderId != ''">
                 and a.order_id = #{orderId}
@@ -45,13 +43,12 @@
             <if test="orderDtlId != null and orderDtlId != ''">
                 and a.order_dtl_id = #{orderDtlId}
             </if>
-
             <!--state:状态(0:待提交 1:待审核 2:待报废 3:已完成 -1:已取消)-->
-            <![CDATA[ and b.state <> '-1']]>
+            <![CDATA[ and a.state <> '-1']]>
             <!--报废类型(1:外协件 2:外协原材料)-->
             and b.type = '2'
         </where>
-        group by c.orderDtl_child_id
+        group by a.orderDtl_child_id
     </sql>
 
     <!--按(外协订单)汇总 (外协件:成品)报废 -->
@@ -239,88 +236,68 @@
     <!--(原材料)退货(检验) 汇总 order_count:退货数量 -->
     <sql id="findAssistRetreatProductSignByOrder">
         select
-            deliverChild.orderDtl_child_id,
-            round(ifnull(retreatDtl.order_count, 0), 2) order_count
-        from (
-            select
-                a.deliver_dtl_child_id,
-                sum(a.order_count) order_count
-            from vmes_assist_retreat_detail a
-                left join vmes_assist_retreat b on a.parent_id = b.id
-            <where>
-                <if test="orderId != null and orderId != ''">
-                    and a.order_id = #{orderId}
-                </if>
-                <if test="orderDtlId != null and orderDtlId != ''">
-                    and a.order_dtl_id = #{orderDtlId}
-                </if>
-
-                <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
-                and b.state = '3'
-                <!--type:退货类型(1:外协件 2:外协原材料)-->
-                and b.type = '2'
-            </where>
-            group by a.deliver_dtl_child_id
-        ) retreatDtl
-            left join vmes_assist_deliver_detail_child deliverChild on retreatDtl.deliver_dtl_child_id = deliverChild.id
+            a.orderDtl_child_id,
+            sum(a.order_count) order_count
+        from vmes_assist_retreat_detail a
+            left join vmes_assist_retreat b on a.parent_id = b.id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and a.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and a.order_dtl_id = #{orderDtlId}
+            </if>
+            <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+            and a.state = '3'
+            <!--type:退货类型(1:外协件 2:外协原材料)-->
+            and b.type = '2'
+        </where>
+        group by a.orderDtl_child_id
     </sql>
 
     <!--(原材料)退货(检验) 汇总 sign_fine_count:收货合格数(签收数-报废数) -->
     <sql id="findAssistRetreatProductByOrder">
         select
-            deliverChild.orderDtl_child_id,
-            round(ifnull(retreatDtl.sign_fine_count, 0),2) order_count
-        from (
-            select
-                a.deliver_dtl_child_id,
-                sum(a.sign_fine_count) sign_fine_count
-            from vmes_assist_retreat_detail a
-                left join vmes_assist_retreat b on a.parent_id = b.id
-            <where>
-                <if test="orderId != null and orderId != ''">
-                    and a.order_id = #{orderId}
-                </if>
-                <if test="orderDtlId != null and orderDtlId != ''">
-                    and a.order_dtl_id = #{orderDtlId}
-                </if>
+            a.orderDtl_child_id,
+            sum(a.sign_fine_count) sign_fine_count
+        from vmes_assist_retreat_detail a
+            left join vmes_assist_retreat b on a.parent_id = b.id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and a.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and a.order_dtl_id = #{orderDtlId}
+            </if>
+            <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+            and a.state = '3'
 
-                <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
-                and b.state = '3'
-                <!--type:退货类型(1:外协件 2:外协原材料)-->
-                and b.type = '2'
-            </where>
-            group by a.deliver_dtl_child_id
-        ) retreatDtl
-            left join vmes_assist_deliver_detail_child deliverChild on retreatDtl.deliver_dtl_child_id = deliverChild.id
+            <!--type:退货类型(1:外协件 2:外协原材料)-->
+            and b.type = '2'
+        </where>
+        group by a.orderDtl_child_id
     </sql>
 
     <!--(原材料)退货(全部)-->
     <sql id="findAssistRetreatProductAllByOrder">
         select
-            deliverChild.orderDtl_child_id,
-            round(ifnull(retreatDtl.order_count, 0), 2) order_count
-        from (
-            select
-            a.deliver_dtl_child_id,
+            a.orderDtl_child_id,
             sum(a.order_count) order_count
-            from vmes_assist_retreat_detail a
-                left join vmes_assist_retreat b on a.parent_id = b.id
-            <where>
-                <if test="orderId != null and orderId != ''">
-                    and a.order_id = #{orderId}
-                </if>
-                <if test="orderDtlId != null and orderDtlId != ''">
-                    and a.order_dtl_id = #{orderDtlId}
-                </if>
-
-                <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
-                <![CDATA[ and b.state <> '-1']]>
-                <!--type:退货类型(1:外协件 2:外协原材料)-->
-                and b.type = '2'
-            </where>
-            group by a.deliver_dtl_child_id
-        ) retreatDtl
-            left join vmes_assist_deliver_detail_child deliverChild on retreatDtl.deliver_dtl_child_id = deliverChild.id
+        from vmes_assist_retreat_detail a
+            left join vmes_assist_retreat b on a.parent_id = b.id
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and a.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''">
+                and a.order_dtl_id = #{orderDtlId}
+            </if>
+            <!--state:状态(0:待提交 1:待审核 2:待退货 3:已完成 -1:已取消)-->
+            <![CDATA[ and a.state <> '-1']]>
+            <!--type:退货类型(1:外协件 2:外协原材料)-->
+            and b.type = '2'
+        </where>
+        group by a.orderDtl_child_id
     </sql>
     <!--================================================================================================================ -->
     <!--外协收货明细子表(原材料) 汇总  -->
