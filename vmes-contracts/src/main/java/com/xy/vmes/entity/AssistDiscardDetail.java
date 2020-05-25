@@ -27,14 +27,14 @@ public class AssistDiscardDetail implements Serializable {
 	//订单明细id
 	@TableField("order_dtl_id")
 	private String orderDtlId;
-	//发货明细子表id(原材料)
+	//发货明细子表id(原材料)-(废弃字段)
 	@TableField("deliver_dtl_child_id")
 	private String deliverDtlChildId;
 
-	//外协发货明细id
+	//外协发货明细id-(废弃字段)
 	@TableField("deliver_dtl_id")
 	private String deliverDtlId;
-	//外协发货id
+	//外协发货id-(废弃字段)
 	@TableField("deliver_id")
 	private String deliverId;
 	//外协件id(外协件)
