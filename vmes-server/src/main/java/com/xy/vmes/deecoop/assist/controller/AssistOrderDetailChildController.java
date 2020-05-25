@@ -1,6 +1,7 @@
 package com.xy.vmes.deecoop.assist.controller;
 
 import com.xy.vmes.service.AssistOrderDetailChildByAssistDeliverService;
+import com.xy.vmes.service.AssistOrderDetailChildByRetreatService;
 import com.xy.vmes.service.AssistOrderDetailChildService;
 
 import com.yvan.HttpUtils;
@@ -23,6 +24,8 @@ public class AssistOrderDetailChildController {
     private Logger logger = LoggerFactory.getLogger(AssistOrderDetailChildController.class);
     @Autowired
     private AssistOrderDetailChildService assistOrderDetailChildService;
+    @Autowired
+    private AssistOrderDetailChildByRetreatService assistOrderDetailChildByRetreatService;
     @Autowired
     private AssistOrderDetailChildByAssistDeliverService assistOrderDetailChildByDeliverService;
     /**
@@ -64,6 +67,19 @@ public class AssistOrderDetailChildController {
         ResultModel model = assistOrderDetailChildService.listPageAssistOrderDetailChildInfo(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildInfo 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
+        return model;
+    }
+
+    //外协-退货管理-生成退货单(退料)
+    //外协-报废管理-生成报废单(报废原料)
+    @PostMapping("/assist/assistOrderDetailChild/listPageAssistOrderDetailChildByRetreat")
+    public ResultModel listPageAssistOrderDetailChildByRetreat() throws Exception {
+        logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildByRetreat 执行开始 ################# ");
+        Long startTime = System.currentTimeMillis();
+        PageData pd = HttpUtils.parsePageData();
+        ResultModel model = assistOrderDetailChildByRetreatService.listPageAssistOrderDetailChildByRetreat(pd);
+        Long endTime = System.currentTimeMillis();
+        logger.info("################/assist/assistOrderDetailChild/listPageAssistOrderDetailChildByRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

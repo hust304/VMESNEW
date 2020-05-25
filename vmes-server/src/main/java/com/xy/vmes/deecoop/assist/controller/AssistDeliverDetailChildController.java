@@ -1,6 +1,5 @@
 package com.xy.vmes.deecoop.assist.controller;
 
-import com.xy.vmes.service.AssistDeliverDetailChildByRetreatService;
 import com.xy.vmes.service.AssistDeliverDetailChildService;
 
 import com.yvan.HttpUtils;
@@ -25,9 +24,6 @@ public class AssistDeliverDetailChildController {
     @Autowired
     private AssistDeliverDetailChildService assistDeliverDetailChildService;
 
-    @Autowired
-    private AssistDeliverDetailChildByRetreatService assistDeliverDetailChildByRetreatService;
-
     /**
     * @author 陈刚 自动创建，可以修改
     * @date 2020-04-27
@@ -40,19 +36,6 @@ public class AssistDeliverDetailChildController {
         ResultModel model = assistDeliverDetailChildService.listPageAssistDeliverDetailChild(pd);
         Long endTime = System.currentTimeMillis();
         logger.info("################/assist/assistDeliverDetailChild/listPageAssistDeliverDetailChild 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
-        return model;
-    }
-
-    //外协-退货管理-生成退货单(退料)
-    //外协-报废管理-生成报废单(报废原料)
-    @PostMapping("/assist/assistDeliverDetailChild/listPageAssistDeliverDetailChildByRetreat")
-    public ResultModel listPageAssistDeliverDetailChildByRetreat() throws Exception {
-        logger.info("################/assist/assistDeliverDetailChild/listPageAssistDeliverDetailChildByRetreat 执行开始 ################# ");
-        Long startTime = System.currentTimeMillis();
-        PageData pd = HttpUtils.parsePageData();
-        ResultModel model = assistDeliverDetailChildByRetreatService.listPageAssistDeliverDetailChildByRetreat(pd);
-        Long endTime = System.currentTimeMillis();
-        logger.info("################/assist/assistDeliverDetailChild/listPageAssistDeliverDetailChildByRetreat 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
         return model;
     }
 

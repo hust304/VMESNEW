@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+说明：vmes_assist_order_detail_child:外协订单明细子表 Mapper.xml
+外协-退货管理-生成退货单(退料)
+
+创建人：陈刚
+创建时间：2020-05-08
+ -->
+<mapper namespace="com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildByRetreatMapper">
+    <insert id="assistOrderDetailChildByRetreat" >
+        delete from vmes_column where model_code = 'assistOrderDetailChildByRetreat' ;
+        insert into vmes_column (
+        id,model_code,title_key,title_name,serial_number,
+        isdisable,ishide,isedit,ismust,cdate,
+        cuser
+        ) VALUES
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','id','id',0, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','orderDtlChildId','orderDtlChildId',1, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','orderId','外协订单id',2, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','orderDtlId','外协订单明细id',3, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','productId','原材料id(系统货品表id)',4, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','unitId','单位id',5, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','ratio','用料比例',6, '1','1','1','0',now(), 'admin'),
+            (replace(uuid(), '-', ''),'assistOrderDetailChildByRetreat','count','外协数量',7, '1','1','1','0',now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'productCode', '货品编码', 8, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'productName', '货品名称', 9, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'productSpec', '规格型号', 10, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'productGenre', '货品属性id', 11, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'productProperty', '自定义属性', 12, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'unitName', '单位', 13, '1', '1', '1', '0', now(), 'admin'),
+
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'deliverCount', '发货数', 14, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'signCount', '签收数', 15, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'retreatUserCount', '退货数', 16, '1', '1', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'retreatCount', '退料数', 17, '1', '0', '1', '0', now(), 'admin'),
+            (replace(uuid(), '-', ''), 'assistOrderDetailChildByRetreat', 'discardCount', '报废数', 18, '1', '1', '1', '0', now(), 'admin'),
+    </insert>
+
+    <select id="findAssistOrderDetailChildByRetreat" parameterType="com.yvan.PageData" resultType="java.util.Map">
+        select
+            md5(uuid()) id,
+            orderChild.id orderDtlChildId,
+            orderChild.order_id orderId,
+            orderChild.order_dtl_id orderDtlId,
+            orderChild.product_id productId,
+            orderChild.unit_id unitId,
+
+            round(ifnull(orderChild.ratio, 0), 2) ratio,
+            round(ifnull(orderChild.count, 0), 2) count,
+
+            <!--货品表(原材料信息)-->
+            product.code sysProductCode,
+            product.source_code custProductCode,
+            CASE
+            WHEN product.source_code is null THEN product.code
+            WHEN product.source_code is not null THEN product.source_code
+            ELSE null
+            END productCode,
+            product.name productName,
+            product.spec productSpec,
+            product.genre productGenre,
+            product.property productProperty,
+            unitName.name unitName,
+
+            round(ifnull(deliver.deliverCount, 0), 2) deliverCount,
+            round(ifnull(sign.order_count, 0), 2) signCount,
+            round(ifnull(retreatUser.order_count, 0), 2) retreatUserCount,
+            round(ifnull(discard.order_count, 0), 2) discardCount,
+            round(ifnull(retreat.order_count, 0), 2) retreatCount
+
+        from vmes_assist_order_detail_child orderChild
+            left join vmes_product product on orderChild.product_id = product.id
+            left join vmes_dictionary unitName on orderChild.unit_id = unitName.id
+
+            <!--(原材料)发货数量 外协收货明细子表(原材料) 汇总 findAssistDeliverDetailChildByOrder-->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDeliverDetailChildByOrder"></include>
+            ) deliver on orderChild.id = deliver.orderDtl_child_id
+
+            <!--(外协件:成品)签收数 汇总(arrive_count) findAssistSignAllByOrder-->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistSignAllByOrder"></include>
+            ) sign on orderChild.id = sign.orderDtl_child_id
+
+            <!--(外协件:成品)退货数量 用户主动退 findAssistRetreatUserAllByOrder-->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatUserAllByOrder"></include>
+            ) retreatUser on orderChild.id = retreatUser.orderDtl_child_id
+
+            <!--按(外协订单)汇总 (原材料)报废(全部) findAssistDiscardProductAllByOrder-->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistDiscardProductAllByOrder"></include>
+            ) discard on orderChild.id = discard.orderDtl_child_id
+
+            <!--(原材料)退货(全部) findAssistRetreatProductAllByOrder-->
+            left join (
+                <include refid="com.xy.vmes.deecoop.common.AssistCommonMapper.findAssistRetreatProductAllByOrder"></include>
+            ) retreat on orderChild.id = discard.orderDtl_child_id
+
+        <where>
+            <if test="orderId != null and orderId != ''" >
+                and orderChild.order_id = #{orderId}
+            </if>
+            <if test="orderDtlId != null and orderDtlId != ''" >
+                and orderChild.order_dtl_id = #{orderDtlId}
+            </if>
+        </where>
+        <if test='orderStr != null and orderStr != ""' >
+            order by ${orderStr}
+        </if>
+    </select>
+</mapper>
+

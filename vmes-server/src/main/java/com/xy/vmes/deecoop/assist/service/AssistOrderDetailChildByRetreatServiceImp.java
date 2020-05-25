@@ -2,9 +2,9 @@ package com.xy.vmes.deecoop.assist.service;
 
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.xy.vmes.common.util.ColumnUtil;
-import com.xy.vmes.deecoop.assist.dao.AssistDeliverDetailChildByRetreatMapper;
+import com.xy.vmes.deecoop.assist.dao.AssistOrderDetailChildByRetreatMapper;
 import com.xy.vmes.entity.Column;
-import com.xy.vmes.service.AssistDeliverDetailChildByRetreatService;
+import com.xy.vmes.service.AssistOrderDetailChildByRetreatService;
 import com.xy.vmes.service.ColumnService;
 import com.xy.vmes.service.SystemToolService;
 import com.yvan.HttpUtils;
@@ -23,30 +23,30 @@ import java.util.Map;
 
 @Service
 @Transactional(readOnly = false)
-public class AssistDeliverDetailChildByRetreatServiceImp implements AssistDeliverDetailChildByRetreatService {
+public class AssistOrderDetailChildByRetreatServiceImp implements AssistOrderDetailChildByRetreatService {
     @Autowired
-    private AssistDeliverDetailChildByRetreatMapper deliverDetailChildMapper;
+    private AssistOrderDetailChildByRetreatMapper orderDetailChildMapper;
     @Autowired
     private ColumnService columnService;
     @Autowired
     private SystemToolService systemToolService;
 
-    public List<Map> findAssistDeliverDetailChildByRetreat(PageData pd, Pagination pg) throws Exception {
+    public List<Map> findAssistOrderDetailChildByRetreat(PageData pd, Pagination pg) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
         if (pd == null) {return mapList;}
 
         if (pg == null) {
-            return deliverDetailChildMapper.findAssistDeliverDetailChildByRetreat(pd);
+            return orderDetailChildMapper.findAssistOrderDetailChildByRetreat(pd);
         } else if (pg != null) {
-            return deliverDetailChildMapper.findAssistDeliverDetailChildByRetreat(pd, pg);
+            return orderDetailChildMapper.findAssistOrderDetailChildByRetreat(pd, pg);
         }
 
         return mapList;
     }
 
-    public ResultModel listPageAssistDeliverDetailChildByRetreat(PageData pd) throws Exception {
+    public ResultModel listPageAssistOrderDetailChildByRetreat(PageData pd) throws Exception {
         ResultModel model = new ResultModel();
-        List<Column> columnList = columnService.findColumnList("assistDeliverDetailChildByRetreat");
+        List<Column> columnList = columnService.findColumnList("assistOrderDetailChildByRetreat");
         if (columnList == null || columnList.size() == 0) {
             model.putCode("1");
             model.putMsg("数据库没有生成TabCol，请联系管理员！");
@@ -83,7 +83,7 @@ public class AssistDeliverDetailChildByRetreatServiceImp implements AssistDelive
             result.put("pageData", pg);
         }
 
-        List<Map> varList = this.findAssistDeliverDetailChildByRetreat(pd, pg);
+        List<Map> varList = this.findAssistOrderDetailChildByRetreat(pd, pg);
         if (varList != null && varList.size() > 0) {
             //prodColumnKey 业务模块栏位key(','分隔的字符串)-顺序必须按(货品编码,货品名称,规格型号,货品自定义属性)摆放
             String prodColumnKey = pd.getString("prodColumnKey");
@@ -96,10 +96,50 @@ public class AssistDeliverDetailChildByRetreatServiceImp implements AssistDelive
                 String prodInfo = systemToolService.findProductInfo(prodColumnKey, objectMap);
                 objectMap.put("prodInfo", prodInfo);
 
-                //maxCount 最大(退料,报废)
-                BigDecimal maxCount = BigDecimal.valueOf(0D);
-                if (objectMap.get("maxCount") != null) {
-                    maxCount = (BigDecimal)objectMap.get("maxCount");
+                //deliverCount 发货数
+                BigDecimal deliverCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("deliverCount") != null) {
+                    deliverCount = (BigDecimal)objectMap.get("deliverCount");
+                }
+                //四舍五入到2位小数
+                deliverCount = deliverCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //signCount 签收数
+                BigDecimal signCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("signCount") != null) {
+                    signCount = (BigDecimal)objectMap.get("signCount");
+                }
+                //四舍五入到2位小数
+                signCount = signCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //retreatUserCount 退货数
+                BigDecimal retreatUserCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("retreatUserCount") != null) {
+                    retreatUserCount = (BigDecimal)objectMap.get("retreatUserCount");
+                }
+                //四舍五入到2位小数
+                retreatUserCount = retreatUserCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //retreatCount 退料数
+                BigDecimal retreatCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("retreatCount") != null) {
+                    retreatCount = (BigDecimal)objectMap.get("retreatCount");
+                }
+                //四舍五入到2位小数
+                retreatCount = retreatCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //discardCount 报废数
+                BigDecimal discardCount = BigDecimal.valueOf(0D);
+                if (objectMap.get("discardCount") != null) {
+                    discardCount = (BigDecimal)objectMap.get("discardCount");
+                }
+                //四舍五入到2位小数
+                discardCount = discardCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
+
+                //maxCount 最大(退料,报废): 发货数 - (签收数 + 退货数 + 退料数 + 报废数)
+                BigDecimal maxCount = BigDecimal.valueOf(deliverCount.doubleValue() - (signCount.doubleValue() + retreatUserCount.doubleValue() + retreatCount.doubleValue() + discardCount.doubleValue()));
+                if (maxCount.doubleValue() < 0) {
+                    maxCount = BigDecimal.valueOf(0D);
                 }
                 //四舍五入到2位小数
                 maxCount = maxCount.setScale(Common.SYS_NUMBER_FORMAT_DEFAULT, BigDecimal.ROUND_HALF_UP);
