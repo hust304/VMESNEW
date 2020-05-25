@@ -136,7 +136,8 @@
             sign_fine_count signFineCount,
             quality_fine_count qualityFineCount,
 
-            out_dtl_id outDtlId
+            out_dtl_id outDtlId,
+            orderDtl_child_id orderDtlChildId
 
         from vmes_assist_retreat_detail
         <where>

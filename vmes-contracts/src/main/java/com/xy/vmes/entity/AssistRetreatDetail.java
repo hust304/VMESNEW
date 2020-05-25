@@ -114,6 +114,9 @@ public class AssistRetreatDetail implements Serializable {
 	//出库明细ID
 	@TableField("out_dtl_id")
 	private String outDtlId;
+	//订单明细子表id
+	@TableField("orderDtl_child_id")
+	private String orderDtlChildId;
 
 
 	public void setId(String id) {
@@ -301,6 +304,12 @@ public class AssistRetreatDetail implements Serializable {
 	}
 	public void setOutDtlId(String outDtlId) {
 		this.outDtlId = outDtlId;
+	}
+	public String getOrderDtlChildId() {
+		return orderDtlChildId;
+	}
+	public void setOrderDtlChildId(String orderDtlChildId) {
+		this.orderDtlChildId = orderDtlChildId;
 	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 

@@ -79,6 +79,10 @@ public class AssistDiscardDetail implements Serializable {
 	@TableField("isdisable")
 	private String isdisable;
 
+	//订单明细子表id
+	@TableField("orderDtl_child_id")
+	private String orderDtlChildId;
+
 
 	public void setId(String id) {
 		this.id = id;
@@ -200,7 +204,12 @@ public class AssistDiscardDetail implements Serializable {
 	public String getIsdisable() {
 		return isdisable;
 	}
-
+	public String getOrderDtlChildId() {
+		return orderDtlChildId;
+	}
+	public void setOrderDtlChildId(String orderDtlChildId) {
+		this.orderDtlChildId = orderDtlChildId;
+	}
 /*****************************************************以上为自动生成代码禁止修改，请在下面添加业务代码**************************************************/
 
 
