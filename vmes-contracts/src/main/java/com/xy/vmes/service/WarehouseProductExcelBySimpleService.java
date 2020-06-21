@@ -29,8 +29,18 @@ public interface WarehouseProductExcelBySimpleService {
      * @param companyId
      */
     void addSystemBaseTableImportExcel(List<LinkedHashMap<String, String>> objectList,
+                                       LinkedHashMap<String, String> titleMap,
+                                       Integer maxParmInt,
                                        String companyId,
                                        String userId) throws Exception;
+
+    /**
+     * 获取货品自定义属性(parm1-parm150)
+     * @param objectMap
+     */
+    void findProductParameter(Map<String, String> objectMap);
+    void findExcelMap2ProductMap(Map<String, String> excelMap, Map<String, String> productMap);
+    boolean isNeedProductParm(LinkedHashMap<String, String> tieleMap, Integer maxParmInt);
 
     void findWarehouseProductMapByExcelDataList(List<LinkedHashMap<String, String>> objectList,
                                                 Map<String, WarehouseProduct> warehouseProductMap,

@@ -357,10 +357,26 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
         String companyId = httpRequest.getParameter("companyId");
         String userId = httpRequest.getParameter("userId");
 
+//        //获取execl最大货品参数个数
+//        Integer maxParmInt = Integer.valueOf(0);
+//        String maxParm = httpRequest.getParameter("maxParm");
+//        try {
+//            maxParmInt = Integer.parseInt(maxParm);
+//        } catch (NumberFormatException e) {
+//            e.printStackTrace();
+//        }
+        Integer maxParmInt = Integer.valueOf(13);
+
         if (dataMapLst == null || dataMapLst.size() == 1) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
             return model;
+        }
+
+        //获取货品属性title
+        LinkedHashMap<String, String> titleMap = new LinkedHashMap<>();
+        if (dataMapLst.size() > 0) {
+            titleMap = dataMapLst.get(0);
         }
         dataMapLst.remove(0);
 
@@ -390,7 +406,11 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
             // 1. 仓库表
             // 2. 货品表
             // 3. 字典表(计量单位)
-            warehouseProductExcelBySimpleService.addSystemBaseTableImportExcel(dataMapLst, companyId, userId);
+            warehouseProductExcelBySimpleService.addSystemBaseTableImportExcel(dataMapLst,
+                    titleMap,
+                    maxParmInt,
+                    companyId,
+                    userId);
 
             //3. 遍历Excel导入List-Map<String, WarehouseProduct>
             Map<String, WarehouseProduct> warehouseProductMap = new HashMap<String, WarehouseProduct>();

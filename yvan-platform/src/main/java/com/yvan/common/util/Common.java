@@ -53,6 +53,10 @@ public class Common {
     public final static String SYS_COMPANYAPPLICATION_ROLE_ID_B = "00439bedece9443b93fc68be84c88ef4";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Excel 文件导入常量
+    public final static int IMPORTEXCEL_PRODUCTPARM_MAXPARM_COUNT = 150;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     public final static String REDIS_SECURITY_CODE = "securityCode";
     public final static String DEPARTMENT_ROOT_ID = "b6ff76cb95f711e884ad00163e105f05";
     //public final static String REDIS_EMPLOY = "employ";

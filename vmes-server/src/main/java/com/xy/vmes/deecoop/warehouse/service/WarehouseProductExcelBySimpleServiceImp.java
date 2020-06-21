@@ -20,6 +20,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
     @Autowired
     private ProductService productService;
     @Autowired
+    private ProductPropertyService productPropertyService;
+    @Autowired
     private ProductUnitService productUnitService;
     @Autowired
     private WarehouseProductService warehouseProductService;
@@ -220,6 +222,9 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
                     }
                 }
             }
+
+            //获取货品自定义属性(parm1-parm150)
+            this.findProductParameter(mapObject);
         }
 
         return strBuf.toString();
@@ -234,6 +239,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
      * @param companyId
      */
     public void addSystemBaseTableImportExcel(List<LinkedHashMap<String, String>> objectList,
+                                              LinkedHashMap<String, String> titleMap,
+                                              Integer maxParmInt,
                                               String companyId,
                                               String userId) throws Exception {
 
@@ -286,12 +293,69 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         //4. 查询货品表(货品名称_规格型号)-系统中已经存在的货品比较-不存在添加货品表(货品单位)
         Map<String, String> sysProductMap = this.findProductMapBySystem(companyId);
         Map<String, Map<String, String>> excelProductMap = this.findProductMapByExcel(objectList, companyId);
-        this.addProduct(excelProductMap, sysProductMap, companyId, userId);
+        this.addProduct(titleMap,
+                maxParmInt,
+                excelProductMap,
+                sysProductMap,
+                companyId,
+                userId);
 
         //5. 货品计量单位绑定
         this.addProductUnit(excelProductMap, companyId, userId);
 
 
+    }
+
+    /**
+     * 获取货品自定义属性(parm1-parm150)
+     * @param objectMap
+     */
+    public void findProductParameter(Map<String, String> objectMap) {
+        String parmKey = new String("parm");
+        for (int i = 1; i <= Common.IMPORTEXCEL_PRODUCTPARM_MAXPARM_COUNT; i++) {
+            String excelParmKey = parmKey + Integer.valueOf(i).toString();
+
+            String excelParmKeyValue = new String();
+            if (objectMap.get(excelParmKey) != null) {
+                excelParmKeyValue = objectMap.get(excelParmKey).trim();
+            }
+
+            objectMap.put(excelParmKey, excelParmKeyValue);
+        }
+    }
+
+    public void findExcelMap2ProductMap(Map<String, String> excelMap, Map<String, String> productMap) {
+        String parmKey = new String("parm");
+        for (int i = 1; i <= Common.IMPORTEXCEL_PRODUCTPARM_MAXPARM_COUNT; i++) {
+            String excelParmKey = parmKey + Integer.valueOf(i).toString();
+
+            String excelParmKeyValue = new String();
+            if (excelMap.get(excelParmKey) != null) {
+                excelParmKeyValue = excelMap.get(excelParmKey).trim();
+            }
+
+            productMap.put(excelParmKey, excelParmKeyValue);
+        }
+    }
+
+    public boolean isNeedProductParm(LinkedHashMap<String, String> tieleMap, Integer maxParmInt) {
+        if (tieleMap == null) {return false;}
+        if (maxParmInt == null || maxParmInt.intValue() <= 0) {return false;}
+
+        String parmKey = new String("parm");
+        for (int i = 1; i <= maxParmInt.intValue(); i++) {
+            String excelParmKey = parmKey + Integer.valueOf(i).toString();
+
+            String excelParmKeyValue = new String();
+            if (tieleMap.get(excelParmKey) != null) {
+                excelParmKeyValue = tieleMap.get(excelParmKey).trim();
+            }
+            if (excelParmKeyValue == null || excelParmKeyValue.trim().length() == 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void findWarehouseProductMapByExcelDataList(List<LinkedHashMap<String, String>> objectList,
@@ -811,6 +875,8 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
             String sourceCode = mapObject.get("sourceCode");
             productValueMap.put("sourceCode", sourceCode);
 
+            this.findExcelMap2ProductMap(mapObject, productValueMap);
+
             //mapKey := 货品名称_规格型号
             String mapKey = productName + "_" + productSpec;
             productMap.put(mapKey, productValueMap);
@@ -819,7 +885,9 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         return productMap;
     }
 
-    private void addProduct(Map<String, Map<String, String>> excelProductMap,
+    private void addProduct(LinkedHashMap<String, String> titleMap,
+                            Integer maxParmInt,
+                            Map<String, Map<String, String>> excelProductMap,
                             Map<String, String> sysProductMap,
                             String companyId,
                             String userId) throws Exception {
@@ -837,13 +905,50 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
 
         if (addProductList.size() > 0) {
             for (String productKey : addProductList) {
+                Map<String, String> productMap = excelProductMap.get(productKey);
+
+                //添加货品属性
+                String productID = Conv.createUuid();
+                String productParmValue = new String();
+                boolean isNeedFlag = this.isNeedProductParm(titleMap, maxParmInt);
+                if (isNeedFlag) {
+                    String parmKey = new String("parm");
+                    for (int i = 0; i < maxParmInt.intValue(); i++) {
+                        String excelParmKey = parmKey + Integer.valueOf(i+1).toString();
+
+                        ProductProperty productProperty = new ProductProperty();
+                        productProperty.setProdId(productID);
+
+                        //parmName
+                        String parmName = new String();
+                        if (titleMap.get(excelParmKey) != null) {
+                            parmName = titleMap.get(excelParmKey).trim();
+                        }
+                        productProperty.setName(parmName);
+
+                        //parmValue
+                        String parmValue = new String();
+                        if (productMap.get(excelParmKey) != null) {
+                            parmValue = productMap.get(excelParmKey).trim();
+                        }
+                        productProperty.setValue(parmValue);
+
+                        //获取自定义属性字符串-'_'分隔的字符串
+                        productParmValue = productParmValue + parmValue + "_";
+
+                        productPropertyService.save(productProperty);
+                    }
+                }
+
                 //添加产品表(vmes_product)
                 Product addProduct = new Product();
-                addProduct.setId(Conv.createUuid());
+                addProduct.setId(productID);
+                //自定义属性 (货品自定义属性字符串:'_'分隔的字符串)
+                addProduct.setProperty(productParmValue);
+
                 addProduct.setCompanyId(companyId);
                 addProduct.setCuser(userId);
 
-                Map<String, String> productMap = excelProductMap.get(productKey);
                 //productName 货品名称
                 String productName = productMap.get("productName");
                 addProduct.setName(productName);
