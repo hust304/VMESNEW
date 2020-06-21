@@ -338,6 +338,26 @@ public class WarehouseProductExcelBySimpleServiceImp implements WarehouseProduct
         }
     }
 
+    public int findMaxNotNullProductParm(LinkedHashMap<String, String> tieleMap) {
+        int MaxNotNull = 0;
+        if (tieleMap == null) {return MaxNotNull;}
+
+        String parmKey = new String("parm");
+        for (int i = 1; i <= Common.IMPORTEXCEL_PRODUCTPARM_MAXPARM_COUNT; i++) {
+            String excelParmKey = parmKey + Integer.valueOf(i).toString();
+
+            String excelParmKeyValue = new String();
+            if (tieleMap.get(excelParmKey) != null) {
+                excelParmKeyValue = tieleMap.get(excelParmKey).trim();
+            }
+            if (excelParmKeyValue != null && excelParmKeyValue.trim().length() > 0) {
+                MaxNotNull = MaxNotNull + 1;
+            }
+        }
+
+        return MaxNotNull;
+    }
+
     public boolean isNeedProductParm(LinkedHashMap<String, String> tieleMap, Integer maxParmInt) {
         if (tieleMap == null) {return false;}
         if (maxParmInt == null || maxParmInt.intValue() <= 0) {return false;}

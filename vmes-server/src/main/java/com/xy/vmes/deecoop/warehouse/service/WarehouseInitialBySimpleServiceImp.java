@@ -357,16 +357,6 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
         String companyId = httpRequest.getParameter("companyId");
         String userId = httpRequest.getParameter("userId");
 
-//        //获取execl最大货品参数个数
-//        Integer maxParmInt = Integer.valueOf(0);
-//        String maxParm = httpRequest.getParameter("maxParm");
-//        try {
-//            maxParmInt = Integer.parseInt(maxParm);
-//        } catch (NumberFormatException e) {
-//            e.printStackTrace();
-//        }
-        Integer maxParmInt = Integer.valueOf(13);
-
         if (dataMapLst == null || dataMapLst.size() == 1) {
             model.putCode(Integer.valueOf(1));
             model.putMsg("导入文件数据为空，请至少填写一行导入数据！");
@@ -378,6 +368,9 @@ public class WarehouseInitialBySimpleServiceImp implements WarehouseInitialBySim
         if (dataMapLst.size() > 0) {
             titleMap = dataMapLst.get(0);
         }
+
+        //获取execl自定义货品属性非空最大参数个数
+        Integer maxParmInt = warehouseProductExcelBySimpleService.findMaxNotNullProductParm(titleMap);
         dataMapLst.remove(0);
 
         StringBuffer checkColumnMsgStr = new StringBuffer();

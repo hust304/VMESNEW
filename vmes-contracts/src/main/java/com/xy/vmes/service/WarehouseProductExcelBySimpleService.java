@@ -40,6 +40,7 @@ public interface WarehouseProductExcelBySimpleService {
      */
     void findProductParameter(Map<String, String> objectMap);
     void findExcelMap2ProductMap(Map<String, String> excelMap, Map<String, String> productMap);
+    int findMaxNotNullProductParm(LinkedHashMap<String, String> tieleMap);
     boolean isNeedProductParm(LinkedHashMap<String, String> tieleMap, Integer maxParmInt);
 
     void findWarehouseProductMapByExcelDataList(List<LinkedHashMap<String, String>> objectList,
