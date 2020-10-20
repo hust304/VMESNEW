@@ -391,6 +391,30 @@ public class CustomerServiceImp implements CustomerService {
 
         return false;
     }
+
+    public Map<String, String> findCustomerNameKeyMap(String companyId, String isdisable) {
+        Map<String, String> valueMap = new HashMap<>();
+
+        PageData findMap = new PageData();
+        findMap.put("companyId", companyId);
+        findMap.put("isdisable", isdisable);
+        findMap.put("mapSize", Integer.valueOf(findMap.size()));
+        List<Customer> objectList = customerService.findCustomerList(findMap);
+        if (objectList != null && objectList.size() > 0) {
+            for (Customer object : objectList) {
+                String name = object.getName();
+                String id = object.getId();
+
+                if (name != null && name.trim().length() > 0
+                    && id != null && id.trim().length() > 0
+                ) {
+                    valueMap.put(name, id);
+                }
+            }
+        }
+
+        return valueMap;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    @Override
 //    public ResultModel addCustomerBalance(PageData pd) throws Exception {

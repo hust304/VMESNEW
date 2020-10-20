@@ -487,7 +487,7 @@ public class CustomerController {
         //2. Excel导入字段-名称唯一性判断-在Excel文件中
         //3. Excel导入字段-名称唯一性判断-在业务表中判断
         //4. Excel数据添加到货品表
-        this.addImportExcelByList(dataMapLst);
+        this.addImportExcelByList(dataMapLst, companyId);
 
         Long endTime = System.currentTimeMillis();
         logger.info("################customer/importExcelCustomers 执行结束 总耗时"+(endTime-startTime)+"ms ################# ");
@@ -759,58 +759,92 @@ public class CustomerController {
         return strBuf.toString();
     }
 
-    private void addImportExcelByList(List<LinkedHashMap<String, String>> objectList) {
+    private void addImportExcelByList(List<LinkedHashMap<String, String>> objectList, String companyId) throws Exception {
         if (objectList == null || objectList.size() == 0) {return;}
 
+        //根据企业id获取全部(客户供应商名称)
+        //isdisable: 是否启用(0:已禁用 1:启用)
+        String isdisable = new String("1");
+        Map<String, String> customerNameKeyMap = customerService.findCustomerNameKeyMap(companyId, isdisable);
+
         for (int i = 0; i < objectList.size(); i++) {
-            Customer customer = new Customer();
+
             LinkedHashMap<String, String> mapObject = objectList.get(i);
-
-            String userId = mapObject.get("userId");
-            customer.setCuser(userId);
-
-            //companyId 企业ID
-            String companyId = mapObject.get("companyId");
-            customer.setCompanyId(companyId);
-
             //name 名称
             String name = mapObject.get("name");
-            customer.setName(name);
 
-            //genreName 属性 genre 属性id
-            String genre = mapObject.get("genre");
-            customer.setGenre(genre);
+            if (customerNameKeyMap != null && customerNameKeyMap.get(name) != null) {
+                //修改属性
+                Customer editCustomer = new Customer();
+                String id = customerNameKeyMap.get(name);
+                editCustomer.setId(id);
 
-            //typeName 类型 type 类型id
-            String type = mapObject.get("type");
-            customer.setType(type);
+                editCustomer.setName(name);
+                //genreName 属性 genre 属性id
+                String genre = mapObject.get("genre");
+                editCustomer.setGenre(genre);
 
-            //provinceName 地区  province 区域id
-            String province = mapObject.get("province");
-            customer.setProvince(province);
+                //typeName 类型 type 类型id
+                String type = mapObject.get("type");
+                editCustomer.setType(type);
 
-            //remark 备注
-            String remark = mapObject.get("remark");
-            if (remark != null && remark.trim().length() > 0) {
-                customer.setRemark(remark.trim());
-            }
+                //provinceName 地区  province 区域id
+                String province = mapObject.get("province");
+                editCustomer.setProvince(province);
 
-            try {
-                //获取客户供应商编码
-                String code = coderuleService.createCoder(companyId,"vmes_customer","C");
-                customer.setCode(code);
-
-                //生成客户供应商二维码
-                customer.setId(Conv.createUuid());
-                String qrcode = fileService.createQRCode("customer", customer.getId());
-                if (qrcode != null && qrcode.trim().length() > 0) {
-                    customer.setQrcode(qrcode);
+                //remark 备注
+                String remark = mapObject.get("remark");
+                if (remark != null && remark.trim().length() > 0) {
+                    editCustomer.setRemark(remark.trim());
                 }
-                customerService.save(customer);
 
-                //System.out.println("第" + (i+1) + "行：添加成功！");
-            } catch (Exception e) {
-                e.printStackTrace();
+                customerService.update(editCustomer);
+            } else {
+                //添加属性
+                Customer addCustomer = new Customer();
+
+                String userId = mapObject.get("userId");
+                addCustomer.setCuser(userId);
+                //companyId 企业ID
+                addCustomer.setCompanyId(companyId);
+
+                addCustomer.setName(name);
+                //genreName 属性 genre 属性id
+                String genre = mapObject.get("genre");
+                addCustomer.setGenre(genre);
+
+                //typeName 类型 type 类型id
+                String type = mapObject.get("type");
+                addCustomer.setType(type);
+
+                //provinceName 地区  province 区域id
+                String province = mapObject.get("province");
+                addCustomer.setProvince(province);
+
+                //remark 备注
+                String remark = mapObject.get("remark");
+                if (remark != null && remark.trim().length() > 0) {
+                    addCustomer.setRemark(remark.trim());
+                }
+
+                try {
+                    //获取客户供应商编码
+                    String code = coderuleService.createCoder(companyId,"vmes_customer","C");
+                    addCustomer.setCode(code);
+
+                    //生成客户供应商二维码
+                    addCustomer.setId(Conv.createUuid());
+                    String qrcode = fileService.createQRCode("customer", addCustomer.getId());
+                    if (qrcode != null && qrcode.trim().length() > 0) {
+                        addCustomer.setQrcode(qrcode);
+                    }
+                    customerService.save(addCustomer);
+                    customerNameKeyMap.put(addCustomer.getName(), addCustomer.getId());
+
+                    //System.out.println("第" + (i+1) + "行：添加成功！");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

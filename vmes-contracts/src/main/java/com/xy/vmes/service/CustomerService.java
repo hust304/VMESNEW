@@ -134,6 +134,8 @@ public interface CustomerService {
 
     List<Map> getReceiveDataListPage(PageData pd,Pagination pg) throws Exception;//@
 
+    Map<String, String> findCustomerNameKeyMap(String companyId, String isdisable);
+
 //    void updateCustomerBalance(
 //            Customer customer,
 //            BigDecimal balance,
