@@ -59,7 +59,7 @@ public class EmployeeExcelServiceImp implements EmployeeExcelService {
 
         String msg_column_mobile_error = "第 {0} 行: {1}:{2} 输入错误，请输入11位手机号码！" + Common.SYS_ENDLINE_DEFAULT;
         String msg_column_post_error = "第 {0} 行: {1}:{2} 输入错误，该岗位名称不属于({3})部门！" + Common.SYS_ENDLINE_DEFAULT;
-        String msg_column_identity_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的身份证号！" + Common.SYS_ENDLINE_DEFAULT;
+        //String msg_column_identity_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的身份证号！" + Common.SYS_ENDLINE_DEFAULT;
         String msg_column_date_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的日期格式(yyyy-MM-dd)！" + Common.SYS_ENDLINE_DEFAULT;
 
         StringBuffer strBuf = new StringBuffer();
@@ -201,36 +201,41 @@ public class EmployeeExcelServiceImp implements EmployeeExcelService {
             //非必填项验证
             //email 邮箱
             //identityNumber 身份证号
-            String identityNumber = mapObject.get("identityNumber");
-            if (identityNumber != null && identityNumber.trim().length() > 0) {
-                try {
-                    BigDecimal identity_big = new BigDecimal(identityNumber);
-                    //mapObject.put("identityNumber", mobile_big.toBigInteger().toString());
-                    if (identity_big.toBigInteger().toString().length() <= 14) {
-                        //String msg_column_identity_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的身份证号！"
-                        String str_error = MessageFormat.format(msg_column_mobile_error,
-                                (i+index_int),
-                                "身份证号",
-                                identityNumber);
-                        strBuf.append(str_error);
-
-                        maxRow = maxRow + 1;
-                        if (maxShowRow_int <= maxRow) {return strBuf.toString();}
-                    } else if (identity_big.toBigInteger().toString().length() == 11) {
-                        mapObject.put("identityNumber", identity_big.toBigInteger().toString());
-                    }
-                } catch (NumberFormatException e) {
-                    //String msg_column_identity_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的身份证号！"
-                    String str_error = MessageFormat.format(msg_column_identity_error,
-                            (i+index_int),
-                            "身份证号",
-                            identityNumber);
-                    strBuf.append(str_error);
-
-                    maxRow = maxRow + 1;
-                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
-                }
+            String identityNumber = new String();
+            if (mapObject.get("identityNumber") != null) {
+                identityNumber = mapObject.get("identityNumber");
             }
+            mapObject.put("identityNumber", identityNumber);
+
+//            if (identityNumber != null && identityNumber.trim().length() > 0) {
+//                try {
+//                    BigDecimal identity_big = new BigDecimal(identityNumber);
+//                    //mapObject.put("identityNumber", mobile_big.toBigInteger().toString());
+//                    if (identity_big.toBigInteger().toString().length() <= 14) {
+//                        //String msg_column_identity_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的身份证号！"
+//                        String str_error = MessageFormat.format(msg_column_mobile_error,
+//                                (i+index_int),
+//                                "身份证号",
+//                                identityNumber);
+//                        strBuf.append(str_error);
+//
+//                        maxRow = maxRow + 1;
+//                        if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+//                    } else if (identity_big.toBigInteger().toString().length() == 11) {
+//                        mapObject.put("identityNumber", identity_big.toBigInteger().toString());
+//                    }
+//                } catch (NumberFormatException e) {
+//                    //String msg_column_identity_error = "第 {0} 行: {1}:{2} 输入错误，请输入正确的身份证号！"
+//                    String str_error = MessageFormat.format(msg_column_identity_error,
+//                            (i+index_int),
+//                            "身份证号",
+//                            identityNumber);
+//                    strBuf.append(str_error);
+//
+//                    maxRow = maxRow + 1;
+//                    if (maxShowRow_int <= maxRow) {return strBuf.toString();}
+//                }
+//            }
 
             //maritalName 婚姻状况 婚姻状况(1:已婚 0:未婚)
             String maritalName = mapObject.get("maritalName");
