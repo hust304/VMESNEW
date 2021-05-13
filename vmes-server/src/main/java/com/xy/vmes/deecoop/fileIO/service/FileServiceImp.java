@@ -70,7 +70,9 @@ public class FileServiceImp implements FileService {
         if(!QRCode.getParentFile().exists()){				//判断有没有父路径，就是判断文件整个路径是否存在
             QRCode.getParentFile().mkdirs();				//不存在就全部创建
         }
-        QRCodeUtils.create(new FileOutputStream(QRCode),content);
+
+        //QRCodeUtils.create(new FileOutputStream(QRCode),content);
+
         return relativePath+fileName;
     }
 
