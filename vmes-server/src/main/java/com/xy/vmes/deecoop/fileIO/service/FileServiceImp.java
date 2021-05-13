@@ -71,7 +71,7 @@ public class FileServiceImp implements FileService {
             QRCode.getParentFile().mkdirs();				//不存在就全部创建
         }
 
-        //QRCodeUtils.create(new FileOutputStream(QRCode),content);
+        QRCodeUtils.create(new FileOutputStream(QRCode),content);
 
         return relativePath+fileName;
     }
