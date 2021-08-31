@@ -291,11 +291,11 @@ public class WarehouseController {
                     treeNode.setLayer(layer);
 
                     //serialNumber 节点顺序
-                    Integer serialNumber = Integer.valueOf(0);
+                    Long serialNumber = Long.valueOf(0);
                     if (mapObject.get("layer") != null) {
-                        serialNumber = (Integer)mapObject.get("serialNumber");
+                        serialNumber = (Long)mapObject.get("serialNumber");
                     }
-                    treeNode.setSerialNumber(serialNumber);
+                    treeNode.setSerialNumber(serialNumber.intValue());
 
                     treeList.add(treeNode);
                 }
