@@ -833,6 +833,18 @@ public class ProductServiceImp implements ProductService {
         //3.修改产品表(vmes_product)
         productDB.setUuser(pageData.getString("cuser"));
         productDB.setCode(productOld.getCode());
+
+        String validityDaysStr = pageData.getString("validityDays");
+        if (validityDaysStr == null || validityDaysStr.trim().length() == 0) {
+            productDB.setValidityDays(BigDecimal.valueOf(0));
+        }
+
+        //remark
+        String remark = pageData.getString("remark");
+        if (remark == null || remark.trim().length() == 0) {
+            productDB.setRemark("");
+        }
+
         this.update(productDB);
         return model;
     }

@@ -543,7 +543,7 @@
 
             <!--按货品属性 查询语句-->
             <if test="productCode != null and productCode != ''">
-                and product.code LIKE CONCAT(CONCAT('%', #{productCode}),'%')
+                and (product.code LIKE CONCAT(CONCAT('%', #{productCode}),'%') or product.source_code LIKE CONCAT(CONCAT('%', #{productCode}),'%'))
             </if>
             <if test="productName != null and productName != ''">
                 and product.name LIKE CONCAT(CONCAT('%', #{productName}),'%')
