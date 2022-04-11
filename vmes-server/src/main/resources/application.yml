@@ -68,10 +68,10 @@ spring:
     filters: stat,wall
 
   rabbitmq:
-      host: 47.92.1.209
+      host: 120.27.8.239
       port: 5672
-      username: guest
-      password: guest
+      username: admin
+      password: admin
 
 #系统使用阿里邮箱
 #阿里邮箱网址(https://qiye.aliyun.com)

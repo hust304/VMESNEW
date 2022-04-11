@@ -1,5 +1,9 @@
 package com.yvan.rabbitmq.config;
 
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.context.annotation.Bean;
+
 public class RabbitMqConfig {
 
     /** 交换机名称*/
@@ -24,14 +28,15 @@ public class RabbitMqConfig {
     //public static final String EXCHANGE_TEST = "exchange_test";
     //public static final String QUEUE_TEST = "queue_test";
 
-//    @Bean public ConnectionFactory connectionFactory() {
-//        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(this.host, this.port);
-//        cachingConnectionFactory.setUsername(this.userName);
-//        cachingConnectionFactory.setPassword(this.password);
-//        cachingConnectionFactory.setVirtualHost("/");
-//        cachingConnectionFactory.setPublisherConfirms(true);
-//        return cachingConnectionFactory;
-//    }
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("120.27.8.239", 5672);
+        cachingConnectionFactory.setUsername("admin");
+        cachingConnectionFactory.setPassword("admin");
+        cachingConnectionFactory.setVirtualHost("/");
+        cachingConnectionFactory.setPublisherConfirms(true);
+        return cachingConnectionFactory;
+    }
 
 
 
